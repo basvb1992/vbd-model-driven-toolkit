@@ -88,7 +88,7 @@ an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
 
-The current 0.3.0 source maps to solution version `0.3.0.0`. Local PAC builds
+The current 0.4.0 source maps to solution version `0.4.0.0`. Local PAC builds
 contain exactly the browser `VBD` resource and complete escaped third-party
 notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
 zero Dataverse dependencies from the nine bundled runtime packages.

@@ -33,9 +33,9 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-118 runtime functions and the bounded local
+125 runtime functions and the bounded local
 tooling subset are implemented; see [getting started](getting-started.md) and
-[environment/launcher usage](environment-launching.md). The remaining 80 functions
+[environment/launcher usage](environment-launching.md). The remaining 73 functions
 are planned; [core usage](core-usage.md) defines current subset limitations.
 
 ## Non-goals
@@ -234,6 +234,42 @@ existing outputs. Managed creation remains explicitly blocked.
 | Keep consultant reports local and evidence-qualified. | Consultant suites; supplied snapshot/manifest examples and redaction/exit-code tests. | No live collection or authoritative deprecation claims. |
 | Make current delivery scope discoverable. | README, roadmap, distribution and linked usage guides. | Broader runtime catalog and Studio remain planned. |
 
+## Navigation/capability continuation
+
+[Issue #13](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/13)
+scopes seven R1 APIs: four owned `SidePanes` helpers, `Links.record/view` and
+`Diagnostics.getCapabilities`. The outcome is portable record/view links,
+reusable native pane identities and honest API-presence observations.
+This is a 0.4.0 source milestone, not completion of R1 or tenant certification.
+
+Use the existing SDK invocation and origin/identity validators. Pane ownership
+is per SDK-host/page instance, not server authorization. Coalesce identical
+concurrent creation, reject foreign/incompatible IDs, bound tracked identities
+to 32, and reject forged/stale/replaced handles. Do not retry native mutations
+or close a pane as rollback. Serialize navigation; reject close during navigation.
+Only online desktop Web clients and persisted-record/custom-page/webresource
+page inputs are supported initially. No external URL/iframe/DOM contract.
+
+Deep links must be pure and strictly allowlisted, including nested `formid`
+encoding and savedquery/userquery type codes. Capability diagnostics inspect
+method presence only; they neither invoke SDK functions nor infer access.
+Config.load/resolve, Bindings/Cache/Security and non-popup `Launch.openProfile` remain planned.
+No new dependencies, PR merges, tenant authentication/access, deployment,
+managed conversion, automatic wiring or public redistribution are authorized.
+
+Acceptance maps to focused native/lifecycle/link/probe fixtures, browser export
+and package-consumer checks, complete source availability (125/198), matching
+0.4.0/0.4.0.0 descriptors, full checks and explicit actual-PAC unmanaged
+roundtrip. Real Dynamics pane rendering/access and clean imports remain unverified.
+
+| Acceptance | Verified evidence | Unverified boundary |
+| --- | --- | --- |
+| Pure approved-origin links, nested form IDs, system/personal view codes and unchanged window policy. | `tests/navigation-helpers.test.ts`; browser-bundle link smoke. | Actual target record/view/form access. |
+| Native ownership, concurrent creation, stale/forged/replaced/renamed handles, lifecycle locks and capacity. | Focused fixtures cover 32 tracked IDs, pending work, failures, reentry and host replacement; 300/1600 width and title/data thresholds. | Real Dynamics pane identity/resize/rendering behavior. |
+| Capability observations without business actions/value reads. | Getter-failure, absent/present and non-invocation fixtures; browser-bundle smoke. | Presence is not native support, access or installation. |
+| Compatible exports, versions, notices and isolated source. | Full check: 22 files / 707 tests with native PAC; strict types/lint/build/package-consumer checks; 125/198 availability. | The remaining 73 APIs and ten remaining R1 entries are not implemented. |
+| Actual current packaged runtime and independence. | Actual PAC 2.12.2 unmanaged pack/unpack/repack; exact reusable archive reports 0.4.0 / 125 methods, two resources, zero Dataverse dependencies, nine complete package notices and 201 matching input fingerprints. | No managed export, tenant import, clean upgrade or public release. |
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -262,7 +298,7 @@ existing outputs. Managed creation remains explicitly blocked.
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 118-function source namespace and local two-resource solution inspected; tenant installation unverified. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 125-function source namespace and local two-resource solution inspected; tenant installation unverified. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |

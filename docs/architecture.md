@@ -4,8 +4,8 @@ Most contracts below are proposed. The implemented configuration/diagnostic
 functions and local delivery tools are described in [getting started](getting-started.md).
 The scoped environment/app-launch subset is in [runtime usage](environment-launching.md).
 Their source-level checks are not Dataverse installation or live-app evidence.
-The [core usage](core-usage.md) contract describes the 118 implemented methods
-in 0.3.0, including the bounded native UI/data subset.
+The [core usage](core-usage.md) contract describes the 125 implemented methods
+in 0.4.0, including the bounded native UI/data subset and owned side panes.
 
 ## Product and framework separation
 

@@ -10,6 +10,28 @@ import * as library from "../src/index.js";
 const bundle = readFileSync(resolve("dist", "vbd.toolkit.js"), "utf8");
 
 describe("browser distribution", () => {
+  it("builds deep links and reports absent capabilities in the browser bundle without invoking a host", () => {
+    const result: unknown = runInNewContext(`${bundle}
+      JSON.stringify({
+        url: VBD.Links.view({
+          environmentUrl: "https://target.example", allowedOrigins: ["https://target.example"],
+          appName: "vbd_App", entityName: "account", viewId: "${appId}", viewType: "userquery"
+        }),
+        capabilities: VBD.Diagnostics.getCapabilities(),
+        sidePaneMethods: Object.keys(VBD.SidePanes).sort()
+      });`, { crypto: globalThis.crypto, URL }, { timeout: 5000 });
+    expect(result).toBe(JSON.stringify({
+      url: `https://target.example/main.aspx?appname=vbd_App&pagetype=entitylist&etn=account&viewid=%7B${appId}%7D&viewtype=4230`,
+      capabilities: {
+        toolkitVersion: manifest.version, basis: "methodPresenceOnly",
+        capabilities: {
+          navigation: "absent", quickCreate: "absent", lookups: "absent",
+          environmentReads: "absent", sidePanes: "absent", notifications: "absent"
+        }
+      },
+      sidePaneMethods: ["close", "createOrGet", "navigate", "select"]
+    }));
+  });
   it("loads the implemented namespace without requiring Node, Xrm, or DOM at initialization", () => {
     const result: unknown = runInNewContext(`${bundle}
       JSON.stringify({

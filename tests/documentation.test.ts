@@ -45,7 +45,7 @@ describe("documentation contracts", () => {
     const actual = Object.entries(library).filter(([, value]) => typeof value === "object" && value !== null)
       .flatMap(([module, methods]) => Object.keys(methods).map((name) => `VBD.${module}.${name}`)).sort();
     expect(documented).toEqual(actual);
-    expect(actual).toHaveLength(118);
+    expect(actual).toHaveLength(125);
   });
 
   it("has no broken local document/example links or undocumented function references", () => {

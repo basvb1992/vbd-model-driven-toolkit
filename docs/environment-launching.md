@@ -1,7 +1,7 @@
 # Environment reads and prepared app launching
 
 The environment/launcher subset introduced in 0.2.0 continues in the broader
-0.3.0 core. See [core usage](core-usage.md) for prepared-profile form/grid
+0.4.0 core. See [core usage](core-usage.md) for prepared-profile form/grid
 handlers and native navigation. Record bindings in app-window profiles,
 arbitrary external app-window destinations, non-popup openProfile and workflow
 execution remain out of scope. No tenant deployment is included.

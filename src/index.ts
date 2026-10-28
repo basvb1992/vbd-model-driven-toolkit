@@ -5,7 +5,7 @@ export type {
   ConfigurationValidation
 } from "./configuration.js";
 export { Diagnostics } from "./diagnostics.js";
-export type { Diagnostic, ReportOptions } from "./diagnostics.js";
+export type { Diagnostic, ReportOptions, CapabilityName, CapabilityReport } from "./diagnostics.js";
 export { VbdError } from "./errors.js";
 export type { ErrorCode } from "./errors.js";
 export type { Finding, FindingStatus } from "./findings.js";
@@ -17,7 +17,9 @@ export type {
 } from "./environment.js";
 export type { ReadContext, ReadScope } from "./platform.js";
 export { Links } from "./links.js";
-export type { AppLinkOptions } from "./links.js";
+export type { AppLinkOptions, RecordLinkOptions, ViewLinkOptions } from "./links.js";
+export { SidePanes } from "./side-panes.js";
+export type { SidePaneOptions, SidePaneHandle, SidePanePage } from "./side-panes.js";
 export { Launch } from "./launch.js";
 export type { ProfileIdentity, PreparationOptions, ProfileDefinition, PreparedLaunch } from "./launch.js";
 export { Windows } from "./windows.js";
