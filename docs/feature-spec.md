@@ -354,6 +354,41 @@ tests with actual native PAC, strict types/lint/build and consumer declarations.
 GitHub draft release assets retain genuine export bytes and checksums; public
 binary publication remains blocked by the unresolved license decision.
 
+## Optional Playground companion
+
+[Issue #17](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/17)
+addresses the missing launchable test experience without changing Core into
+an app. A separate `VBDToolkitPlayground` solution supplies one model-driven
+app/sitemap and three read-only example webresources; Core stays library-only.
+There are no new runtime APIs, tables, business records, workflows, consumer
+wiring or role changes.
+
+Use the supported HTML-webresource global context, not parent DOM/Xrm access.
+Explicit current-user reads are limited to bounded same-origin environment
+metadata/values, with protected types rejected and values masked by default.
+All output is text; no arbitrary script/query editor or write operations.
+The [usage guide](playground.md) defines the UI and package contracts.
+
+Acceptance maps to focused adapter/source-boundary tests, actual native PAC
+pack/unpack, unchanged Core regression gates and browser fixtures covering
+explicit-only reads, local examples, links, masking/text rendering, recoverable
+errors, keyboard focus, desktop/mobile overflow and 200% zoom. BvB staging must
+pass with no missing dependencies; actual import/publication/read-back must
+confirm app, sitemap and exact resources. Real native app rendering is verified
+only when an authenticated browser session can open it; otherwise record that
+boundary and provide the direct app link. Core's existing tag/draft/assets and
+unrelated applications must remain unchanged.
+
+Actual evidence: corrected companion import and targeted app/sitemap/resource
+publication succeeded, with zero component failures and matching server/served
+resource hashes. The published app collection contains the active named app;
+Core remains unchanged. The first import's unresolved redundant webresource
+AppModuleComponent entries were removed after confirming the failure left no
+companion records. Browser fixtures cover the read-only UI at desktop/mobile
+widths, keyboard focus and 200% zoom. Live native launch reaches Microsoft
+sign-in; authenticated native rendering remains unverified because the
+automation browser has no BvB session. See [deployment details](playground.md).
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface

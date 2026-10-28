@@ -115,6 +115,7 @@ handover; a visual authoring Studio comes later.
 | [Consultant tools](docs/consultant-tools.md) | Local sanitized comparison and supplied-manifest upgrade reports |
 | [Solution packaging](docs/solution-packaging.md) | Offline unmanaged PAC packaging, complete notices, inspection and managed prerequisites |
 | [Testing in BvB](docs/testing-in-bvb.md) | Consumer-owned test form setup, safe smoke scenarios and deployment evidence boundaries |
+| [Optional Playground app](docs/playground.md) | Separate launchable read-only app, examples and supported HTML-webresource boundaries |
 | [Environment and configuration](docs/environment-and-configuration.md) | Value resolution, types, caching, secrets, feature flags, and bindings |
 | [Apps and independent windows](docs/app-launching.md) | App profiles, deep links, popup restrictions, authentication, and return contracts |
 | [Recipe examples](docs/recipes.md) | Proposed end-to-end interactions and smart mechanisms |

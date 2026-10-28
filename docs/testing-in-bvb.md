@@ -6,6 +6,10 @@ The standalone Core solution contains **two webresources only**:
 table, environment-variable definition or test record. Importing the library
 does not wire an existing application automatically.
 
+For a launchable read-only example app, use the separate
+[VBD Toolkit Playground companion](playground.md). Its app is in the
+`VBDToolkitPlayground` solution; it is deliberately not added to Core.
+
 **Current deployment:** standalone unmanaged `VBDModelDrivenToolkit` 0.5.0.0
 is imported and its two resources are published in BvB Demo Apps. Import job
 completion, zero component failures, exact component inventory, and the served

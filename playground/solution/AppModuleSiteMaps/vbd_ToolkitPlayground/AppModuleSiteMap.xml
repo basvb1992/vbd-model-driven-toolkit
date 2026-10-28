@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppModuleSiteMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SiteMapUniqueName>vbd_ToolkitPlayground</SiteMapUniqueName>
+  <EnableCollapsibleGroups>False</EnableCollapsibleGroups>
+  <ShowHome>False</ShowHome><ShowPinned>False</ShowPinned><ShowRecents>False</ShowRecents>
+  <SiteMap IntroducedVersion="7.0.0.0">
+    <Area Id="vbd_playground_area" ShowGroups="true">
+      <Titles><Title Title="VBD Toolkit" LCID="1033" /></Titles>
+      <Group Id="vbd_playground_group" IsProfile="false">
+        <Titles><Title Title="Read-only examples" LCID="1033" /></Titles>
+        <SubArea Id="vbd_playground_examples" Url="$webresource:vbd_/playground/vbd.playground.html" Client="Web" AvailableOffline="false" PassParams="false">
+          <Titles><Title Title="Playground" LCID="1033" /></Titles>
+        </SubArea>
+      </Group>
+    </Area>
+  </SiteMap>
+  <LocalizedNames><LocalizedName description="VBD Toolkit Playground" languagecode="1033" /></LocalizedNames>
+</AppModuleSiteMap>

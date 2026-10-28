@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{020be5d7-9e65-8349-8bb7-27c0bffb6c3e}</WebResourceId>
+  <Name>vbd_/playground/vbd.playground.svg</Name><DisplayName>VBD Toolkit Playground icon</DisplayName>
+  <WebResourceType>11</WebResourceType><IsCustomizable>1</IsCustomizable>
+  <IntroducedVersion>0.1.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient><IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <FileName>/WebResources/vbd_playground.svg</FileName>
+</WebResource>
