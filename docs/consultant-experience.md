@@ -1,8 +1,12 @@
 # Consultant capability catalog
 
-**Status: design only. Every capability below is planned, not implemented.**
+**Status: partial C1a foundations are implemented; no complete consultant UI or
+live deployment checker is available.** C01 has structured diagnostic contracts,
+C02 has source/sanitized-snapshot preflight, and C03 has declared-configuration
+Markdown handover. All broader capability requirements remain planned.
 This catalog defines experiences built around the runtime library. It does not
 add functions to the 198-function [runtime catalog](function-catalog.md).
+See [getting started](getting-started.md) for current commands and limitations.
 
 The requested user outcomes and acceptance criteria remain in the existing
 [feature specification](feature-spec.md). Technical and packaging boundaries
@@ -240,5 +244,7 @@ one explicit context, one source/target scope, and deterministic redacted report
 Extend coverage through bounded implementation issues instead of waiting for
 all runtime functions or building Studio first.
 
-All required runtime behavior and acceptance tests remain unverified until
-implementation; this document is not evidence that any capability already works.
+Only the scoped C1a source-level behavior has automated evidence. A diagnostic
+panel, live metadata collection, deployed registration verification, and the
+remaining capability requirements are unimplemented/unverified. This catalog
+does not certify those broader behaviors.

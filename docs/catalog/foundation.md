@@ -1,6 +1,9 @@
 # Foundation and configuration functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md).
+Six entries are implemented locally: Config's validate/register/get and
+Diagnostics' normalizeError/report/getVersion. The other 39 entries in this
+file remain planned. See [catalog conventions](../function-catalog.md) and
+[current usage](../getting-started.md); no entry is Dataverse-deployed yet.
 `R1`/`R2`/`R3` indicate earliest delivery phase, not implementation status.
 
 ## VBD.Context
@@ -39,6 +42,11 @@ absence from access/service failure. See the [resolution contract](../environmen
 
 ## VBD.Config
 
+Implemented subset: validate/register/get for the portable version-1 declaration
+schema only. `load` and `resolve` remain planned. Registration rejects duplicate
+keys by default, accepts explicit `{ replace: true }`, validates options, and
+copies stored/retrieved configuration to prevent caller mutation.
+
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.Config.load` | Approved JSON webresource/config source, schema/version | Validated configuration | Load only registered sources; no arbitrary script loading. | R1 |
@@ -74,6 +82,11 @@ authorization still governs every operation; incomplete metadata cannot mean all
 | `VBD.Security.hasPrivilege` | Privilege identity, required scope | Privilege assessment | Stable privilege checks preferred over role display-name matching. | R1 |
 
 ## VBD.Diagnostics
+
+Implemented subset: normalizeError/report/getVersion. Reporting requires an
+explicit sink, with fixed safe messages and no serialized original cause/stack.
+`getCapabilities` remains planned. Version reporting alone does not certify
+client compatibility or installation.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

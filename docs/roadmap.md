@@ -1,7 +1,20 @@
 # Roadmap
 
-All function catalog entries are **planned**. Delivery phase is not implementation
-status and does not guarantee every proposed API name will survive design review.
+Six catalog functions have a local implementation; the other 192 are planned.
+Delivery phase is not implementation status and does not guarantee every
+proposed API name will survive design review.
+
+## Current progress: C1a
+
+[Issue #1](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/1) scopes
+the first implementation: six configuration/diagnostic APIs, strict schema,
+browser/ESM/declaration builds, local source/snapshot preflight, and Markdown
+handover. See [getting started](getting-started.md).
+
+Local verification includes strict types/lint/build, NodeNext consumer types,
+CLI behavior, redaction/bounds tests, and browser-bundle VM smoke checks.
+This is not a completed R1 release: no live environment reads, launcher/command
+execution, diagnostic panel, Dataverse import, or solution package exists.
 
 ## D0: Documentation baseline
 
@@ -51,7 +64,7 @@ turn these options into core prerequisites.
 ## Consultant value workstream
 
 This workstream complements R1-R3; it does not add CLI/Studio capabilities to
-the public browser function count. All capabilities remain planned. See the
+the public browser function count. C1a is partial progress, not full completion. See the
 [consultant catalog](consultant-experience.md) for IDs and observable evidence.
 
 | Stage | Priority capabilities | Dependency / gate |

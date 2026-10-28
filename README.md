@@ -4,11 +4,36 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: documentation and API design only. No functions, solution packages,
-deployment scripts, or npm package have been implemented or released.**
+**Status: early source implementation (0.1.0). Six functions and local
+source/snapshot delivery tools are implemented. No Dataverse deployment,
+solution ZIP, Studio, launcher runtime, or public npm release exists yet.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
+Six are locally implemented; the other 192 remain planned.
+
+## Available now
+
+- `VBD.Config.validate`, `register`, and `get`: strict portable declaration
+  validation and an isolated in-memory registry.
+- `VBD.Diagnostics.normalizeError`, `report`, and `getVersion`: structured
+  errors, explicit redacted sinks, and version information.
+- A browser `VBD` bundle, ESM developer bundle, and TypeScript declarations.
+- Local `preflight` JSON and `handover` Markdown tools. These use source and
+  optional sanitized supplied evidence; no live environment is queried.
+
+Requires Node.js 24 or later for development/tools:
+
+```powershell
+npm ci
+npm run check
+node .\dist\vbd-toolkit.mjs preflight --config .\examples\customer-workspace.json
+```
+
+The example preflight intentionally exits **2 (incomplete)**: live deployment
+is unverified and the configured launch/command runtime is not implemented.
+See [getting started](docs/getting-started.md) for usable APIs, report generation,
+input limits, and the precise current boundaries.
 
 ## What we are designing
 
@@ -50,6 +75,7 @@ handover; a visual authoring Studio comes later.
 
 | Document | Contents |
 | --- | --- |
+| [Getting started](docs/getting-started.md) | Build, six implemented APIs, portable schema, preflight, handover, and exit codes |
 | [Feature specification](docs/feature-spec.md) | Outcomes, boundaries, acceptance criteria, assumptions, and failure cases |
 | [Function catalog](docs/function-catalog.md) | Complete proposed public API inventory, inputs, outputs, and delivery phases |
 | [Architecture](docs/architecture.md) | Typed APIs, maker adapters, recipes, contexts, errors, and compatibility |
