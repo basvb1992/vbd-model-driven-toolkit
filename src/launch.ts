@@ -6,7 +6,7 @@ import { VbdError } from "./errors.js";
 import { Links } from "./links.js";
 import { contextSchema, readScope, resolveReadContext, scopeKey } from "./platform.js";
 import type { ReadContext } from "./platform.js";
-import { identifierSchema, parseInput } from "./validation.js";
+import { identifierSchema, isRecord, parseInput } from "./validation.js";
 import { Windows, windowHostSchema } from "./windows.js";
 import type { LaunchResult } from "./windows.js";
 
@@ -30,6 +30,19 @@ export interface PreparedLaunch {
   readonly id: string;
   readonly expiresAt: number;
 }
+export interface SameWindowHost {
+  navigateSameWindow(url: string): void | Promise<void>;
+}
+const sameWindowOptions = preparationOptions.extend({
+  host: z.custom<SameWindowHost>(value =>
+    isRecord(value) && typeof value.navigateSameWindow === "function").optional()
+});
+export type OpenProfileOptions = z.input<typeof sameWindowOptions>;
+export interface SameWindowResult {
+  status: "requested";
+  outcome: "unknown";
+  presentation: "sameWindow";
+}
 interface PreparedState {
   url: string;
   allowedOrigins: string[];
@@ -52,10 +65,17 @@ function getProfile(input: ProfileIdentity): ProfileDefinition {
   return profile;
 }
 
-async function prepareProfile(input: PreparationOptions): Promise<PreparedLaunch> {
+function requirePresentation(profile: ProfileDefinition, expected: "newWindow" | "sameWindow"): void {
+  const presentation: string = profile.presentation;
+  if (presentation !== expected) throw new VbdError("INVALID_ARGUMENT", { operation: "launch.presentation" });
+}
+
+async function resolveProfile(input: PreparationOptions, presentation: "newWindow" | "sameWindow"):
+Promise<PreparedState & { expiresAt: number }> {
   const options = parseInput(preparationOptions, input, "launch.prepareProfile");
   const identity = { configurationName: options.configurationName, profileKey: options.profileKey };
   const profile = getProfile(identity);
+  requirePresentation(profile, presentation);
   const revision = configurationRevision(options.configurationName);
   const generation = environmentGeneration();
   const context = resolveReadContext(options.context);
@@ -101,6 +121,16 @@ async function prepareProfile(input: PreparationOptions): Promise<PreparedLaunch
   if (expiresAt <= createdAt) {
     throw new VbdError("CONFIG_EXPIRED", { operation: "launch.prepareProfile" });
   }
+  return {
+    url, allowedOrigins, configurationName: options.configurationName, revision,
+    generation, scope: scopeIdentity, context: options.context, createdAt, expiresAt
+  };
+}
+
+async function prepareProfile(input: PreparationOptions): Promise<PreparedLaunch> {
+  const { expiresAt, ...state } = await resolveProfile(input, "newWindow");
+  assertCurrent(state, expiresAt);
+  const createdAt = state.createdAt;
   for (const token of prepared.keys()) {
     if (token.expiresAt <= createdAt) {
       prepared.delete(token);
@@ -113,11 +143,67 @@ async function prepareProfile(input: PreparationOptions): Promise<PreparedLaunch
     }
   }
   const token: PreparedLaunch = Object.freeze({ id: crypto.randomUUID(), expiresAt });
-  prepared.set(token, {
-    url, allowedOrigins, configurationName: options.configurationName, revision,
-    generation, scope: scopeIdentity, context: options.context, createdAt
-  });
+  prepared.set(token, state);
   return token;
+}
+
+function assertCurrent(state: PreparedState, expiresAt: number): void {
+  const now = Date.now();
+  const currentScope = scopeKey(readScope(resolveReadContext(state.context)));
+  if (now < state.createdAt || now >= expiresAt ||
+      state.revision !== configurationRevision(state.configurationName) ||
+      state.generation !== environmentGeneration() || state.scope !== currentScope) {
+    throw new VbdError("CONFIG_EXPIRED", { operation: "launch.freshness" });
+  }
+}
+
+function browserSameWindowHost(): SameWindowHost {
+  try {
+    const window: unknown = Reflect.get(globalThis, "window");
+    if (window !== globalThis || Reflect.get(globalThis, "self") !== window ||
+        Reflect.get(globalThis, "top") !== window) {
+      throw new VbdError("UNSUPPORTED_SURFACE", { operation: "launch.sameWindowHost" });
+    }
+    const location: unknown = Reflect.get(globalThis, "location");
+    if (!isRecord(location)) {
+      throw new VbdError("UNSUPPORTED_SURFACE", { operation: "launch.sameWindowHost" });
+    }
+    const assign = location.assign;
+    if (typeof assign !== "function") {
+      throw new VbdError("UNSUPPORTED_SURFACE", { operation: "launch.sameWindowHost" });
+    }
+    return { navigateSameWindow: url => { Reflect.apply(assign, location, [url]); } };
+  } catch (cause) {
+    if (cause instanceof VbdError) throw cause;
+    throw new VbdError("UNSUPPORTED_SURFACE", { operation: "launch.sameWindowHost", cause });
+  }
+}
+
+async function openProfile(input: OpenProfileOptions): Promise<SameWindowResult> {
+  const { host: suppliedHost, ...options } = parseInput(sameWindowOptions, input, "launch.openProfile");
+  requirePresentation(getProfile({
+    configurationName: options.configurationName, profileKey: options.profileKey
+  }), "sameWindow");
+  const host = suppliedHost ?? browserSameWindowHost();
+  const { expiresAt, ...state } = await resolveProfile(options, "sameWindow");
+  try {
+    const navigate = host.navigateSameWindow;
+    if (typeof navigate !== "function") {
+      throw new VbdError("INVALID_ARGUMENT", { operation: "launch.openProfile" });
+    }
+    assertCurrent(state, expiresAt);
+    const pending: unknown = Reflect.apply(navigate, host, [state.url]);
+    if (pending !== undefined && (!isRecord(pending) || typeof pending.then !== "function")) {
+      throw new VbdError("DATA_RESPONSE_INVALID", { operation: "launch.openProfile" });
+    }
+    if (await pending !== undefined) {
+      throw new VbdError("DATA_RESPONSE_INVALID", { operation: "launch.openProfile" });
+    }
+  } catch (cause) {
+    if (cause instanceof VbdError) throw cause;
+    throw new VbdError("WINDOW_REQUEST_FAILED", { operation: "launch.openProfile", cause });
+  }
+  return { status: "requested", outcome: "unknown", presentation: "sameWindow" };
 }
 
 function openPrepared(token: PreparedLaunch, input: z.input<typeof openOptions> = {}): LaunchResult {
@@ -126,20 +212,11 @@ function openPrepared(token: PreparedLaunch, input: z.input<typeof openOptions> 
   if (!state) {
     throw new VbdError("CONFIG_NOT_READY", { operation: "launch.openPrepared" });
   }
-  const now = Date.now();
-  let currentScope: string;
   try {
-    currentScope = scopeKey(readScope(resolveReadContext(state.context)));
+    assertCurrent(state, token.expiresAt);
   } catch (error) {
     prepared.delete(token);
     throw error;
-  }
-  if (now < state.createdAt || now >= token.expiresAt ||
-      state.revision !== configurationRevision(state.configurationName) ||
-      state.generation !== environmentGeneration() ||
-      state.scope !== currentScope) {
-    prepared.delete(token);
-    throw new VbdError("CONFIG_EXPIRED", { operation: "launch.openPrepared" });
   }
   return Windows.open({
     url: state.url, allowedOrigins: state.allowedOrigins,
@@ -149,4 +226,4 @@ function openPrepared(token: PreparedLaunch, input: z.input<typeof openOptions> 
   });
 }
 
-export const Launch = Object.freeze({ getProfile, prepareProfile, openPrepared });
+export const Launch = Object.freeze({ getProfile, prepareProfile, openPrepared, openProfile });

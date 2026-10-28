@@ -33,9 +33,9 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-125 runtime functions and the bounded local
+135 runtime functions and the bounded local
 tooling subset are implemented; see [getting started](getting-started.md) and
-[environment/launcher usage](environment-launching.md). The remaining 73 functions
+[environment/launcher usage](environment-launching.md). The remaining 63 functions
 are planned; [core usage](core-usage.md) defines current subset limitations.
 
 ## Non-goals
@@ -270,6 +270,61 @@ roundtrip. Real Dynamics pane rendering/access and clean imports remain unverifi
 | Compatible exports, versions, notices and isolated source. | Full check: 22 files / 707 tests with native PAC; strict types/lint/build/package-consumer checks; 125/198 availability. | The remaining 73 APIs and ten remaining R1 entries are not implemented. |
 | Actual current packaged runtime and independence. | Actual PAC 2.12.2 unmanaged pack/unpack/repack; exact reusable archive reports 0.4.0 / 125 methods, two resources, zero Dataverse dependencies, nine complete package notices and 201 matching input fingerprints. | No managed export, tenant import, clean upgrade or public release. |
 
+## R1 completion and BvB test-release slice
+
+[Issue #15](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/15)
+scopes the final ten R1 APIs and operator-authorized BvB deployment preparation.
+Target source/solution versions are 0.5.0/0.5.0.0, with 135/198 APIs; 63 R2/R3
+entries remain planned. Parallel isolated lanes own Config/Bindings/Cache (seven)
+and Security (two); the integrator owns non-popup Launch.openProfile and release
+orchestration. Existing PRs/worktrees/artifacts remain intact.
+
+Preserve schema-v1 declaration safety, scoped bounded copy-isolated memory
+caching, binding source/path/depth/cycle limits, typed environment provenance
+and errors, and current namespace/SDK/window contracts. Same-window profiles
+are separate from newWindow profiles; async openProfile must never become a
+popup convenience. Privilege/table hints must retain allowed/denied/unknown
+semantics and cannot substitute for server authorization.
+
+Deployment is restricted to the standalone two-webresource toolkit after
+current-target identity, installed-version/component checks and staged
+dependency validation. Publish only toolkit resources; do not wire consumer
+forms/apps or change environment-wide security. Genuine managed/unmanaged
+exports must match the verified source/version/payloads, with accurate residual
+live/clean-target verification limitations and no fabricated managed metadata.
+
+The repository is now public, while its license remains UNLICENSED. License
+confirmation was unavailable: preserve rights and prepare a GitHub draft
+release rather than treating an unanswered license prompt as permission to
+grant redistribution rights. Do not invent ALM approval identities or site
+markers for this non-Power-Pages toolkit. Record unfulfilled deployment/release
+gates explicitly; source/CLI success alone is not deployment evidence.
+
+Pre-deployment read-only checks found an existing general VBD publisher with a
+different option-value prefix. The toolkit must not overwrite that publisher.
+Before the first actual toolkit install, its dedicated publisher unique name is
+therefore `VBDModelDrivenToolkit` (display `VBD Toolkit`), retaining prefix `vbd`,
+portable option prefix 59926 and the same solution/resource/component identities.
+The packager pins this exact publisher, rather than broadly accepting arbitrary
+publishers. Original local-only artifact identities remain historical.
+
+The Power Pages-only plan wizard does not apply to this standalone model-driven
+webresource solution. No site markers or approved-plan stamps are fabricated.
+The operator's current request authorizes BvB testing; the active BvB Demo Apps
+identity was checked against PAC and Dataverse WhoAmI, with no installed toolkit
+or colliding resource/dedicated-publisher names. The bounded manual path stages
+the exact reviewed artifact, requires Passed/zero validation/dependency errors,
+imports without force-overwrite, publishes only the toolkit resource IDs and
+reads back content before genuine export. No production target is inferred.
+
+Source verification: 27 files / 997 tests passed with explicit native PAC,
+strict types/lint/build/package-consumer checks and complete 135/198 exports.
+Local pack/unpack/repack over the 0.5.0 source contains exactly two resources
+and nine runtime packages, with zero Dataverse dependencies. StageSolution
+returned Passed with zero missing dependencies/validation findings and only the
+solution plus two resources. This is not yet a completed import or managed
+clean-target test; record those separately after actual execution.
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -298,7 +353,7 @@ roundtrip. Real Dynamics pane rendering/access and clean imports remain unverifi
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 125-function source namespace and local two-resource solution inspected; tenant installation unverified. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 135-function source namespace and local two-resource solution inspected; tenant installation must be separately evidenced. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |

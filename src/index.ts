@@ -4,6 +4,16 @@ export type {
   EnvironmentRequirement,
   ConfigurationValidation
 } from "./configuration.js";
+export type {
+  TrustedConfigurationSource, ConfigurationLoadOptions, ConfigurationVariablePolicy,
+  ConfigurationResolveOptions, ResolvedConfiguration
+} from "./configuration-runtime.js";
+export { Bindings } from "./bindings.js";
+export type { BindingType, BindingSource, ValueBinding, BindingOptions } from "./bindings.js";
+export { Cache } from "./cache.js";
+export type {
+  CacheKey, CacheLoadOptions, CacheInvalidation, CacheScopeOptions
+} from "./cache.js";
 export { Diagnostics } from "./diagnostics.js";
 export type { Diagnostic, ReportOptions, CapabilityName, CapabilityReport } from "./diagnostics.js";
 export { VbdError } from "./errors.js";
@@ -21,7 +31,10 @@ export type { AppLinkOptions, RecordLinkOptions, ViewLinkOptions } from "./links
 export { SidePanes } from "./side-panes.js";
 export type { SidePaneOptions, SidePaneHandle, SidePanePage } from "./side-panes.js";
 export { Launch } from "./launch.js";
-export type { ProfileIdentity, PreparationOptions, ProfileDefinition, PreparedLaunch } from "./launch.js";
+export type {
+  ProfileIdentity, PreparationOptions, ProfileDefinition, PreparedLaunch,
+  SameWindowHost, OpenProfileOptions, SameWindowResult
+} from "./launch.js";
 export { Windows } from "./windows.js";
 export type { WindowHost, WindowOptions, LaunchResult } from "./windows.js";
 export type { EntityRef } from "./entity-reference.js";
@@ -57,3 +70,9 @@ export type {
 } from "./query.js";
 export { Actions } from "./actions.js";
 export type { ParameterContract, ResponseContract, OperationContract, OperationOptions } from "./actions.js";
+export { Security } from "./security.js";
+export type {
+  PrivilegeIdentity, PrivilegeDepth, TableOperation, SecurityOptions,
+  SecurityDepthEncoding, SecurityScope, SecurityPrivilegeRead, SecurityTableRead,
+  SecurityContext, SecurityReason, SecurityObservationScope, AccessAssessment
+} from "./security.js";

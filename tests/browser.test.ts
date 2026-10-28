@@ -10,6 +10,42 @@ import * as library from "../src/index.js";
 const bundle = readFileSync(resolve("dist", "vbd.toolkit.js"), "utf8");
 
 describe("browser distribution", () => {
+  it("uses the bundled configuration, binding, cache and same-window contracts across realms", async () => {
+    const source = launchFixture(), opened: string[] = [];
+    const config = configuration();
+    const sandbox = {
+      crypto: globalThis.crypto, URL, TextEncoder, config,
+      readContext: source.context,
+      host: { navigateSameWindow: (url: string) => { opened.push(url); } }
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        config.launchProfiles[0].presentation = "sameWindow";
+        config.registrations = [];
+        VBD.Config.register("vmSame", config);
+        const bindings = await VBD.Bindings.resolveMany({
+          enabled: { source: {kind:"literal", value:false}, type:"boolean" },
+          count: { source: {kind:"literal", value:0}, type:"number" }
+        }, { context:readContext });
+        const cached = await VBD.Cache.getOrLoad({namespace:"vm",key:"settings"}, {
+          context:readContext, approved:true, purpose:"metadata", revision:"v1", ttlMs:1000,
+          load:async()=>({enabled:false}), validate:value=>value.enabled===false
+        });
+        const resolved = await VBD.Config.resolve("vmSame", {context:readContext});
+        const request = await VBD.Launch.openProfile({
+          configurationName:"vmSame",profileKey:"customerWorkspace",context:readContext,host
+        });
+        return JSON.stringify({ bindings, cached, resolved:Object.keys(resolved.values).length,
+          request, security:typeof VBD.Security.assessTable });
+      })();`, sandbox, { timeout: 5000 });
+    expect(result).toBe(JSON.stringify({
+      bindings: { enabled: false, count: 0 }, cached: { enabled: false }, resolved: 3,
+      request: { status: "requested", outcome: "unknown", presentation: "sameWindow" },
+      security: "function"
+    }));
+    expect(opened).toEqual([`https://target.example/main.aspx?appid=${appId}`]);
+    expect(source.retrieve).toHaveBeenCalledTimes(6);
+  });
   it("builds deep links and reports absent capabilities in the browser bundle without invoking a host", () => {
     const result: unknown = runInNewContext(`${bundle}
       JSON.stringify({

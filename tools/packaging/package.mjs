@@ -262,9 +262,9 @@ function manifest(bytes, expectedVersion, kind) {
   const p = child(m, "Publisher");
   childrenOnly(p, ["UniqueName", "LocalizedNames", "Descriptions", "CustomizationPrefix", "CustomizationOptionValuePrefix",
     "EMailAddress", "SupportingWebsiteUrl", "Addresses"]);
-  requireThat(value(p, "UniqueName") === "VBD" && value(p, "CustomizationPrefix") === "vbd"
+  requireThat(value(p, "UniqueName") === "VBDModelDrivenToolkit" && value(p, "CustomizationPrefix") === "vbd"
     && value(p, "CustomizationOptionValuePrefix") === "59926", "PREFIX", "Only the independent VBD publisher is accepted.");
-  localization(child(p, "LocalizedNames"), "LocalizedName", "VBD");
+  localization(child(p, "LocalizedNames"), "LocalizedName", "VBD Toolkit");
   empty(child(p, "Descriptions")); empty(child(m, "MissingDependencies"));
   blankPublisherDetails(p);
   const roots = child(m, "RootComponents");

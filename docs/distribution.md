@@ -88,7 +88,7 @@ an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
 
-The current 0.4.0 source maps to solution version `0.4.0.0`. Local PAC builds
+The current 0.5.0 source maps to solution version `0.5.0.0`. Local PAC builds
 contain exactly the browser `VBD` resource and complete escaped third-party
 notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
 zero Dataverse dependencies from the nine bundled runtime packages.
@@ -136,7 +136,8 @@ to the consuming organization. Uninstall dependency and data impacts need review
 
 ## Access and license
 
-The repository was created private. The owner can share access with collaborators.
-A public repository and redistribution license are not yet approved. Do not
-publish reusable solution binaries or a package without resolving the license,
-ownership of included assets, and release governance.
+The repository was created private and is now public. Source visibility does
+not grant redistribution rights: the package remains private/UNLICENSED and no
+open-source license is selected. Until the owner confirms the license, prepare
+a draft GitHub test release rather than publishing reusable binary assets.
+Resolve ownership of included assets and release governance before publication.

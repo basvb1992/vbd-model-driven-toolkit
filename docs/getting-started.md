@@ -27,7 +27,10 @@ Inside a configured local workspace, developer code can import the ESM package
 as `import * as VBD from "vbd-model-driven-toolkit"`. After loading the built
 browser bundle once, implemented modules are under global `VBD`.
 No webresource upload or registration has been performed.
-The 0.4.0 core interaction/form/data and owned-pane subset is documented in [core usage](core-usage.md).
+The 0.5.0 core interaction/form/data, owned-pane and Security subsets are documented in [core usage](core-usage.md).
+Approved configuration loading/resolution, bindings and memory caching are
+documented in [configuration runtime](environment-and-configuration.md).
+See [BvB testing](testing-in-bvb.md) before wiring a consumer-owned test form.
 The new environment/launcher methods are documented separately in
 [environment reads and app launching](environment-launching.md).
 

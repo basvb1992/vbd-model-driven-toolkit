@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**125 functions have a local implementation; the other 73 remain planned.**
+**135 functions have a local implementation; the other 63 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -13,6 +13,11 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 
 - `VBD.Actions.executeAction`
 - `VBD.Actions.executeFunction`
+- `VBD.Bindings.resolve`
+- `VBD.Bindings.resolveMany`
+- `VBD.Cache.clear`
+- `VBD.Cache.getOrLoad`
+- `VBD.Cache.invalidate`
 - `VBD.Choices.getOptions`
 - `VBD.Commands.execute`
 - `VBD.Commands.refresh`
@@ -20,7 +25,9 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Commands.runGrid`
 - `VBD.Commands.validateSelection`
 - `VBD.Config.get`
+- `VBD.Config.load`
 - `VBD.Config.register`
+- `VBD.Config.resolve`
 - `VBD.Config.validate`
 - `VBD.Context.fromFormCommand`
 - `VBD.Context.fromFormEvent`
@@ -90,6 +97,7 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Grids.refresh`
 - `VBD.Launch.getProfile`
 - `VBD.Launch.openPrepared`
+- `VBD.Launch.openProfile`
 - `VBD.Launch.prepareProfile`
 - `VBD.Layout.focusTab`
 - `VBD.Layout.setSectionVisible`
@@ -116,6 +124,8 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Query.executeOData`
 - `VBD.Query.iteratePages`
 - `VBD.Query.retrieveAll`
+- `VBD.Security.assessTable`
+- `VBD.Security.hasPrivilege`
 - `VBD.SidePanes.close`
 - `VBD.SidePanes.createOrGet`
 - `VBD.SidePanes.navigate`

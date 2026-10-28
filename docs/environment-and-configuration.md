@@ -81,8 +81,11 @@ Preparing a registered profile now resolves its declared bindings through the
 typed environment API; it does not extend the configuration schema to arbitrary
 expressions, records, credentials, or workflow execution.
 
-`presentation` remains `newWindow` only, including form/grid registrations.
-No same-window dispatch, profile preparation, or launch changes are made here.
+Profile `presentation` accepts `newWindow` or `sameWindow`. Existing prepared
+form/grid registrations are newWindow-only; sameWindow profiles must not be
+registered through those handlers. The separate
+[openProfile contract](environment-launching.md#same-window-profile-requests)
+handles reviewed same-window navigation without becoming a popup workaround.
 
 The local snapshot format describes definition type and value presence/access
 only. Passing these checks does not prove a URL is allowed, an app is accessible,
@@ -90,7 +93,7 @@ or an effective value has the correct content.
 
 ### Source-module signatures
 
-These are named source exports pending parent-owned package/browser integration.
+These are exported through the ESM/types and browser VBD namespace.
 `ReadContext` is the existing supported online environment-read adapter.
 
 ```ts

@@ -4,13 +4,13 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: early source implementation (0.4.0). 125 functions, local delivery
+**Status: early source implementation (0.5.0). 135 functions, local delivery
 tools, and offline unmanaged solution packaging are implemented. No Dataverse deployment,
 live form/ribbon installation, Studio, or public npm release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
-125 are locally implemented; the other 73 remain planned.
+135 are locally implemented; the other 63 remain planned.
 
 ## Available now
 
@@ -27,6 +27,10 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
   ribbon adapters, with explicit lifecycle/cancellation/failure outcomes.
 - Owned desktop-Web side panes, pure approved-origin record/view links, and
   read-only method-presence diagnostics (not access or installation checks).
+- Approved JSON configuration loading, typed declaration resolution, allowlisted
+  bindings and scoped copy-isolated memory caching. No recipe engine or secrets store.
+- Conservative privilege/table UX hints and same-window app profiles, separate
+  from the active-gesture prepared-window path.
 - Typed field/control/form/layout helpers, owned lookup/event registration, choices
   and bounded synchronous validation; no automatic save or server-rule bypass.
 - Bounded OData/FetchXML data/query helpers and explicit operation contracts,
@@ -108,6 +112,7 @@ handover; a visual authoring Studio comes later.
 | [Consultant capabilities](docs/consultant-experience.md) | Prioritized diagnostic, delivery, comparison, handover, and Studio experiences |
 | [Consultant tools](docs/consultant-tools.md) | Local sanitized comparison and supplied-manifest upgrade reports |
 | [Solution packaging](docs/solution-packaging.md) | Offline unmanaged PAC packaging, complete notices, inspection and managed prerequisites |
+| [Testing in BvB](docs/testing-in-bvb.md) | Consumer-owned test form setup, safe smoke scenarios and deployment evidence boundaries |
 | [Environment and configuration](docs/environment-and-configuration.md) | Value resolution, types, caching, secrets, feature flags, and bindings |
 | [Apps and independent windows](docs/app-launching.md) | App profiles, deep links, popup restrictions, authentication, and return contracts |
 | [Recipe examples](docs/recipes.md) | Proposed end-to-end interactions and smart mechanisms |
@@ -139,8 +144,9 @@ Its exact identity and publisher must be verified before a future deployment.
 No environment URLs, app IDs, tenant values, credentials, or customer data are
 required in this repository.
 
-The repository is initially private. Public visibility and a redistribution
-license are pending owner approval. Future tagged releases should provide
+The repository is now public, but a redistribution license remains undecided;
+the package stays private/UNLICENSED. Draft releases do not grant reuse rights.
+Future tagged releases should provide
 managed and unmanaged solution ZIPs built from the same source revision.
 Local unmanaged ZIPs can be generated and inspected, but have not been
 import-tested. No managed ZIP, tagged release or public distribution is claimed.

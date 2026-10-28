@@ -1,6 +1,6 @@
 # Roadmap
 
-125 catalog functions have a local implementation; the other 73 are planned.
+135 catalog functions have a local implementation; the other 63 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
@@ -33,10 +33,14 @@ entries. It does not complete all R1 options or the full roadmap.
 adds seven source APIs in 0.4.0: owned side-pane create/navigate/select/close,
 record/view links and read-only capability observations. See
 [current usage](core-usage.md#owned-side-panes-and-deep-links).
-The remaining ten R1 entries are configuration load/resolve, bindings, generic
-cache, table/privilege hints and non-popup openProfile. R2/R3 extensions remain
-separate scoped work. Pane rendering/access and client compatibility still need
-live Dynamics verification; SDK fixtures are not a completed R1 release.
+[Issue #15](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/15)
+adds the final ten R1 entries in 0.5.0: approved configuration loading/resolution,
+allowlisted bindings, generic scoped memory cache, conservative table/privilege
+hints and sameWindow-only openProfile. Native privilege depths remain unknown
+where the SDK contract cannot establish their encoding. This completes the
+**R1 source inventory**, not all R1 options, live Dynamics verification or
+release readiness. The 63 R2/R3 entries remain separate scoped work.
+See [BvB testing](testing-in-bvb.md) for consumer-owned installation/wiring.
 
 ## Integrated local delivery
 

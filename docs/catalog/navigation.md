@@ -1,8 +1,8 @@
 # Navigation, app launcher, and window functions
 
-25 entries are implemented locally: the eight non-generative Navigation methods,
-Dialogs 6, Links 3, SidePanes 4, Launch.getProfile/prepareProfile/openPrepared, and Windows.open.
-The other 4 remain planned.
+26 entries are implemented locally: the eight non-generative Navigation methods,
+Dialogs 6, Links 3, SidePanes 4, Launch 4, and Windows.open.
+The other 3 remain planned.
 See [catalog conventions](../function-catalog.md),
 [current runtime usage](../environment-launching.md), and the mandatory
 [app/window contract](../app-launching.md).
@@ -72,16 +72,17 @@ keys, IDs, and encoding. Never forward the entire form or current URL by default
 
 Profiles bind environment variables and immediate context to supported destinations.
 These are launch configuration helpers, not authentication or app provisioning.
-The current profile schema supports modelDrivenApp/newWindow only, without
-record/field parameters. The three implemented methods do not provide ribbon
-handlers or non-popup openProfile behavior.
+The current profile schema supports modelDrivenApp/newWindow or sameWindow,
+without record/field parameters. Existing prepared-profile ribbon handlers are
+newWindow-only. openProfile is a separate sameWindow path; inline/dialog/pane
+app-profile dispatch is not silently approximated.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.Launch.getProfile` | Configuration name and profile key | Validated unresolved profile copy | Check the supported declaration; do not resolve values. | R1 |
 | `VBD.Launch.prepareProfile` | Configuration/profile identity, optional read context, TTL | Opaque `PreparedLaunch` | Resolve async configuration early; expire on freshness/revision/scope/invalidation changes. | R1 |
 | `VBD.Launch.openPrepared` | Original prepared token, optional dimensions/trusted host | Synchronous `LaunchResult` | Require active user activation; no async reads, URL overrides, or record bindings. | R1 |
-| `VBD.Launch.openProfile` | Profile key, ctx, supported non-popup presentation | Navigation request/result | Async convenience for inline/dialog/pane/host navigation; independent windows require openPrepared. | R1 |
+| `VBD.Launch.openProfile` | configurationName/profileKey, context/TTL and optional trusted SameWindowHost | Requested/unknown sameWindow receipt | sameWindow profiles only; default top-level location.assign, embedded hosts need explicit adapter. No async popup workaround. | R1 |
 
 ## VBD.Windows
 

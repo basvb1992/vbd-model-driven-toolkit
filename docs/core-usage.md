@@ -1,7 +1,7 @@
 # Core interaction, form, and data usage
 
-The 0.4.0 source adds seven APIs to the 0.3.0 core: 125 of 198 are implemented across
-25 namespaces. These are bounded source contracts, not certification of every
+The 0.5.0 source adds the final ten R1 APIs: 135 of 198 are implemented across
+28 namespaces. These are bounded source contracts, not certification of every
 SDK feature, client, tenant, form, or permission configuration.
 No live deployment or managed export is part of this milestone. Local unmanaged
 PAC packaging is documented [separately](solution-packaging.md).
@@ -296,13 +296,11 @@ application code. It is not executed from untrusted JSON. Native server access,
 actual form layouts, async app settings, all browsers/mobile/offline variants,
 and tenant/solution deployment remain unverified unless separately evidenced.
 
-<!-- BEGIN Security: bounded source implementation; parent owns namespace integration. -->
 ## Security — privilege UX hints, not authorization
 
 This source module implements **only** the existing R1 `VBD.Security.assessTable`
-and `VBD.Security.hasPrivilege` contracts. Parent integration must wire `Security`
-and its types into the package/browser namespace and update availability counts.
-The source-level signatures are:
+and `VBD.Security.hasPrivilege` contracts, exported through the package/browser
+namespace and TypeScript declarations. The signatures are:
 
 ```typescript
 Security.hasPrivilege(identity: PrivilegeIdentity, options?: SecurityOptions): Promise<AccessAssessment>;
@@ -327,8 +325,7 @@ The server always enforces authorization; do not turn an allowed hint into an
 authorization decision or use an unknown hint as permission to proceed.
 
 ```typescript
-// Source-checkout example; package/global VBD.Security wiring is parent-owned.
-import { Security } from "./src/security.js";
+import { Security } from "vbd-model-driven-toolkit";
 
 const hint = await Security.assessTable("account", "read", { requiredDepth: "local" });
 if (hint.state === "unknown") {

@@ -16,7 +16,7 @@ const profile = z.object({
   destinationKind: z.literal("modelDrivenApp"),
   appId: binding,
   environmentUrl: binding.optional(),
-  presentation: z.literal("newWindow"),
+  presentation: z.enum(["newWindow", "sameWindow"]),
   allowedOrigins: z.array(binding).min(1).max(20)
 }).strict();
 const registration = z.object({
@@ -85,6 +85,12 @@ const configurationSchema = z.object({
       ctx.addIssue({
         code: "custom",
         message: "Registration references an undeclared profile. Use its exact key.",
+        path: ["registrations", index, "profileKey"]
+      });
+    } else if (config.launchProfiles.find(profile => profile.key === item.profileKey)?.presentation !== "newWindow") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Prepared form/grid commands require a newWindow profile.",
         path: ["registrations", index, "profileKey"]
       });
     }
