@@ -3,8 +3,10 @@
 The 0.5.0 source adds the final ten R1 APIs: 135 of 198 are implemented across
 28 namespaces. These are bounded source contracts, not certification of every
 SDK feature, client, tenant, form, or permission configuration.
-No live deployment or managed export is part of this milestone. Local unmanaged
-PAC packaging is documented [separately](solution-packaging.md).
+The standalone 0.5.0.0 unmanaged toolkit is imported/published in BvB and genuine
+managed/unmanaged exports are verified. No consumer wiring or clean managed
+target import is implied. See [testing](testing-in-bvb.md) and
+[packaging evidence](solution-packaging.md).
 
 All methods are under global `VBD` in the browser bundle, or available through
 `import * as VBD from "vbd-model-driven-toolkit"` in a configured local workspace.
@@ -431,4 +433,3 @@ all three states after parent export integration. No tenant access, live
 authorization validation or deployment is included. AXIOM/CANVAS handoff:
 explicitly wire the form/ribbon handler and neutral unknown-state UX; this
 module does not configure them. R2 `Security.assessRecord` is **not implemented**.
-<!-- END Security -->

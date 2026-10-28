@@ -6,6 +6,14 @@ The standalone Core solution contains **two webresources only**:
 table, environment-variable definition or test record. Importing the library
 does not wire an existing application automatically.
 
+**Current deployment:** standalone unmanaged `VBDModelDrivenToolkit` 0.5.0.0
+is imported and its two resources are published in BvB Demo Apps. Import job
+completion, zero component failures, exact component inventory, and the served
+browser-resource SHA-256 were verified. No consumer test form/command handler
+was created; follow the setup below to exercise the library in your own app.
+Genuine managed/unmanaged exports are available as draft-release assets pending
+the owner's license decision. This is not a clean managed-target certification.
+
 ## Load it on a test form
 
 Use an app and form you own for testing; do not change unrelated production

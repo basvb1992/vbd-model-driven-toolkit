@@ -4,7 +4,8 @@ The environment/launcher subset introduced in 0.2.0 continues in the broader
 0.5.0 core. See [core usage](core-usage.md) for prepared-profile form/grid
 handlers and native navigation. Record bindings in app-window profiles,
 arbitrary external app-window destinations and workflow
-execution remain out of scope. No tenant deployment is included.
+execution remain out of scope. The bundle is installed in BvB for testing;
+consumer environment bindings and form/ribbon wiring are not automatically installed.
 
 ## Same-window profile requests
 

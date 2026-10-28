@@ -4,7 +4,8 @@
 Security 2, Diagnostics 4, Environment 10, and Utils 7.
 The other 2 entries in this
 file remain planned. See [catalog conventions](../function-catalog.md) and
-[current usage](../getting-started.md); no entry is Dataverse-deployed yet.
+[current usage](../getting-started.md). The bundle is deployed in BvB for
+testing; this is not live certification of every function.
 `R1`/`R2`/`R3` indicate earliest delivery phase, not implementation status.
 
 ## VBD.Context

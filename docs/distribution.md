@@ -1,7 +1,8 @@
 # Repository and solution distribution
 
-Local source builds, CLI tools, and offline unmanaged solution packaging now
-exist. Managed export, clean imports and public distribution remain gated.
+Local source builds, CLI tools, offline unmanaged packaging, a verified BvB
+unmanaged import and genuine paired exports now exist. Clean managed-target
+imports and public binary distribution remain gated.
 See [getting started](getting-started.md),
 [consultant tools](consultant-tools.md), and
 [solution packaging](solution-packaging.md).
@@ -93,10 +94,13 @@ contain exactly the browser `VBD` resource and complete escaped third-party
 notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
 zero Dataverse dependencies from the nine bundled runtime packages.
 Build and inspection use the shared browser/notice contract and locked inputs.
-No managed build is fabricated: it fails `MANAGED_EXPORT_REQUIRED` before
-creating output. The [packaging guide](solution-packaging.md) records the local
-evidence and future authorized export path. Neither variant is import-tested,
-tagged or approved for redistribution.
+No offline managed build is fabricated: it fails `MANAGED_EXPORT_REQUIRED`
+before creating output. The [packaging guide](solution-packaging.md) records
+the successful BvB source installation and genuine native managed/unmanaged
+exports. Raw exported bytes are inspected with explicit `dataverseExport`
+format, never rewritten to make them pass. The unmanaged source installation
+is verified; clean managed-target install/upgrade and public redistribution
+approval remain outstanding.
 
 | Artifact | Intended use |
 | --- | --- |

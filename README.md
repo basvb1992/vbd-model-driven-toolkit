@@ -5,8 +5,10 @@ model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
 **Status: early source implementation (0.5.0). 135 functions, local delivery
-tools, and offline unmanaged solution packaging are implemented. No Dataverse deployment,
-live form/ribbon installation, Studio, or public npm release is claimed.**
+tools, and solution packaging are implemented. The standalone unmanaged toolkit
+is deployed/published in BvB Demo Apps for testing; genuine managed/unmanaged
+exports exist. No consumer form/ribbon wiring, Studio, clean managed-target
+validation or public npm release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
@@ -148,7 +150,9 @@ The repository is now public, but a redistribution license remains undecided;
 the package stays private/UNLICENSED. Draft releases do not grant reuse rights.
 Future tagged releases should provide
 managed and unmanaged solution ZIPs built from the same source revision.
-Local unmanaged ZIPs can be generated and inspected, but have not been
-import-tested. No managed ZIP, tagged release or public distribution is claimed.
+The unmanaged 0.5.0.0 toolkit import and published browser content are verified
+in BvB. Genuine managed/unmanaged exports retain the same runtime payloads.
+A draft GitHub test release is prepared pending the owner license decision;
+managed clean-target installation and full native UI coverage remain outstanding.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing implementation.

@@ -137,3 +137,11 @@ fails explicitly until genuine authorized export prerequisites are satisfied.
 First distributable release requires ALM acceptance evidence, owner-approved
 license/visibility, tagged reproducible artifacts, and consumer installation
 instructions. Repository creation alone is not a solution release.
+
+The 0.5.0.0 test milestone now has a successful unmanaged BvB import, targeted
+resource publication, exact server/browser content hashes and genuine paired
+exports. No consumer wiring, production deployment, clean managed-target import
+or full native-client certification is implied. GitHub test release preparation
+is **draft-only while UNLICENSED**; public source visibility is not license
+approval. See [BvB testing](testing-in-bvb.md) and
+[current evidence](solution-packaging.md#current-050-bvb-test-evidence).

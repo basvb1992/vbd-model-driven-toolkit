@@ -16,7 +16,7 @@ const packageVersion = JSON.parse(await readFile(join(repository, "package.json"
 const solutionVersion = `${packageVersion}.0`;
 
 // These fixtures are CONSTRUCTED archives, not PAC or Dataverse export evidence.
-function zip(entries, { method = 0, flags = 0, mode = 0 } = {}) {
+function zip(entries, { method = 0, flags = 0, mode = 0, localExtra = Buffer.alloc(0) } = {}) {
   const locals = [], centrals = [];
   let offset = 0;
   for (const [name, input] of entries) {
@@ -27,13 +27,14 @@ function zip(entries, { method = 0, flags = 0, mode = 0 } = {}) {
     local.writeUInt16LE(flags, 6); local.writeUInt16LE(method, 8);
     local.writeUInt32LE(crc32(data), 14); local.writeUInt32LE(compressed.length, 18);
     local.writeUInt32LE(data.length, 22); local.writeUInt16LE(encoded.length, 26);
+    local.writeUInt16LE(localExtra.length, 28);
     central.writeUInt32LE(0x02014b50); central.writeUInt16LE(20, 4); central.writeUInt16LE(20, 6);
     central.writeUInt16LE(flags, 8); central.writeUInt16LE(method, 10);
     central.writeUInt32LE(crc32(data), 16); central.writeUInt32LE(compressed.length, 20);
     central.writeUInt32LE(data.length, 24); central.writeUInt16LE(encoded.length, 28);
     central.writeUInt32LE(mode >>> 0, 38); central.writeUInt32LE(offset, 42);
-    locals.push(local, encoded, compressed); centrals.push(central, encoded);
-    offset += local.length + encoded.length + compressed.length;
+    locals.push(local, encoded, localExtra, compressed); centrals.push(central, encoded);
+    offset += local.length + encoded.length + localExtra.length + compressed.length;
   }
   const directory = Buffer.concat(centrals), end = Buffer.alloc(22);
   end.writeUInt32LE(0x06054b50); end.writeUInt16LE(entries.length, 8); end.writeUInt16LE(entries.length, 10);
@@ -102,6 +103,30 @@ function constructedEntries(expected) {
     ["[Content_Types].xml", '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/octet-stream" /><Default Extension="js" ContentType="application/octet-stream" /><Default Extension="html" ContentType="application/octet-stream" /></Types>'],
     ...resources.map((item, index) => [`WebResources/${item.file}`, expected.payloads[index]])
   ];
+}
+const dataversePadding = Buffer.from("20a2180028a014000000000000000000000000000000000000000000", "hex");
+function constructedExportEntries(expected, kind = "unmanaged") {
+  const entries = new Map(constructedEntries(expected));
+  const attributes = 'OrganizationVersion="9.2.1.1" OrganizationSchemaType="Full" CRMServerServiceabilityVersion="9.2.1.00001"';
+  entries.set("solution.xml", decode(Buffer.from(entries.get("solution.xml")))
+    .replace('SolutionPackageVersion="9.1"', 'SolutionPackageVersion="9.2"')
+    .replace("<ImportExportXml ", `<ImportExportXml ${attributes} `)
+    .replace("<Managed>0</Managed>", `<Managed>${kind === "managed" ? 1 : 0}</Managed>`));
+  let customizations = String(entries.get("customizations.xml"))
+    .replace("<ImportExportXml ", `<ImportExportXml ${attributes} `)
+    .replace("<SolutionPluginAssemblies />", "");
+  const types = [];
+  for (const item of resources) {
+    const path = `WebResources/${item.name.replace(/[/.]/g, "")}${componentId(item.name).replace(/[{}]/g, "").toUpperCase()}`;
+    customizations = customizations.replace(`/WebResources/${item.file}`, `/${path}`);
+    entries.set(path, entries.get(`WebResources/${item.file}`));
+    entries.delete(`WebResources/${item.file}`);
+    types.push(`<Override PartName="/${path}" ContentType="application/octet-stream" />`);
+  }
+  customizations = customizations.replaceAll("</IsCustomizable>", "</IsCustomizable><CanBeDeleted>1</CanBeDeleted><IsHidden>0</IsHidden>");
+  entries.set("customizations.xml", customizations);
+  entries.set("[Content_Types].xml", `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/octet-stream" />${types.join("")}</Types>`);
+  return [...entries];
 }
 function inspect(bytes, expected, options = {}) {
   return inspectArchive(bytes, expected, { checksum: sha256(bytes), ...options });
@@ -190,6 +215,54 @@ describe("bounded contracts (unit/constructed, not PAC)", () => {
 });
 
 describe("source/build/archive boundary (synthetic builds and constructed archives)", () => {
+  it.each(["unmanaged", "managed"])("inspects constructed %s export dialect without changing default PAC grammar", async kind => {
+    const expected = await inputs(await fixture());
+    const bytes = zip(constructedExportEntries(expected, kind), { method: 8, flags: 2, localExtra: dataversePadding });
+    expect(() => inspect(bytes, expected, { kind })).toThrow("ZIP");
+    const report = inspect(bytes, expected, { kind, format: "dataverseExport" });
+    expect(report).toMatchObject({ kind, format: "dataverseExport", version: solutionVersion, dependencies: [], importTested: false });
+    if (kind === "managed") expect(report.managedProvenance).toContain("UNVERIFIED");
+    expect(report.components).toHaveLength(2);
+  });
+  it.each([
+    Buffer.alloc(28), Buffer.concat([dataversePadding, Buffer.from([0])]),
+    Buffer.from("20a2180028a014000100000000000000000000000000000000000000", "hex")
+  ])("rejects unknown/nonzero export padding", localExtra => {
+    const bytes = zip([["a", "fixture"]], { localExtra });
+    expect(() => readZip(bytes, { format: "dataverseExport" })).toThrow("ZIP");
+  });
+  it.each([
+    ["solution.xml", 'OrganizationSchemaType="Full"', 'OrganizationSchemaType="Compact"'],
+    ["solution.xml", 'OrganizationVersion="9.2.1.1"', 'OrganizationVersion="https://other.example"'],
+    ["solution.xml", 'SolutionPackageVersion="9.2"', 'SolutionPackageVersion="9.3"'],
+    ["solution.xml", '<Publisher>', '<Publisher contact="unexpected">'],
+    ["customizations.xml", "<IsHidden>0</IsHidden>", "<IsHidden>1</IsHidden>"],
+    ["customizations.xml", "<CanBeDeleted>1</CanBeDeleted>", "<CanBeDeleted>0</CanBeDeleted>"],
+    ["customizations.xml", "<Entities />", "<Entities><Entity /></Entities>"],
+    ["customizations.xml", "<WebResources>", "<SolutionPluginAssemblies><Plugin /></SolutionPluginAssemblies><WebResources>"],
+    ["[Content_Types].xml", '<Override PartName="/WebResources/', '<Override PartName="/unexpected/'],
+    ["[Content_Types].xml", 'Extension="xml"', 'Extension="html"']
+  ])("rejects unreviewed export metadata (%s)", async (file, from, to) => {
+    const expected = await inputs(await fixture()), entries = constructedExportEntries(expected);
+    const index = entries.findIndex(([name]) => name === file);
+    expect(String(entries[index][1])).toContain(from);
+    entries[index][1] = String(entries[index][1]).replace(from, to);
+    const bytes = zip(entries, { localExtra: dataversePadding });
+    expect(() => inspect(bytes, expected, { format: "dataverseExport" })).toThrow();
+  });
+  it("rejects extra exported files, duplicate content types and changed payload bytes", async () => {
+    const expected = await inputs(await fixture()), base = constructedExportEntries(expected);
+    const changed = [
+      [...base, ["extra.xml", "<extra/>"]],
+      base.map(([name, value]) => [name, name.startsWith("WebResources/") ? "changed bytes" : value]),
+      base.map(([name, value]) => [name, name === "[Content_Types].xml"
+        ? String(value).replace("</Types>", '<Override PartName="/extra" ContentType="application/octet-stream" /></Types>') : value])
+    ];
+    for (const entries of changed) {
+      expect(() => inspect(zip(entries, { localExtra: dataversePadding }), expected, { format: "dataverseExport" })).toThrow();
+    }
+    expect(() => readZip(zip([["a", "fixture"]]), { format: "unreviewed" })).toThrow("ZIP");
+  });
   it("fingerprints every expanded-core dependency and complete notice in the real current build", async () => {
     const expected = await inputs(repository);
     expect(expected.version).toBe(solutionVersion);
