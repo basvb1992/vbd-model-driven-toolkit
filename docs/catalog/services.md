@@ -1,6 +1,7 @@
 # Shared services, files, and recipe functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md).
+The five UI entries are implemented; the other 20 remain planned.
+See [catalog conventions](../function-catalog.md) and [core usage](../core-usage.md).
 Optional modules must not become hidden prerequisites for core functions.
 
 ## VBD.UI
@@ -8,13 +9,15 @@ Optional modules must not become hidden prerequisites for core functions.
 Form-specific notifications are in `VBD.Forms`. Global notifications use supported
 platform APIs. Progress is owned/scoped so overlapping operations do not clear
 each other's state unexpectedly.
+Ownership coordinates VBD callers on a shared native progress surface, not
+unrelated libraries that call the SDK spinner directly.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.UI.showProgress` | Message, operation ID | Progress token | Validate platform capability and token ownership. | R1 |
 | `VBD.UI.hideProgress` | Progress token | Cleanup result | Close owned progress state; report invalid ownership. | R1 |
 | `VBD.UI.withProgress` | Message, trusted async operation | Operation result | Cleanup in finally; retain original error/cancellation. | R1 |
-| `VBD.UI.notify` | Message, severity, scope, optional duration/actions | Notification token | Supported global notification contract only. | R1 |
+| `VBD.UI.notify` | Message, level, close-button policy | Owned notification token | Native global notification only; auto-dismiss/background action policies are explicitly unsupported here. | R1 |
 | `VBD.UI.clearNotification` | Notification token | Clear result | Clear only owned/requested notification. | R1 |
 
 ## VBD.Execution

@@ -1,13 +1,16 @@
 # Foundation and configuration functions
 
-Sixteen entries are implemented locally: Config's validate/register/get,
-Diagnostics' normalizeError/report/getVersion, and all ten Environment APIs.
-The other 29 entries in this
+33 entries are implemented locally: Context 10, Config's validate/register/get,
+Diagnostics' normalizeError/report/getVersion, Environment 10, and Utils 7.
+The other 12 entries in this
 file remain planned. See [catalog conventions](../function-catalog.md) and
 [current usage](../getting-started.md); no entry is Dataverse-deployed yet.
 `R1`/`R2`/`R3` indicate earliest delivery phase, not implementation status.
 
 ## VBD.Context
+
+The current adapters use supplied supported contexts; create/bulk/undefined
+forms never become guessed persisted records. See [core usage](../core-usage.md).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -100,6 +103,10 @@ client compatibility or installation.
 | `VBD.Diagnostics.getCapabilities` | ctx, requested modules | Capability report | Explain supported/unsupported surfaces without executing business actions. | R1 |
 
 ## VBD.Utils
+
+All except formatValue are implemented. Comparisons are allowlisted and do not
+coerce types; reference/choice arrays compare as multisets. Escaping is scalar,
+not arbitrary query/expression serialization.
 
 Keep this module small; prefer native/platform utilities when they already meet
 the public contract.

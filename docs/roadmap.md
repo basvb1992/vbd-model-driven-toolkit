@@ -1,6 +1,6 @@
 # Roadmap
 
-Twenty-one catalog functions have a local implementation; the other 177 are planned.
+118 catalog functions have a local implementation; the other 80 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
@@ -20,6 +20,23 @@ isolated app-window requests. See [runtime usage](environment-launching.md).
 This is not a completed R1 release: no generic command adapters, diagnostic
 panel, Dataverse import, or solution package exists. Supported Xrm reads and
 browser requests are implemented, but actual tenant integration remains unverified.
+
+## Next core source milestones
+
+[Issue #5](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/5)
+adds the selected 97 interaction/form/data APIs described in
+[core usage](core-usage.md). This covers the 39 R1 form entries, 14 R1
+Data/Query/Actions entries, and 44 Context/Utils/navigation/dialog/UI/grid/command
+entries. It does not complete all R1 options or the full roadmap.
+
+The remaining 17 R1 entries are configuration load/resolve, bindings, generic
+cache, table/privilege hints, capability reporting, side-pane helpers, record/view
+links and non-popup openProfile. R2/R3 extensions remain separate scoped work.
+
+Independent consultant comparison/upgrade and offline solution-packaging lanes
+are owned by their coordinator in reserved paths/separate worktrees. They are
+not automatically cherry-picked into this active core branch, and no deployment
+is implied by their packaging source.
 
 ## D0: Documentation baseline
 

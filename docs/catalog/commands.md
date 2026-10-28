@@ -1,12 +1,17 @@
 # Commands, grids, and business helper functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md).
+The eight R1 Commands/Grids entries are implemented; the other 20 remain planned.
+See [catalog conventions](../function-catalog.md) and [core usage](../core-usage.md).
 Client predicates are UX decisions, not server authorization.
 
 ## VBD.Commands
 
 The thin maker adapters have deliberate positional signatures documented in
 [architecture](../architecture.md). Internal operations use typed options.
+Current run/runGrid/execute are deliberately limited to prepared version-1
+app profiles, with a configurationName/profileKey key. They are not a generic
+arbitrary function/recipe runner. Maker errors return explicit failed outcomes
+after safe presentation; presentation failure rejects.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

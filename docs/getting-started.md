@@ -26,6 +26,7 @@ Inside a configured local workspace, developer code can import the ESM package
 as `import * as VBD from "vbd-model-driven-toolkit"`. After loading the built
 browser bundle once, implemented modules are under global `VBD`.
 No webresource upload or registration has been performed.
+The 0.3.0 core interaction/form/data subset is documented in [core usage](core-usage.md).
 The new environment/launcher methods are documented separately in
 [environment reads and app launching](environment-launching.md).
 
@@ -75,7 +76,8 @@ types, literal destinations, workflow definitions, and invalid references fail.
 This validates a portable declaration, not actual values, URL origins, app
 availability, command deployment, or browser launching. Runtime preparation
 now resolves and validates a destination, but this source-level report does
-not invoke it. Generated generic command entry points remain unimplemented.
+not invoke it. Prepared-profile command entry points are implemented, but this
+report does not inspect their actual bootstrap/registration/app settings.
 
 ## Source preflight
 
@@ -94,7 +96,7 @@ and unsupported statuses.
 | 2 | Evidence incomplete or an expected runtime/check is unsupported. |
 
 **A valid current example returns 2, not 0.** Live verification and generic
-command handlers are unavailable, so current valid configurations cannot be
+registry/handler wiring are unverified, so current valid configurations cannot be
 certified deployment-ready. Do not mask code 2 as success in a deployment gate.
 
 ## Optional sanitized snapshot
@@ -132,8 +134,10 @@ node .\dist\vbd-toolkit.mjs handover --config .\examples\customer-workspace.json
 
 Reports include source version/revision when supplied, evidence scope/time,
 declared variables/profiles/registrations, findings, and troubleshooting.
-Wiring instructions are explicitly marked as future templates, not deployed
-or implemented commands. Handover retains the preflight exit code, including 2.
+Wiring instructions are declared templates, not proof of deployed commands.
+They assume configuration is registered using its id; adjust for a caller-owned
+registry alias and prepare the same registryName/profileKey on load.
+Handover retains the preflight exit code, including 2.
 
 Use `--revision` with a 7-40 character Git hexadecimal revision when appropriate.
 Omit `--output` to print the report. Parent directories must already exist;
@@ -146,6 +150,8 @@ local `reports/` is ignored and nothing is uploaded automatically.
 
 ## Not included yet
 
-Form/ribbon handlers, non-popup navigation, recipes, live CLI metadata/access
-collection, a diagnostic panel, Studio, solution packages, and Dataverse
-deployment remain future work. The workflow framework stays independent.
+Remaining generic configuration/binding/security/metadata/process/file/recipe
+APIs, live CLI metadata/access collection, a diagnostic panel, Studio and tenant
+deployment remain future work. Independent consultant/packaging work is owned
+by its separate lane and is not automatically integrated here.
+The workflow framework stays independent.
