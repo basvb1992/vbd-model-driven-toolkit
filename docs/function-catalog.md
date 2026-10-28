@@ -48,6 +48,11 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - Generic functions wrap supported contracts; specialized Dynamics operations
   need verified optional adapters, not guessed status changes.
 - VBD Studio is a possible authoring application, not an implemented namespace.
+- Consultant/Delivery Tools capabilities are documented separately in
+  [consultant capabilities](consultant-experience.md); they are not extra
+  browser functions in the 198-function inventory.
+- Core is independent of the Workflow/Interaction Framework. `VBD.Recipes`
+  composes bounded client interactions, not durable or scheduled workflows.
 - Internal implementation helpers are not automatically public APIs. Add them
   here only when there is a reusable caller-facing requirement.
 

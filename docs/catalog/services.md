@@ -48,13 +48,16 @@ size, memory limits, and platform-specific chunking where required.
 
 Recipes compose registered operations. Validation/preview are non-mutating;
 execution can have side effects and cannot promise global rollback.
+They are finite client interactions, independent of the Workflow/Interaction
+Framework: no durable waits, scheduled triggers, persistent retries, or resume
+state. See the [bounded interaction contract](../architecture.md).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Recipes.register` | Recipe key, validated versioned steps | Registration result | Only allowlisted operations/bindings; reject invalid references/cycles. | R2 |
-| `VBD.Recipes.validate` | Unknown recipe, operation registry/schema | Validation report | Check types, capabilities, dependencies, and failure policy. | R2 |
+| `VBD.Recipes.register` | Recipe key, validated versioned finite steps | Registration result | Only allowlisted client operations/bindings; reject invalid references, cycles, and durable-workflow definitions. | R2 |
+| `VBD.Recipes.validate` | Unknown recipe, operation registry/schema | Validation report | Check types, capabilities, finite execution bounds, dependencies, and failure policy. | R2 |
 | `VBD.Recipes.preview` | Recipe key, ctx, permitted read-only resolution | Redacted execution plan | No writes, navigation, email, or workflow start. | R2 |
-| `VBD.Recipes.run` | Recipe key, ctx, permitted inputs/cancellation | Per-step and final result | Stop/continue/skip policy explicit; preserve partial effects and errors. | R2 |
+| `VBD.Recipes.run` | Recipe key, ctx, permitted inputs/cancellation | Per-step and final result | Bounded current-invocation execution only; no persisted resume; preserve partial effects and errors. | R2 |
 | `VBD.Recipes.list` | Registered scope/filter | Safe recipe summaries | Do not return secrets, full contexts, or unrelated configuration. | R2 |
 
 R1 command/event adapters can execute one registered operation configuration

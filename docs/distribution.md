@@ -17,6 +17,8 @@ Proposed implementation layout:
 | `tests/` | Unit and contract tests with non-sensitive fixtures. |
 | `examples/` | Form/ribbon wiring and generic recipe configurations. |
 | `solution/` | Unpacked `VBDModelDrivenToolkit` solution source. |
+| `studio/` | Optional VBD Studio source and its separate solution; no Core prerequisite. |
+| `tools/` | Explicit local/CI Delivery Tools, separate from browser bundles. |
 | `scripts/` | Reproducible build/package/verify automation. |
 | `docs/` | Specification, catalog, contracts, usage, and release guidance. |
 | `artifacts/` | Ignored local build outputs; tagged releases publish selected ZIPs. |
@@ -36,6 +38,27 @@ Do not create empty implementation scaffolding merely to imply readiness.
 - Importing core never silently wires every form or modifies unrelated apps.
 - Existing lowercase `vbd` globals from other libraries are not renamed or
   overwritten. The new toolkit exposes the separate `VBD` public contract.
+- No Core dependency on the Workflow/Interaction Framework or its solution
+  components. Matching publisher prefixes do not imply shared component ownership.
+- VBD Studio, if built, uses a separate proposed `VBDToolkitStudio` solution and
+  a declared compatible Core version. It is not a workflow designer.
+- Delivery Tools run outside Dataverse/browser bundles with their own explicit
+  authentication and minimum read permissions for selected checks.
+- Any framework integration ships separately with explicit opt-in dependencies;
+  it is not included in Core or the default sample requirements.
+
+## Product artifact boundaries
+
+| Product area | Future delivery | Verification boundary |
+| --- | --- | --- |
+| Core | Managed/unmanaged `VBDModelDrivenToolkit` packages. | Clean import with no Studio or Workflow/Interaction Framework installed. |
+| Studio | Optional independently versioned managed/unmanaged `VBDToolkitStudio` packages. | Compatible Core dependency only; no durable workflow features. |
+| Delivery Tools | Optional local/CI tools with usage and authentication guidance. | Read-only checks/reports; missing access yields incomplete/unknown, not success. |
+| Optional adapter | Separate explicit integration artifact if requested. | Missing external framework cannot break Core or unrelated consumers. |
+
+Do not combine all products into a single mandatory installer. A Core release
+must not wait for Studio, and no Delivery Tool may silently import/publish/fix
+an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
 
@@ -61,6 +84,8 @@ Before publishing an implementation release:
 5. Verify an existing consumer upgrade without unexpected handler/config changes.
 6. Publish checksums, release notes, compatibility matrix, known limitations,
    examples, and migration notes with the tagged artifacts.
+7. Prove the selected artifact's dependency boundary, including a Core smoke test
+   in an environment without the Workflow/Interaction Framework.
 
 Managed import is not proof that commands or forms have been registered.
 Installation guidance must include precise consumer wiring steps.

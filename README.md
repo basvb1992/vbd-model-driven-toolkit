@@ -19,10 +19,32 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
 - Independent browser-window launch requests, distinct from modal dialogs,
   side panes, offline execution, and separate authentication sessions.
 - A standalone solution distributed in managed and unmanaged formats.
+- Optional consultant diagnostics, deployment preflight, generated handover,
+  environment comparison, and a later configuration Studio.
 
 The initial target is online Unified Interface. Mobile, offline, specialized
 Dynamics operations, and cross-window messaging are separately gated capabilities.
 This is not a Canvas App client library or a replacement for server-side security.
+
+## Independent product, not another workflow engine
+
+The toolkit is **separate from the existing Workflow/Interaction Framework**:
+its own repository, solution, release lifecycle, and installation requirements.
+Core must work when that framework is not installed.
+
+VBD recipes are short, bounded client interactions. Durable runs, scheduling,
+approval waits, resumable work, and persistent retries belong to an external
+server/workflow system. Any future integration is optional and uses a public API.
+
+| Product area | Purpose | Installation boundary |
+| --- | --- | --- |
+| **VBD Core** | Runtime library and maker entry points. | Standalone `VBDModelDrivenToolkit` solution. |
+| **VBD Studio** | Optional configuration, preview, and wiring guidance. | Separate optional solution; not required by Core. |
+| **VBD Delivery Tools** | Read-only preflight, comparison, and generated handover. | Local/CI tooling; no browser-hosted admin credentials. |
+
+These are planned product areas, not released components. First consultant
+priorities are actionable diagnostics, deployment readiness, and generated
+handover; a visual authoring Studio comes later.
 
 ## Design documents
 
@@ -31,6 +53,7 @@ This is not a Canvas App client library or a replacement for server-side securit
 | [Feature specification](docs/feature-spec.md) | Outcomes, boundaries, acceptance criteria, assumptions, and failure cases |
 | [Function catalog](docs/function-catalog.md) | Complete proposed public API inventory, inputs, outputs, and delivery phases |
 | [Architecture](docs/architecture.md) | Typed APIs, maker adapters, recipes, contexts, errors, and compatibility |
+| [Consultant capabilities](docs/consultant-experience.md) | Prioritized diagnostic, delivery, comparison, handover, and Studio experiences |
 | [Environment and configuration](docs/environment-and-configuration.md) | Value resolution, types, caching, secrets, feature flags, and bindings |
 | [Apps and independent windows](docs/app-launching.md) | App profiles, deep links, popup restrictions, authentication, and return contracts |
 | [Recipe examples](docs/recipes.md) | Proposed end-to-end interactions and smart mechanisms |

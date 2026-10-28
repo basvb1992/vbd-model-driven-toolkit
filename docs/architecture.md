@@ -2,6 +2,28 @@
 
 All contracts below are proposed. No runtime exists yet.
 
+## Product and framework separation
+
+| Product area | Owns | Dependency direction |
+| --- | --- | --- |
+| VBD Core | Client APIs, adapters, validated configuration, bounded interactions. | Requires supported platform APIs, not Studio or a workflow framework. |
+| VBD Studio | Optional configuration/diagnostic UI and wiring guidance. | Consumes Core's contracts; Core never depends on Studio. |
+| VBD Delivery Tools | Source/metadata checks, comparison, handover, upgrade reports. | Uses explicit local/CI authentication and scoped supported reads; never injects admin credentials into Core. |
+| External Workflow/Interaction Framework | Durable server execution, queues, schedules, approval waits, retries/resume. | No mandatory installation or version coupling in either direction. |
+
+The consultant feature contracts are in
+[consultant capabilities](consultant-experience.md); runtime function contracts
+remain in the [function catalog](function-catalog.md).
+
+Use the same `vbd` publisher prefix without sharing ownership of unrelated
+components. Each solution has its own component inventory and version. Core
+must not reference framework-owned tables, flows, plugins, controls, or APIs.
+Do not move framework assets into the toolkit repository.
+
+Any optional adapter must declare its external public contract/version and
+dependency explicitly. The absence of that adapter or external system affects
+only the opted-in interaction, not Core installation or unrelated operations.
+
 ## Layers
 
 | Layer | Responsibility | Must not do |
@@ -9,8 +31,8 @@ All contracts below are proposed. No runtime exists yet.
 | Typed core | Validate options and call supported client/Dataverse APIs. | Know customer table names or silently infer contexts. |
 | Surface adapters | Convert form events and command parameters into explicit contexts. | Pretend form event context, PrimaryControl, and SelectedControl are interchangeable. |
 | Configuration and bindings | Resolve validated values and allowlisted context bindings. | Evaluate JavaScript strings or expose secrets. |
-| Recipes | Compose registered operations with defined failure policies. | Claim transactional rollback for unrelated side effects. |
-| Optional authoring UI | Help makers create valid configurations and wiring instructions. | Become a prerequisite for core usage. |
+| Recipes | Compose finite registered client operations with defined failure policies. | Persist execution state, schedule/resume runs, or claim global rollback. |
+| Optional authoring UI | Help makers create valid client configurations and wiring instructions. | Become a Core prerequisite or a workflow designer. |
 
 ## Runtime shape
 
@@ -114,9 +136,31 @@ policy. Optional fallbacks must be configured and reported to the caller.
   sensitive URL query strings by default.
 - Event disposables and idempotent registration rather than accumulating handlers.
 
+## Bounded interaction contract
+
+`VBD.Recipes` is a client interaction composer, not the existing workflow engine.
+Each invocation is scoped to the current user action/form event and has finite
+steps, selection/concurrency limits, and an execution-time policy.
+
+- No arbitrary cycles, recursive recipe calls, or unbounded iteration.
+- No Dataverse run-history/state tables, persisted checkpoints, resume tokens,
+  scheduled triggers, durable timers, or approval wait states.
+- Transient in-invocation retries require a bounded safe/idempotent policy.
+  Persistent retry queues and background recovery are not toolkit features.
+- Leaving/reloading the page does not create resumable work or imply rollback.
+- A server handoff returns its accepted/completed status and correlation reference.
+  Do not keep a browser recipe waiting for a long-running approval.
+- Native business-process-flow UI helpers operate existing supported platform
+  processes; they do not implement a new process engine.
+
+Studio uses these same restrictions. It may edit input bindings, predicates,
+and finite client steps, but cannot export a durable workflow definition.
+
 ## Server boundary
 
 Custom APIs/plugins/approved orchestration handle security-critical validation,
 transactions across supported writes, secrets, large bulk operations, external
 credentials, and long-running work. A recipe spanning confirmation, email,
 record creation, and navigation cannot be rolled back as one client transaction.
+Server work can use any compatible approved API; the toolkit does not assume
+or install the owner's Workflow/Interaction Framework.

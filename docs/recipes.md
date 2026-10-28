@@ -4,6 +4,10 @@ These are design scenarios, not runnable configurations. Refer to the
 [function catalog](function-catalog.md) for individual planned APIs.
 R1 supports direct configured operations; multi-step recipe execution is R2.
 
+Recipes are finite client interactions, not workflows in the separate
+Workflow/Interaction Framework. They have no durable waits, schedules,
+persisted run state, or resume behavior. See [architecture](architecture.md).
+
 ## Independent customer workspace
 
 **Outcome:** a ribbon button opens the appropriate app in a separate browsing
@@ -88,6 +92,8 @@ validation messages.
 - Validate parameters, saved record, and explicit confirmation requirements.
 - Execute with correlation and an idempotency contract where applicable.
 - Distinguish accepted-for-processing from completed.
+- Return after an accepted long-running handoff; do not hold a browser recipe
+  open for an approval or make the external framework a Core dependency.
 - Show actionable errors and refresh only the declared affected surfaces.
 
 ## Feature-controlled commands

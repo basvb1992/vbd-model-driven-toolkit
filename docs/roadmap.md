@@ -9,6 +9,8 @@ status and does not guarantee every proposed API name will survive design review
 - Environment-variable, binding, cache, launch, and window contracts.
 - Example recipes, phased scope, supported-API references, and packaging plan.
 - Standalone private GitHub repository.
+- Consultant capability catalog and explicit separation from the existing
+  Workflow/Interaction Framework.
 
 No runtime code, deployment, solution export, or public package is part of D0.
 
@@ -45,6 +47,31 @@ execution are verified for every added capability.
 
 Gate: separate feature issue/spec delta and dependency/security review. Do not
 turn these options into core prerequisites.
+
+## Consultant value workstream
+
+This workstream complements R1-R3; it does not add CLI/Studio capabilities to
+the public browser function count. All capabilities remain planned. See the
+[consultant catalog](consultant-experience.md) for IDs and observable evidence.
+
+| Stage | Priority capabilities | Dependency / gate |
+| --- | --- | --- |
+| C1: Consultant essentials | C01 actionable diagnostics, C02 read-only deployment preflight, C03 generated handover. | Start with validated configuration/source contracts; add supported live checks only as Core/metadata contracts become available. Clearly label unverified results. |
+| C2: Repeatable delivery | C04 health reports, C05 environment comparison, C06 pattern packs, C07 regression packs, C08 upgrade reports, C09 localization support. | Sanitized snapshots/fixtures, versioned schemas, known/unknown result semantics, and portable examples. |
+| C3: Configuration Studio | C10 configure/validate/preview/wiring UI, reusing C1-C2 contracts. | Optional separate solution; configuration round-trip tests; no workflow designer or mandatory Core dependency on Studio. |
+
+C1 is the first consultant-facing slice, not a commitment to implement all 198
+runtime APIs before it. Each capability needs a bounded issue with acceptance
+evidence before implementation status changes.
+
+## Independence gate
+
+Core must import and pass its smoke scenarios without Studio or the
+Workflow/Interaction Framework installed. Recipes reject durable scheduling,
+approval waits, persisted execution/resume state, and persistent retries.
+Optional integration adapters use public contracts and remain separately
+versioned. Sharing a publisher prefix or development environment is not a
+reason to merge repositories, solutions, or release dependencies.
 
 ## Release packaging workstream
 

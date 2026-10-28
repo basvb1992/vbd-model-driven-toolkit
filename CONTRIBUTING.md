@@ -6,6 +6,8 @@ Do not treat catalog entries as callable APIs.
 ## Before implementing
 
 1. Select catalog functions and the applicable feature acceptance criteria.
+   For consultant tooling, select the capability ID and its Core/Studio/Delivery
+   Tools owner from the consultant capability catalog.
 2. Record the bounded change and proposed observable behavior in an issue.
 3. Keep the existing feature specification and catalog current; do not create
    a parallel requirements document.
@@ -26,6 +28,14 @@ Do not treat catalog entries as callable APIs.
   work on the server.
 - Do not deploy to or modify any environment without an explicitly scoped task.
 - Keep core independent of customer tables and optional Dynamics modules.
+- Keep the toolkit independent of the Workflow/Interaction Framework. Do not add
+  its solution assets or runtime dependencies to Core.
+- Keep recipes bounded and non-durable; do not add scheduling, approval waits,
+  persisted run state, resumable execution, or a second workflow designer.
+- Run privileged/environment-wide delivery checks in explicit local/CI tooling,
+  not browser webresources. An inconclusive read must not become a passing check.
+- Do not expand the public runtime function count to include proposed CLI
+  capabilities or Studio screens.
 
 ## Verification expectations
 
