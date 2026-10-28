@@ -1,6 +1,8 @@
 # Architecture
 
-All contracts below are proposed. No runtime exists yet.
+Most contracts below are proposed. The six implemented configuration/diagnostic
+functions and local delivery tools are described in [getting started](getting-started.md).
+Their source-level checks are not Dataverse installation or live-app evidence.
 
 ## Product and framework separation
 
@@ -46,8 +48,10 @@ only the opted-in interaction, not Core installation or unrelated operations.
 - Stable registered operation names for recipes; extensions register trusted
   functions in code, not unrestricted global names supplied by configuration.
 
-Build tools and dependencies will be selected during implementation, not added
-to a documentation-only repository in advance.
+The first slice uses strict TypeScript, Zod schemas, esbuild browser/ESM/CLI
+bundles, ESLint, and Vitest. Browser code has no Node, Xrm, DOM, or framework
+dependency; local tools import the same validation/diagnostic contracts.
+Duplicate global initialization fails instead of replacing an existing `VBD`.
 
 ## Context and entry points
 
@@ -100,6 +104,11 @@ Proposed codes include `INVALID_ARGUMENT`, `CONTEXT_REQUIRED`,
 `UNSUPPORTED_SURFACE`, `ATTRIBUTE_MISSING`, `CONFIG_NOT_FOUND`,
 `CONFIG_INVALID`, `CONFIG_NOT_READY`, `CONFIG_EXPIRED`, `SECRET_NOT_SUPPORTED`,
 `ACCESS_DENIED`, `POPUP_BLOCKED`, `CONCURRENCY_CONFLICT`, and `PARTIAL_FAILURE`.
+
+The current implemented error codes are in `src/errors.ts`; future platform
+codes above remain proposed. Diagnostic reporting derives messages from a fixed
+code map and never serializes the original cause, native message, stack, or input.
+An explicit sink is required; sink failure is an error, not a reporting receipt.
 
 The core throws; maker entry points present an appropriate user-facing error
 once and retain diagnostic correlation. No broad catch-and-return-default paths.

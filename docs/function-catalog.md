@@ -1,7 +1,7 @@
 # Proposed public function catalog
 
-**Every function in this catalog is planned. None is implemented.**
-Names and contracts are design candidates; review them before implementation.
+**Six functions have a local implementation; the other 192 remain planned.**
+Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
 
@@ -9,12 +9,26 @@ Current inventory: **198 functions across 41 namespaces**. Earliest-phase
 classification: 135 R1, 59 R2, and 4 R3. Implementation issues should select
 bounded subsets; R1 is not a requirement to build 135 functions in one change.
 
+## Implemented source subset
+
+- `VBD.Config.validate`
+- `VBD.Config.register`
+- `VBD.Config.get`
+- `VBD.Diagnostics.normalizeError`
+- `VBD.Diagnostics.report`
+- `VBD.Diagnostics.getVersion`
+
+These six have local type/lint/build and automated evidence, not Dataverse
+deployment verification. Their exact current schema/signatures and limitations
+are in [getting started](getting-started.md). In particular, environment reads,
+launch execution, command handlers, and recipe execution are not implemented.
+
 ## Reading the catalog
 
 - Each row identifies one public function, its inputs, return contract, behavior,
   and earliest proposed phase.
 - `R1`: core; `R2`: advanced/reusable interactions; `R3`: optional capability-gated
-  extension. All phases retain planned status.
+  extension. Phase is not implementation status; only the subset above is implemented.
 - Inputs are proposed named options, not final positional JavaScript signatures.
   Exceptions are the documented maker adapters in [architecture](architecture.md).
 - Reads/writes/navigation that need asynchronous platform APIs return promises.

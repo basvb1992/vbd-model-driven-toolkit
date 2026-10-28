@@ -33,7 +33,8 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-Both catalogs describe planned work, not implemented features.
+Most entries remain planned. Six runtime functions and the bounded C1a local
+tooling subset are implemented; see [getting started](getting-started.md).
 
 ## Non-goals
 
@@ -50,7 +51,47 @@ Both catalogs describe planned work, not implemented features.
 - Browser execution of unbounded bulk work or long-running orchestration.
 - Requiring a configuration table, PCF, server plugin, or a particular Dynamics
   module to use the core toolkit.
-- Implementing the library as part of this initial documentation-only request.
+- Implementing the full catalog, deploying, or publishing solution packages in
+  the initial implementation slice.
+
+## Current implementation slice: C1a
+
+Tracked in [issue #1](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/1).
+Implement six catalog functions: `VBD.Config.validate`, `VBD.Config.register`,
+`VBD.Config.get`, `VBD.Diagnostics.normalizeError`, `VBD.Diagnostics.report`,
+and `VBD.Diagnostics.getVersion`.
+
+The first configuration schema describes typed environment-variable requirements,
+model-driven app launch-profile declarations, and form/grid registration
+declarations. It rejects raw values, unknown properties, duplicate identities,
+invalid references/types, and workflow definitions. Validation is not execution:
+environment-variable reads, launchers, and command entry points remain planned.
+
+Add local-only source/sanitized-snapshot preflight and Markdown handover tools.
+They perform no network calls or Dataverse writes. Snapshot evidence covers
+variable definition type and value presence/access only, never actual values.
+Live application/registration/permission verification remains unknown/unsupported.
+
+Observable bounds: input files at most 1 MiB, at most 200 variable declarations,
+100 profiles, and 500 registrations, identifiers at most 128 characters, snapshot
+freshness 24 hours, and future clock skew at most 5 minutes. CLI exit codes are
+0 for complete success, 1 for invalid input/failure, and 2 for incomplete evidence.
+Existing output files must not be overwritten. Test every bound and redaction
+behavior, browser namespace initialization, registry isolation, and CLI outcomes.
+
+This slice is partial progress on API-01, CON-01, and CON-02; it cannot satisfy
+Dataverse deployment, effective-value retrieval, or live-browser launch criteria.
+
+### C1a acceptance evidence
+
+| Behavior | Local evidence | Unverified boundary |
+| --- | --- | --- |
+| Strict schema, safe paths, bounds, registry isolation, and replacement policy. | `tests/configuration.test.ts`; strict types/lint. | Environment-value retrieval is not implemented. |
+| Safe diagnostics, cause retention, explicit sink, and sink failure. | `tests/diagnostics.test.ts`. | No panel or model-driven notification integration. |
+| Global namespace, duplicate guard, no Node/Xrm/DOM/framework dependency. | `tests/browser.test.ts` VM bundle smoke and package-consumer type check. | Not a live model-driven/browser installation check. |
+| Snapshot presence/type/access/freshness and incomplete statuses. | `tests/delivery.test.ts`. | Supplied evidence is not independent live verification. |
+| Deterministic redacted handover and declared registration labels. | `tests/delivery.test.ts`. | No real deployed registration was inspected. |
+| CLI file/argument bounds, exit codes, malformed input, and no overwrite. | `tests/cli.test.ts`. | No Dataverse or public packaging/deployment. |
 
 ## Dependencies and assumptions
 
@@ -77,10 +118,10 @@ Both catalogs describe planned work, not implemented features.
 | DOC-01 | Every proposed function has a name, purpose, inputs, output, phase, and relevant constraints. | Catalog inventory and duplicate/coverage check. | Documented; checked in documentation baseline. |
 | DOC-02 | Environment-variable and separate-window contracts are explicit. | Contract review against official references and scenario matrix. | Documented; runtime behavior not implemented. |
 | DOC-03 | Repository is independently accessible with committed design documents. | GitHub repository, remote commit, and file/link checks. | Documentation baseline delivery. |
-| DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; no consultant tooling implemented. |
+| DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Planned; design boundary documented. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | Planned; no runtime code. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | Six-function namespace verified locally; Dataverse assets not created. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Planned. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Planned. |
@@ -91,8 +132,8 @@ Both catalogs describe planned work, not implemented features.
 | SEC-01 | Client UX never substitutes for server authorization. | Denied-permission tests and unsupported-operation checks. | Planned. |
 | ALM-01 | Managed and unmanaged ZIPs come from the same tagged source. | Reproducible build, solution inspection, and import checks. | Planned; no packages. |
 | ALM-02 | Imports do not overwrite consuming app handlers/configuration automatically. | Clean-environment install and existing-app regression checks. | Planned. |
-| CON-01 | Diagnostics and preflight are read-only and distinguish pass, warning, fail, unknown, and unsupported with evidence. | Known misconfiguration fixtures, denied-access cases, and write-detection checks. | Planned. |
-| CON-02 | Generated handover distinguishes declared configuration from verified deployed registration. | Compare generated Markdown/HTML with fixtures and an inspected deployed sample; confirm redaction. | Planned. |
+| CON-01 | Diagnostics and preflight are read-only and distinguish pass, warning, fail, unknown, and unsupported with evidence. | Known misconfiguration fixtures, denied-access cases, and write-detection checks. | Source/supplied-snapshot semantics verified locally; live checks/panel planned. |
+| CON-02 | Generated handover distinguishes declared configuration from verified deployed registration. | Compare generated Markdown/HTML with fixtures and an inspected deployed sample; confirm redaction. | Markdown fixtures and unverified labels checked; live deployed comparison/HTML planned. |
 | CON-03 | Comparison/upgrade reports identify relevant drift without treating intentional environment differences as errors or exporting sensitive values. | Two sanitized snapshots, expected-difference policy, deprecated-config fixtures, and redaction checks. | Planned. |
 | CON-04 | Studio exports configurations that use the same validated contracts as direct developer configuration. | Round-trip configuration and compare runtime behavior; reject workflow-engine definitions and unapproved operations. | Planned. |
 | CON-05 | Patterns, regression packs, and localization remain portable and explicitly versioned. | Generic-table fixtures, negative scenarios, supported-surface checks, and missing-translation behavior. | Planned. |

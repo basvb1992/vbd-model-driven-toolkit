@@ -1,0 +1,40 @@
+{
+  "name": "vbd-model-driven-toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "VBD model-driven app configuration, diagnostics, and local delivery tools",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "bin": {
+    "vbd-toolkit": "./dist/vbd-toolkit.mjs"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "typecheck:package": "tsc --strict --noEmit --module NodeNext --target ES2022 --types node tests/package-consumer.mts",
+    "test": "npm run build && npm run typecheck:package && vitest run",
+    "check": "npm run typecheck && npm run lint && npm test"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^24.19.2",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^5.0.5"
+  }
+}

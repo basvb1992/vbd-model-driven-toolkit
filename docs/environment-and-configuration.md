@@ -1,7 +1,9 @@
 # Environment variables and configuration
 
-This is a proposed contract, not working code. Function names and phases are in
-the [catalog](catalog/foundation.md).
+Environment retrieval/resolution below remains proposed. The implemented
+Config.validate/register/get subset validates and stores version-1 declarations;
+it does not read actual environment values. See [getting started](getting-started.md)
+and the [catalog](catalog/foundation.md) for exact availability.
 
 ## Why this belongs in core
 
@@ -73,6 +75,16 @@ an arbitrary field value or URL parameter.
 Start with validated JSON webresource configuration supplied by the consuming
 solution. A configuration table and VBD Studio are optional later enhancements.
 Do not require a custom table merely to open a dialog.
+
+Current schema version 1 supports only model-driven app profile declarations,
+required text environment bindings for app/origin/environment references, and
+declared form/grid commands. Other variable declarations may use text, number,
+boolean, or JSON. All properties are allowlisted; unknown fields, raw values,
+Secret/Data source types, and workflow definitions are rejected.
+
+The local snapshot format describes definition type and value presence/access
+only. Passing these checks does not prove a URL is allowed, an app is accessible,
+or an effective value has the correct content.
 
 ## Proposed toolkit-owned examples
 

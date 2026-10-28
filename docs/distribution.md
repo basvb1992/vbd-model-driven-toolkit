@@ -1,6 +1,8 @@
 # Repository and solution distribution
 
-This document describes future delivery. There is no build or deploy command yet.
+Local source builds and CLI tools now exist; solution distribution below remains
+planned. There is no deploy command or managed/unmanaged package yet.
+See [getting started](getting-started.md).
 
 ## Repository
 
@@ -24,6 +26,24 @@ Proposed implementation layout:
 | `artifacts/` | Ignored local build outputs; tagged releases publish selected ZIPs. |
 
 Do not create empty implementation scaffolding merely to imply readiness.
+
+Current `npm run build` outputs are:
+
+| Output | Current purpose |
+| --- | --- |
+| `dist/vbd.toolkit.js` | Six-function `VBD` browser bundle; duplicate initialization is rejected. |
+| `dist/index.mjs` and `dist/types/` | ESM developer API and declarations. |
+| `dist/vbd-toolkit.mjs` | Node.js 24+ local preflight/handover CLI; uses installed declared dependencies. |
+| `dist/THIRD-PARTY-NOTICES.txt` | Bundled Zod license notice. |
+
+Outputs are ignored local artifacts, not a published release. The package is
+private/UNLICENSED pending owner license approval. The Zod dependency retains
+its own license; its notice is copied into build outputs.
+The project uses npm's `omit-lockfile-registry-resolved` option: the lockfile
+pins versions and integrity without embedding the development machine's mirror.
+Each installer uses its configured approved registry (public npm on GitHub CI).
+No global registry or TLS setting is modified. A distribution test protects
+this portability boundary.
 
 ## Solution boundary
 
