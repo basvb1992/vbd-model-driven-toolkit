@@ -9,6 +9,10 @@ import { guidSchema, logicalNameSchema, parseInput } from "./validation.js";
 import { checkedXml } from "./xml.js";
 import { disposeRegistration, registration } from "./registrations.js";
 import type { Disposable } from "./registrations.js";
+import { filterOptions, restoreOptions, setOptions } from "./choices-options.js";
+export type {
+  ChoiceBaselineToken, ChoiceMutationOptions, ChoiceMutationResult, ChoiceOption, ChoiceRestoreResult
+} from "./choices-options.js";
 
 const tableList = z.array(logicalNameSchema.transform(value => value.toLowerCase())).min(1).max(100)
   .refine(value => new Set(value).size === value.length);
@@ -100,4 +104,4 @@ function getOptions(input: unknown, column: string): { value: number; text: stri
     call(attribute, "getOptions"));
 }
 export const Lookups = Object.freeze({ pick, addFilter, removeFilter, setDefaultView, setEntityTypes });
-export const Choices = Object.freeze({ getOptions });
+export const Choices = Object.freeze({ getOptions, setOptions, filterOptions, restoreOptions });

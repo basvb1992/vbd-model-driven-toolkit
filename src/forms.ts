@@ -4,11 +4,11 @@ import { entityReference } from "./entity-reference.js";
 import type { EntityRef } from "./entity-reference.js";
 import { VbdError } from "./errors.js";
 import {
-  call, callAsync, collectionItems, formTypeSchema, hasMethod, messageSchema, nameSchema, partial,
+  call, callAsync, collectionItems, formTypeSchema, globalContext, hasMethod, messageSchema, nameSchema, partial,
   requireMethod, resultOf, sdkObject
 } from "./sdk.js";
 import type { SdkObject } from "./sdk.js";
-import { logicalNameSchema, parseInput } from "./validation.js";
+import { guidSchema, logicalNameSchema, parseInput } from "./validation.js";
 import { dateMilliseconds } from "./utils.js";
 
 export type FieldKind = "text" | "number" | "boolean" | "date" | "lookup" | "choices";
@@ -263,6 +263,80 @@ async function refresh(input: unknown, settings: { dirtyPolicy?: "reject" | "sav
   await callAsync(form.data, "refresh", false);
   return { status: "refreshed" as const };
 }
+export interface FormSwitchOptions { dirtyPolicy?: "reject" | "save" }
+export type FormSwitchResult = { status: "requested" | "alreadyCurrent"; formId: string };
+const switching = new WeakSet<SdkObject>();
+function switchSnapshot(form: SdkObject, targetId: string) {
+  // A deliberately narrower subset than every main-form surface: desktop Web update forms.
+  const client = globalContext().client;
+  if (resultOf(z.string(), call(client, "getClient")) !== "Web" ||
+      resultOf(z.number().int(), call(client, "getFormFactor")) !== 1 ||
+      getType(form) !== 2) {
+    throw new VbdError("UNSUPPORTED_SURFACE", { operation: "forms.switchForm" });
+  }
+  const data = sdkObject(form.data), entity = sdkObject(data.entity), ui = sdkObject(form.ui);
+  const recordId = resultOf(z.string(), call(entity, "getId"));
+  if (recordId === "" || recordId === "{}") {
+    throw new VbdError("UNSAVED_RECORD", { operation: "forms.switchForm" });
+  }
+  const record = resultOf(guidSchema, recordId);
+  const table = resultOf(logicalNameSchema, call(entity, "getEntityName")).toLowerCase();
+  const selector = sdkObject(ui.formSelector);
+  const items = selector.items;
+  const forms = collectionItems(items, 100).map(sdkObject);
+  const ids = forms.map(item => resultOf(guidSchema, call(item, "getId")));
+  if (new Set(ids).size !== ids.length || new Set(forms).size !== forms.length) {
+    throw new VbdError("DATA_RESPONSE_INVALID", { operation: "forms.switchForm" });
+  }
+  const current = call(selector, "getCurrentItem");
+  if (current === null || current === undefined) {
+    throw new VbdError("UNSUPPORTED_SURFACE", { operation: "forms.switchForm" });
+  }
+  const currentId = resultOf(guidSchema, call(current, "getId"));
+  if (!forms.includes(sdkObject(current)) || ids[forms.indexOf(sdkObject(current))] !== currentId) {
+    throw new VbdError("DATA_RESPONSE_INVALID", { operation: "forms.switchForm" });
+  }
+  const target = forms[ids.indexOf(targetId)];
+  if (!target) throw new VbdError("FORM_TARGET_MISSING", { operation: "forms.switchForm" });
+  const navigate = target.navigate;
+  requireMethod(target, "navigate");
+  requireMethod(data, "getIsDirty");
+  const methods = [form.getControl, form.getAttribute, data.getIsDirty, data.save, entity.getId,
+    entity.getEntityName, ui.getFormType, selector.getCurrentItem, sdkObject(items).get,
+    sdkObject(current).getId, target.getId, navigate];
+  return { data, entity, ui, selector, items, current, currentId, target, methods, record, table };
+}
+async function switchForm(input: unknown, formId: string, settings: FormSwitchOptions = {}): Promise<FormSwitchResult> {
+  const id = parseInput(guidSchema, formId, "forms.switchForm");
+  const options = parseInput(z.object({ dirtyPolicy: z.enum(["reject", "save"]).default("reject") }).strict(),
+    settings, "forms.switchForm");
+  const form = formOf(input);
+  if (switching.has(form)) throw new VbdError("RESOURCE_BUSY", { operation: "forms.switchForm" });
+  switching.add(form);
+  try {
+    const before = switchSnapshot(form, id);
+    if (before.currentId === id) return { status: "alreadyCurrent", formId: id };
+    if (isDirty(form)) {
+      if (options.dirtyPolicy === "reject") throw new VbdError("DIRTY_FORM", { operation: "forms.switchForm" });
+      await save(form);
+      if (formOf(input) !== form) {
+        throw new VbdError("RESOURCE_NOT_FOUND", { operation: "forms.switchForm" });
+      }
+      const after = switchSnapshot(form, id);
+      if (after.data !== before.data || after.entity !== before.entity || after.ui !== before.ui ||
+          after.selector !== before.selector || after.items !== before.items ||
+          after.current !== before.current || after.currentId !== before.currentId ||
+          after.target !== before.target || after.methods.some((method, index) => method !== before.methods[index]) ||
+          after.record !== before.record || after.table !== before.table) {
+        throw new VbdError("RESOURCE_CONFLICT", { operation: "forms.switchForm" });
+      }
+    }
+    // No implicit discard: navigate's native dirty prompt is not a dirty-policy implementation.
+    if (isDirty(form)) throw new VbdError("DIRTY_FORM", { operation: "forms.switchForm" });
+    call(before.target, "navigate");
+    return { status: "requested", formId: id };
+  } finally { switching.delete(form); }
+}
 export function notificationId(id: string): string {
   return `vbd_toolkit_${parseInput(nameSchema, id, "forms.notification")}`;
 }
@@ -278,4 +352,4 @@ function clearNotification(input: unknown, id: string) {
   return { removed };
 }
 export const Fields = Object.freeze({ get, set, clear, copy, setDefault, setRequired, setSubmitMode, fireOnChange, getLookup, setLookup });
-export const Forms = Object.freeze({ save, refresh, isDirty, getType, setNotification, clearNotification });
+export const Forms = Object.freeze({ save, refresh, isDirty, getType, setNotification, clearNotification, switchForm });
