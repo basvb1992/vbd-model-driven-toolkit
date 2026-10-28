@@ -34,11 +34,15 @@ Current `npm run build` outputs are:
 | `dist/vbd.toolkit.js` | Implemented `VBD` browser subset; duplicate initialization is rejected, platform adapters are lazy. |
 | `dist/index.mjs` and `dist/types/` | ESM developer API and declarations. |
 | `dist/vbd-toolkit.mjs` | Node.js 24+ local preflight/handover CLI; uses installed declared dependencies. |
-| `dist/THIRD-PARTY-NOTICES.txt` | Bundled Zod license notice. |
+| `dist/THIRD-PARTY-NOTICES.txt` | Notices for all packages actually bundled, including XML dependencies. |
 
 Outputs are ignored local artifacts, not a published release. The package is
-private/UNLICENSED pending owner license approval. The Zod dependency retains
-its own license; its notice is copied into build outputs.
+private/UNLICENSED pending owner license approval. Bundled dependencies retain
+their own licenses; build metadata drives notice collection and missing notices
+fail the build. The published @nodable/entities 3.1.0 package omits its LICENSE;
+the exact declared upstream MIT notice is retained under third-party/licenses
+with its immutable source blob. That fallback is version/license-bound, not a
+general permission to omit notices.
 The project uses npm's `omit-lockfile-registry-resolved` option: the lockfile
 pins versions and integrity without embedding the development machine's mirror.
 Each installer uses its configured approved registry (public npm on GitHub CI).

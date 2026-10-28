@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { Config, Diagnostics, Environment, Launch, Links, Windows } from "../src/index.js";
+import * as library from "../src/index.js";
 
 function markdownFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -42,10 +42,10 @@ describe("documentation contracts", () => {
     const section = index.split("## Implemented source subset")[1]?.split("## Reading the catalog")[0] ?? "";
     const documented = [...section.matchAll(/^- `(VBD\.[A-Za-z]+\.[A-Za-z]+)`/gm)]
       .map((match) => match[1]).sort();
-    const actual = Object.entries({ Config, Diagnostics, Environment, Launch, Links, Windows })
+    const actual = Object.entries(library).filter(([, value]) => typeof value === "object" && value !== null)
       .flatMap(([module, methods]) => Object.keys(methods).map((name) => `VBD.${module}.${name}`)).sort();
     expect(documented).toEqual(actual);
-    expect(actual).toHaveLength(21);
+    expect(actual).toHaveLength(118);
   });
 
   it("has no broken local document/example links or undocumented function references", () => {

@@ -33,9 +33,10 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-Most entries remain planned. Twenty-one runtime functions and the bounded local
+118 runtime functions and the bounded local
 tooling subset are implemented; see [getting started](getting-started.md) and
-[environment/launcher usage](environment-launching.md).
+[environment/launcher usage](environment-launching.md). The remaining 80 functions
+are planned; [core usage](core-usage.md) defines current subset limitations.
 
 ## Non-goals
 
@@ -147,6 +148,64 @@ automation could independently observe the controlled destination. Both fixture
 pages/routes were cleaned up. This is scoped browser evidence, not a live tenant
 or deployment certification.
 
+## Current source milestones: interactions, forms, and data
+
+[Issue #5](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/5)
+selects 97 additional catalog APIs, targeting 118 implemented APIs. This is
+not a claim that all R1/R2/R3 behavior or a solution package is complete.
+
+- Interaction milestone: Context 10, Utils 7 (except formatValue), Navigation 8
+  (except generative pages), Dialogs 6, UI 5, Commands 5, and the three R1 Grids APIs.
+- Form milestone: the 39 R1 Fields/Controls/Forms/Layout/Lookups/Choices/
+  Validation/Events entries.
+- Data milestone: the seven R1 Data, five R1 Query, and two Actions entries.
+
+Preserve schema version 1. Maker command keys combine configurationName/profileKey.
+OnLoad/OnChange prepare app profiles; the click path performs no asynchronous
+preparation. Generic multi-operation recipes and automatic workflow execution
+remain out of scope. The previously proposed, never-shipped Events.onSave
+signature is refined to accept explicit synchronous rules or bounded JSON.
+
+Mutations are explicit: no implicit field-save/change firing, no silently lost
+dirty data, no ignored ETags, no automatic mutation retries, and no global
+rollback claim. Validate all targets before a group change; expose partial
+failure if the native host fails partway. Lookup PreSearch callbacks are
+synchronous and owned/disposable; filter XML rejects DTD/entities.
+
+Bounds are 100 field/control targets per call, 1000 collection/selection items,
+200 local validation rules, 256 KiB filter XML, and 8192-character display
+messages. Data paging/filter limits must be explicit and tested. SDK callbacks,
+typed operation contracts and supplied contexts are trusted application code,
+not functions supplied by JSON configuration.
+
+Acceptance requires strict type/lint/build/package-consumer checks, adversarial
+unit/CLI/bundle/doc coverage, and controlled browser evidence for the actual
+portable XML validation path and a prepared command click with no extra reads. Source fixtures
+do not certify real Dynamics forms, tenant permissions, mobile/offline behavior,
+deployment, or managed/unmanaged installation. No tenant writes are authorized
+by this source milestone.
+
+### Current milestone evidence mapping
+
+| Area | Source evidence | Unverified boundary |
+| --- | --- | --- |
+| Context/navigation/UI/grid adapters | `tests/interactions.test.ts`, package consumer and browser-bundle tests. | Live native form layouts, target access, all client/options variants. |
+| Typed fields/controls/layout/save safety | `tests/forms.test.ts`, native method/dirty/reentry/partial-failure fixtures. | Actual tenant metadata/field security and server rules. |
+| Owned lookup/events, rules and prepared commands | `tests/form-events.test.ts`, UTF-8/character/DTD limits and synchronous request observations. | Native app registration/settings and specialized lookup behavior. |
+| Bounded data/query/action contracts | Data/query/action suites, bounds and cross-realm browser builds; no live writes. | Actual tenant queries, custom operation metadata and conditional adapters. |
+| Source-backed availability | `npm run docs:availability`, documentation/export parity checks. | Implemented subset is not a complete SDK/milestone certification. |
+
+Controlled browser evidence on 2026-10-28 used the built 0.3.0 bundle in Chrome
+156.0.4314.50 with synthetic routed `.example` pages and SDK fixtures. It observed
+118 methods; malformed XML/DTD rejection; filter application only in PreSearch;
+owned disposal; synchronous save prevention; one safe not-ready presentation;
+OnLoad preparation; a trusted command click that opened before its promise
+settled, with reads unchanged at six; null opener/empty referrer/no Referer
+header; and one failed inactive-gesture outcome without another open/read.
+The inactive attempt produced the second error presentation, not a delayed popup.
+Both fixture pages/routes were removed. This is not a real Dynamics form,
+server query/write, authorization, mobile/offline, or tenant deployment check.
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -175,14 +234,14 @@ or deployment certification.
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Planned; design boundary documented. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | Twenty-one-function namespace verified locally; Dataverse assets not created. |
-| API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Planned. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 118-function source namespace; Dataverse assets not created by this milestone. |
+| API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |
 | NAV-01 | Configured app profiles launch without source edits between environments. | Two deployment configurations and verified generated destination URLs. | Approved destination/scope/preparation adapter tests pass; real deployment remains unverified. |
 | NAV-02 | Window launch respects user activation and reports only observable outcomes. | Real-browser click, blocked/unknown cases, and session/isolation checks. | Controlled Chrome click, inactive rejection, no extra reads, opener/referrer isolation and honest unknown result verified; real tenant/SSO and other browsers unverified. |
-| FORM-01 | Form values, multiple bound controls, events, and save policies behave explicitly. | Unit tests and model-driven form smoke scenarios. | Planned. |
-| DATA-01 | Queries respect paging limits; mutations report partial failures and retry safely. | Paging, throttling, concurrency, and failed-record tests. | Planned. |
+| FORM-01 | Form values, multiple bound controls, events, and save policies behave explicitly. | Unit tests and model-driven form smoke scenarios. | Native host fixtures cover the bounded subset; live Dynamics form checks unverified. |
+| DATA-01 | Queries respect paging limits; mutations report partial failures and retry safely. | Paging, throttling, concurrency, and failed-record tests. | Bounded paging/conditional/mutation uncertainty fixtures checked; no automatic mutations retry or live writes. |
 | SEC-01 | Client UX never substitutes for server authorization. | Denied-permission tests and unsupported-operation checks. | Planned. |
 | ALM-01 | Managed and unmanaged ZIPs come from the same tagged source. | Reproducible build, solution inspection, and import checks. | Planned; no packages. |
 | ALM-02 | Imports do not overwrite consuming app handlers/configuration automatically. | Clean-environment install and existing-app regression checks. | Planned. |

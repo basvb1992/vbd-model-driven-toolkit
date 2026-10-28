@@ -1,8 +1,13 @@
 # Dataverse data and query functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md).
+The 14 R1 Data/Query/Actions entries are implemented in the bounded subset in
+[core usage](../core-usage.md); 11 R2 entries remain planned.
+See [catalog conventions](../function-catalog.md).
 The baseline is online Dataverse in the current environment. Cross-environment
 authentication is not automatically supplied by an app launcher.
+No live writes are part of verification. ETags require an atomic conditional
+adapter; unsupported native conditional writes fail before dispatch.
+Read lookup-shadow names are distinct from logical tables/FetchXML/write fields.
 
 ## VBD.Data
 
@@ -24,6 +29,8 @@ server errors without turning access denial into a missing record.
 
 Support raw OData/FetchXML for advanced consumers and structured safe helpers
 for common conditions. Never substitute unescaped values into query templates.
+FetchXML currently supports explicit selected/ordered root queries and scalar
+filters, not joins/aggregates/general NOT/contains or ambiguous cookie-less paging.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -45,6 +52,9 @@ for common conditions. Never substitute unescaped values into query templates.
 
 Operation names and parameter metadata must be registered/validated; input values
 alone are not enough to construct a correct Web API execution request.
+Contracts declare parameter metadata and expected empty/validated JSON response.
+Response validators may be async with a final scope check; parameter guards
+must return synchronous proven JSON. Enumeration metadata remains unsupported.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

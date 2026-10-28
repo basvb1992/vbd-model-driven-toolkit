@@ -1,6 +1,7 @@
 import * as VBD from "vbd-model-driven-toolkit";
 import type {
-  ToolkitConfiguration, Diagnostic, ReadContext, ResolvedValue, PreparedLaunch, LaunchResult
+  ToolkitConfiguration, Diagnostic, ReadContext, ResolvedValue, PreparedLaunch, LaunchResult,
+  DataContext, Page, ValidationReport, OperationContract
 } from "vbd-model-driven-toolkit";
 
 const result = VBD.Config.validate({});
@@ -32,3 +33,34 @@ void flag;
 void prepared;
 void opened;
 void url;
+
+declare const form: unknown;
+declare const execution: unknown;
+declare const dataContext: DataContext;
+const operation = VBD.Context.fromFormCommand(form);
+const text: string | null = VBD.Fields.get(operation, "name", "text");
+const controls: string[] = VBD.Controls.forAttribute(operation, "name", control => control.getName());
+const report: ValidationReport = VBD.Events.onSave(execution, [
+  { id: "requiredName", field: "name", kind: "required" }
+]);
+const data: Promise<Page> = VBD.Data.retrieveMany("account", {
+  entitySet: "accounts", select: ["accountid", "_ownerid_value"], pageSize: 10
+}, { context: dataContext });
+const contract: OperationContract<{ value: string }> = {
+  operationName: "vbd_ReadValue", parameters: {},
+  response: {
+    kind: "json", status: 200,
+    validate: async (value: unknown) => {
+      if (typeof value !== "object" || value === null || !("value" in value) || typeof value.value !== "string") {
+        throw new Error("Invalid operation response.");
+      }
+      return { value: value.value };
+    }
+  }
+};
+const operationResult: Promise<{ value: string } | undefined> = VBD.Actions.executeFunction(contract, {}, { context: dataContext });
+void text;
+void controls;
+void report;
+void data;
+void operationResult;

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { VbdError } from "./errors.js";
 import { contextSchema, readRows, readScope, resolveReadContext, scopeKey } from "./platform.js";
 import type { ReadContext } from "./platform.js";
-import { guidSchema, logicalNameSchema, parseInput } from "./validation.js";
+import { guidSchema, logicalNameSchema, parseInput, parseInvariantNumber } from "./validation.js";
 
 const defaultTtl = 60_000;
 const maximumTtl = 300_000;
@@ -288,14 +288,8 @@ async function getNumber(name: string, input: NumberReadOptions = {}): Promise<R
     throw new VbdError("INVALID_ARGUMENT", { operation: "environment.getNumber" });
   }
   return readTyped(name, "number", options, (raw) => {
-    const normalized = raw.trim();
-    const value = Number(normalized);
-    if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(normalized) ||
-        !Number.isFinite(value) || (options.min !== undefined && value < options.min) ||
-        (options.max !== undefined && value > options.max)) {
-      throw invalidValue();
-    }
-    return value;
+    try { return parseInvariantNumber(raw, { min: options.min, max: options.max }); }
+    catch (cause) { throw invalidValue(cause); }
   });
 }
 

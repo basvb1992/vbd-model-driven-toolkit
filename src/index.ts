@@ -22,3 +22,36 @@ export { Launch } from "./launch.js";
 export type { ProfileIdentity, PreparationOptions, ProfileDefinition, PreparedLaunch } from "./launch.js";
 export { Windows } from "./windows.js";
 export type { WindowHost, WindowOptions, LaunchResult } from "./windows.js";
+export type { EntityRef } from "./entity-reference.js";
+export { Utils } from "./utils.js";
+export { Context } from "./context.js";
+export type { OperationContext } from "./context.js";
+export { Navigation, Dialogs } from "./navigation.js";
+export type { PresentationOptions, DialogOptions } from "./navigation.js";
+export { UI } from "./ui.js";
+export type { ProgressToken, NotificationToken } from "./ui.js";
+export { Fields, Forms } from "./forms.js";
+export type { FieldKind, FieldValue, FieldWriteOptions } from "./forms.js";
+export { Controls, Layout } from "./controls.js";
+export type { BoundControl } from "./controls.js";
+export { Lookups, Choices } from "./lookups.js";
+export type { LookupPickOptions } from "./lookups.js";
+export { Validation } from "./form-validation.js";
+export type { ValidationRule, ValidationIssue, ValidationReport } from "./form-validation.js";
+export { Events } from "./events.js";
+export type { EventHandler } from "./events.js";
+export type { Disposable } from "./registrations.js";
+export { Commands, Grids } from "./commands.js";
+export type { FailureOutcome } from "./commands.js";
+export { Data } from "./data.js";
+export type {
+  DataContext, JsonFields, JsonValue, ClientOptions, MutationOptions,
+  UpdateOptions, DeleteOptions, RelatedOptions, RelatedResult
+} from "./data.js";
+export { Query } from "./query.js";
+export type {
+  ODataOptions, FetchXmlOptions, QuerySpecification, Continuation, Page, IteratedPage,
+  PagingLimits, AllResult, StopReason, FilterNode, FilterOperator, FilterPolicy, ScalarType
+} from "./query.js";
+export { Actions } from "./actions.js";
+export type { ParameterContract, ResponseContract, OperationContract, OperationOptions } from "./actions.js";

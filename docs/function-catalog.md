@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**Twenty-one functions have a local implementation; the other 177 remain planned.**
+**118 functions have a local implementation; the other 80 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -11,34 +11,129 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 
 ## Implemented source subset
 
-- `VBD.Config.validate`
-- `VBD.Config.register`
+- `VBD.Actions.executeAction`
+- `VBD.Actions.executeFunction`
+- `VBD.Choices.getOptions`
+- `VBD.Commands.execute`
+- `VBD.Commands.refresh`
+- `VBD.Commands.run`
+- `VBD.Commands.runGrid`
+- `VBD.Commands.validateSelection`
 - `VBD.Config.get`
+- `VBD.Config.register`
+- `VBD.Config.validate`
+- `VBD.Context.fromFormCommand`
+- `VBD.Context.fromFormEvent`
+- `VBD.Context.fromGridCommand`
+- `VBD.Context.getApp`
+- `VBD.Context.getClient`
+- `VBD.Context.getRecord`
+- `VBD.Context.getSelection`
+- `VBD.Context.getUser`
+- `VBD.Context.requireCapability`
+- `VBD.Context.requireSavedRecord`
+- `VBD.Controls.forAttribute`
+- `VBD.Controls.setDisabled`
+- `VBD.Controls.setFocus`
+- `VBD.Controls.setLabel`
+- `VBD.Controls.setVisible`
+- `VBD.Data.create`
+- `VBD.Data.delete`
+- `VBD.Data.exists`
+- `VBD.Data.retrieve`
+- `VBD.Data.retrieveMany`
+- `VBD.Data.retrieveRelated`
+- `VBD.Data.update`
+- `VBD.Diagnostics.getVersion`
 - `VBD.Diagnostics.normalizeError`
 - `VBD.Diagnostics.report`
-- `VBD.Diagnostics.getVersion`
+- `VBD.Dialogs.alert`
+- `VBD.Dialogs.confirm`
+- `VBD.Dialogs.customPage`
+- `VBD.Dialogs.error`
+- `VBD.Dialogs.record`
+- `VBD.Dialogs.webResource`
 - `VBD.Environment.get`
+- `VBD.Environment.getBoolean`
+- `VBD.Environment.getDefinition`
+- `VBD.Environment.getJson`
+- `VBD.Environment.getMany`
+- `VBD.Environment.getNumber`
 - `VBD.Environment.getOptional`
 - `VBD.Environment.getText`
-- `VBD.Environment.getNumber`
-- `VBD.Environment.getBoolean`
-- `VBD.Environment.getJson`
-- `VBD.Environment.getDefinition`
-- `VBD.Environment.getMany`
-- `VBD.Environment.preload`
 - `VBD.Environment.invalidate`
-- `VBD.Links.app`
+- `VBD.Environment.preload`
+- `VBD.Events.onChange`
+- `VBD.Events.onLoad`
+- `VBD.Events.onSave`
+- `VBD.Events.register`
+- `VBD.Events.unregister`
+- `VBD.Fields.clear`
+- `VBD.Fields.copy`
+- `VBD.Fields.fireOnChange`
+- `VBD.Fields.get`
+- `VBD.Fields.getLookup`
+- `VBD.Fields.set`
+- `VBD.Fields.setDefault`
+- `VBD.Fields.setLookup`
+- `VBD.Fields.setRequired`
+- `VBD.Fields.setSubmitMode`
+- `VBD.Forms.clearNotification`
+- `VBD.Forms.getType`
+- `VBD.Forms.isDirty`
+- `VBD.Forms.refresh`
+- `VBD.Forms.save`
+- `VBD.Forms.setNotification`
+- `VBD.Grids.getSelected`
+- `VBD.Grids.openSelected`
+- `VBD.Grids.refresh`
 - `VBD.Launch.getProfile`
-- `VBD.Launch.prepareProfile`
 - `VBD.Launch.openPrepared`
+- `VBD.Launch.prepareProfile`
+- `VBD.Layout.focusTab`
+- `VBD.Layout.setSectionVisible`
+- `VBD.Layout.setTabExpanded`
+- `VBD.Layout.setTabVisible`
+- `VBD.Links.app`
+- `VBD.Lookups.addFilter`
+- `VBD.Lookups.pick`
+- `VBD.Lookups.removeFilter`
+- `VBD.Lookups.setDefaultView`
+- `VBD.Lookups.setEntityTypes`
+- `VBD.Navigation.newRecord`
+- `VBD.Navigation.openCustomPage`
+- `VBD.Navigation.openDashboard`
+- `VBD.Navigation.openRecord`
+- `VBD.Navigation.openUrl`
+- `VBD.Navigation.openView`
+- `VBD.Navigation.openWebResource`
+- `VBD.Navigation.quickCreate`
+- `VBD.Query.buildFilter`
+- `VBD.Query.executeFetchXml`
+- `VBD.Query.executeOData`
+- `VBD.Query.iteratePages`
+- `VBD.Query.retrieveAll`
+- `VBD.UI.clearNotification`
+- `VBD.UI.hideProgress`
+- `VBD.UI.notify`
+- `VBD.UI.showProgress`
+- `VBD.UI.withProgress`
+- `VBD.Utils.compareValues`
+- `VBD.Utils.escapeODataLiteral`
+- `VBD.Utils.escapeXml`
+- `VBD.Utils.isGuid`
+- `VBD.Utils.normalizeGuid`
+- `VBD.Utils.parseNumber`
+- `VBD.Utils.toEntityRef`
+- `VBD.Validation.evaluate`
+- `VBD.Validation.validateBeforeSave`
+- `VBD.Validation.validateFields`
 - `VBD.Windows.open`
 
-These have local type/lint/build and automated evidence, not Dataverse
-deployment verification. Their exact current schema/signatures and limitations
-are in [getting started](getting-started.md) and
-[environment/app runtime usage](environment-launching.md). Environment/launcher
-behavior is bounded to that documented subset. Generic command handlers,
-non-popup openProfile, and recipe execution remain planned.
+Generated from the built exports with `npm run docs:availability`.
+Implementation means the documented source subset, not live tenant or deployment certification.
+See [core usage](core-usage.md), [getting started](getting-started.md), and
+[environment/app runtime usage](environment-launching.md) for exact contracts and limits.
 
 ## Reading the catalog
 

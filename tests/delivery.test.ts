@@ -11,7 +11,7 @@ describe("read-only preflight", () => {
     expect(report.readiness).toBe("incomplete");
     expect(report.evidenceScope).toBe("source");
     expect(report.summary.unknown).toBeGreaterThan(0);
-    expect(report.summary.unsupported).toBe(1);
+    expect(report.summary.unsupported).toBe(0);
     expect(report.findings).toContainEqual(expect.objectContaining({ id: "REGISTRATION_UNVERIFIED" }));
   });
 
@@ -134,7 +134,7 @@ describe("handover", () => {
     const firstReport = generateHandover(configuration(), options);
     expect(generateHandover(configuration(), options)).toEqual(firstReport);
     expect(firstReport.markdown).toContain("Declared only; not deployed/verified");
-    expect(firstReport.markdown).toContain("command entry points are not implemented");
+    expect(firstReport.markdown).toContain("command entry points are implemented");
     expect(firstReport.markdown).toContain("**incomplete**");
     expect(firstReport.markdown).toContain("abcdef1234");
     expect(firstReport.markdown).toContain("not a dependency");
@@ -147,7 +147,7 @@ describe("handover", () => {
     const { markdown } = generateHandover(input, { now });
     expect(markdown).toContain("VBD.Commands.runGrid");
     expect(markdown).toContain("SelectedControl, selected references");
-    expect(markdown).toContain("not implemented");
+    expect(markdown).toContain("Deployed wiring was not inspected");
   });
 
   it("refuses invalid source and does not embed rejected snapshot values", () => {

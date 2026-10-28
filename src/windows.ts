@@ -11,7 +11,7 @@ export const windowHostSchema = z.custom<WindowHost>((value) =>
   isRecord(value) && typeof value.isUserActivationActive === "function" && typeof value.open === "function"
 );
 const windowOptions = z.object({
-  url: z.string(),
+  url: z.string().max(32768),
   allowedOrigins: z.array(z.string()).min(1).max(20),
   width: z.number().int().min(100).max(4096).optional(),
   height: z.number().int().min(100).max(4096).optional(),

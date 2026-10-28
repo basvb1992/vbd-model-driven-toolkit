@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import manifest from "../package.json" with { type: "json" };
 import { configuration } from "./helpers.js";
 import { appId, launchFixture } from "./environment-helpers.js";
+import * as library from "../src/index.js";
 
 const bundle = readFileSync(resolve("dist", "vbd.toolkit.js"), "utf8");
 
@@ -12,25 +13,18 @@ describe("browser distribution", () => {
   it("loads the implemented namespace without requiring Node, Xrm, or DOM at initialization", () => {
     const result: unknown = runInNewContext(`${bundle}
       JSON.stringify({
-        modules: Object.keys(VBD).sort(),
-        config: Object.keys(VBD.Config).sort(),
-        diagnostics: Object.keys(VBD.Diagnostics).sort(),
-        environment: Object.keys(VBD.Environment).sort(),
-        launch: Object.keys(VBD.Launch).sort(),
-        links: Object.keys(VBD.Links).sort(),
-        windows: Object.keys(VBD.Windows).sort(),
+        methods: Object.fromEntries(Object.entries(VBD).sort(([a],[b]) => a.localeCompare(b))
+          .map(([name,value]) => [name,Object.keys(value).sort()])),
         version: VBD.Diagnostics.getVersion(),
         invalid: VBD.Config.validate({}).valid
       });`, { crypto: globalThis.crypto });
     expect(typeof result).toBe("string");
+    const methods = Object.fromEntries(Object.entries(library)
+      .filter(([, value]) => typeof value === "object" && value !== null)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([name, value]) => [name, Object.keys(value).sort()]));
     expect(result).toBe(JSON.stringify({
-      modules: ["Config", "Diagnostics", "Environment", "Launch", "Links", "Windows"],
-      config: ["get", "register", "validate"],
-      diagnostics: ["getVersion", "normalizeError", "report"],
-      environment: ["get", "getBoolean", "getDefinition", "getJson", "getMany", "getNumber", "getOptional", "getText", "invalidate", "preload"],
-      launch: ["getProfile", "openPrepared", "prepareProfile"],
-      links: ["app"],
-      windows: ["open"],
+      methods,
       version: manifest.version, invalid: false
     }));
   });

@@ -1,6 +1,8 @@
 # Form, control, and lookup functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md).
+The 39 R1 entries are implemented in a bounded source subset; seven R2 entries
+remain planned. See [catalog conventions](../function-catalog.md) and
+[current signatures/policies](../core-usage.md).
 These functions require the appropriate supplied form/control context. Missing
 attributes/controls are errors unless an explicit optional-target policy is
 declared. Returning silently would hide incorrect maker configuration.
@@ -98,6 +100,6 @@ must be reported rather than silently accepting a filter that never applies.
 | --- | --- | --- | --- | --- |
 | `VBD.Events.onLoad` | Execution context, recipe key | Surface-appropriate completion | Maker adapter; validate lifecycle and prepare command configuration. | R1 |
 | `VBD.Events.onChange` | Execution context, recipe key | Surface-appropriate completion | Maker adapter with reentry guard and no implicit save. | R1 |
-| `VBD.Events.onSave` | Execution context, recipe key | Supported save-event completion | Validate async capability/settings before asynchronous validation. | R1 |
+| `VBD.Events.onSave` | Execution context, typed/JSON local rules, notification options | Synchronous validation/save decision | Prevent invalid saves before returning; no async rule/workflow engine or automatic save. | R1 |
 | `VBD.Events.register` | ctx, supported event/target, trusted handler or recipe key | `Disposable` | Idempotent scoped registration; reject unsupported events. | R1 |
 | `VBD.Events.unregister` | Registration token | Removal result | Dispose only matching owned registration. | R1 |

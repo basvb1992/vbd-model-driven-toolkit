@@ -14,7 +14,7 @@ const help = `VBD local delivery tools (source/supplied-snapshot only)
 
 No network access or Dataverse changes. Existing output files are not overwritten.
 Exit codes: 0 complete, 1 invalid input/failure, 2 incomplete evidence.
-Launch/command runtime and live verification are not implemented.
+Runtime helpers are available; these commands perform no live verification.
 `;
 
 async function readJson(path: string, operation: "readConfig" | "readSnapshot"): Promise<unknown> {

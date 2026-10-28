@@ -142,17 +142,10 @@ export function preflight(input: unknown, options: PreflightOptions = {}): Prefl
     });
     validation.configuration.registrations.forEach((_registration, index) => {
       findings.push({
-        id: "COMMAND_RUNTIME_UNAVAILABLE", capabilityId: "C02", status: "unsupported",
-        path: `registrations[${index}]`,
-        message: "Generic form/grid command adapters are not implemented.",
-        remediation: "Use the typed launcher API only; do not register the planned generic command templates yet.",
-        evidence: "source"
-      });
-      findings.push({
         id: "REGISTRATION_UNVERIFIED", capabilityId: "C02", status: "unknown",
         path: `registrations[${index}]`,
-        message: "Registration is declared only. No deployed form or command was inspected.",
-        remediation: "Verify actual registration and implemented entry points before deployment.",
+        message: "The prepared-profile command handler is available, but this registration is declared only.",
+        remediation: "Bootstrap the registry, prepare configurationName/profileKey on load, and verify actual form/command registration and app settings.",
         evidence: "unverified"
       });
     });

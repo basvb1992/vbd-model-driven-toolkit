@@ -1,9 +1,10 @@
 # Environment reads and prepared app launching
 
-The 0.2.0 development source adds 15 catalog APIs, bringing the implemented
-total to 21. No solution package or Dataverse deployment is included.
-Generic form/grid handlers, record parameters, arbitrary external destinations,
-non-popup openProfile, and workflow execution remain out of scope.
+The environment/launcher subset introduced in 0.2.0 continues in the broader
+0.3.0 core. See [core usage](core-usage.md) for prepared-profile form/grid
+handlers and native navigation. Record bindings in app-window profiles,
+arbitrary external app-window destinations, non-popup openProfile and workflow
+execution remain out of scope. No tenant deployment is included.
 
 ## Context and permissions
 
@@ -158,8 +159,9 @@ function openWorkspace() {
 Run preparation during your supported initialization. Wire your own synchronous
 click wrapper deliberately; never await preparation/save/confirmation before
 opening inside the same handler. If not ready/expired, show the error and have
-the user click again after preparation. These are caller-owned functions, not
-generic VBD form/ribbon handlers. No registration/deployment happens automatically.
+the user click again after preparation. These caller-owned wrappers remain
+supported; 0.3.0 also offers [native entry-point parameters](core-usage.md)
+for prepared profiles. No registration/deployment happens automatically.
 Calls before preparation fail with CONFIG_NOT_READY.
 
 Window requests require observable active navigator.userActivation (or an

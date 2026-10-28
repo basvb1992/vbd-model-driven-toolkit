@@ -1,7 +1,8 @@
 # Navigation, app launcher, and window functions
 
-Five entries are implemented locally: Links.app, Launch.getProfile/prepareProfile/
-openPrepared, and Windows.open. The other 24 remain planned.
+19 entries are implemented locally: the eight non-generative Navigation methods,
+Dialogs 6, Links.app, Launch.getProfile/prepareProfile/openPrepared, and Windows.open.
+The other 10 remain planned.
 See [catalog conventions](../function-catalog.md),
 [current runtime usage](../environment-launching.md), and the mandatory
 [app/window contract](../app-launching.md).
@@ -10,10 +11,12 @@ See [catalog conventions](../function-catalog.md),
 
 Use supported page-type contracts. Record forms, custom pages, HTML webresources,
 and generative pages do not accept identical input objects or return values.
+The current record path supports inline/modal navigateTo, not record new-window
+mode or a main-form Quick Create callback. See [core usage](../core-usage.md).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Navigation.openRecord` | ref, optional form/tab, supported data, presentation/chrome options | Navigation request/result | Native openForm for supported separate-window forms; navigateTo for dialogs; no main-form save callback assumption. | R1 |
+| `VBD.Navigation.openRecord` | ref, optional form/tab, data, inline/modal options | Navigation request/result | navigateTo lifecycle only; record new-window mode is explicitly unsupported in this subset. | R1 |
 | `VBD.Navigation.newRecord` | Table, approved defaults, mapping source, form/presentation | Create-form navigation request/result | Opening a main form is not creating/saving a record or promising a save/close completion. | R1 |
 | `VBD.Navigation.quickCreate` | Table, supported defaults/options | Documented Quick Create save result | Only enabled/supported Quick Create forms; no separate window/tab or invented cancel callback. | R1 |
 | `VBD.Navigation.openView` | Table, view ID/type | Navigation request result | Entity-list navigateTo is inline; no generic list-modal promise. | R1 |

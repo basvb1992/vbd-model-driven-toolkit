@@ -10,7 +10,7 @@ const messages = {
   INPUT_UNREADABLE: "An input file could not be read as a regular UTF-8 JSON file.",
   OUTPUT_EXISTS: "The output file already exists. Choose a new path.",
   OUTPUT_UNWRITABLE: "The output file could not be written.",
-  UNSUPPORTED_SURFACE: "This operation requires a supported online model-driven app or an explicit typed context.",
+  UNSUPPORTED_SURFACE: "The required client capability or context is unavailable. Use a supported client or typed adapter.",
   DATA_READ_FAILED: "A configuration read failed. Inspect the retained cause using authorized diagnostics.",
   DATA_RESPONSE_INVALID: "The configuration service returned an unexpected response shape.",
   ACCESS_DENIED: "Configuration read access was denied. No missing-value fallback was applied.",
@@ -27,6 +27,18 @@ const messages = {
   INVALID_URL: "The destination must satisfy the documented HTTPS app-link and approved-origin policy.",
   USER_ACTIVATION_REQUIRED: "A direct active user gesture is required before requesting a new window.",
   WINDOW_REQUEST_FAILED: "The browser window operation failed. Destination readiness is not known.",
+  SDK_OPERATION_FAILED: "The supported client API operation failed. Inspect its retained cause with authorized diagnostics.",
+  DATA_WRITE_FAILED: "The data write failed or its outcome is uncertain. Verify server state before retrying.",
+  ACTION_FAILED: "The registered operation failed. A mutating request may have reached the server; verify before retrying.",
+  MUTATION_OUTCOME_UNKNOWN: "The mutation outcome cannot be safely confirmed. Do not retry blindly or assume rollback.",
+  CONCURRENCY_CONFLICT: "The record changed. Reload and reconcile before retrying.",
+  FORM_TARGET_MISSING: "A configured form attribute, control, tab, or section is not loaded.",
+  FIELD_TYPE_MISMATCH: "The value does not match the supported attribute type or lookup policy.",
+  EVENT_REENTRY: "The operation attempted a recursive event dispatch.",
+  UNSAVED_RECORD: "This operation requires a saved record.",
+  DIRTY_FORM: "The form has unsaved edits. Choose an explicit save policy before refreshing or navigating.",
+  PARTIAL_FAILURE: "The native host failed after part of the operation completed. Inspect and reconcile; no rollback is implied.",
+  ERROR_PRESENTATION_FAILED: "The original error could not be presented. Both errors are retained for authorized diagnostics.",
   OPERATION_FAILED: "The operation failed. Use the correlation ID for diagnosis."
 } as const;
 

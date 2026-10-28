@@ -4,6 +4,8 @@ Most contracts below are proposed. The implemented configuration/diagnostic
 functions and local delivery tools are described in [getting started](getting-started.md).
 The scoped environment/app-launch subset is in [runtime usage](environment-launching.md).
 Their source-level checks are not Dataverse installation or live-app evidence.
+The [core usage](core-usage.md) contract describes the 118 implemented methods
+in 0.3.0, including the bounded native UI/data subset.
 
 ## Product and framework separation
 
@@ -60,18 +62,25 @@ Duplicate global initialization fails instead of replacing an existing `VBD`.
 
 | Surface | Required input | Proposed adapter |
 | --- | --- | --- |
-| Form OnLoad/OnChange/OnSave | Execution context, with pass-execution-context enabled. | `VBD.Events.onLoad`, `onChange`, or `onSave` |
+| Form OnLoad/OnChange | Execution context, pass-context enabled, registryName/profileKey. | `VBD.Events.onLoad` or `onChange` |
+| Synchronous OnSave validation | Execution context and reviewed typed/JSON rules. | `VBD.Events.onSave` |
 | Form command | `PrimaryControl` plus static recipe/configuration key. | `VBD.Commands.run` |
 | Grid/subgrid command | `SelectedControl` and explicit selected record references/IDs. | `VBD.Commands.runGrid` |
 | Typed application code | An explicitly constructed context and typed options. | Direct namespace function or `VBD.Recipes.run` |
 
-Proposed positional adapter contracts are:
+Current positional adapter contracts are:
 
-- `VBD.Commands.run(primaryControl, recipeKey)`
-- `VBD.Commands.runGrid(selectedControl, selectedReferences, recipeKey)`
-- `VBD.Events.onLoad(executionContext, recipeKey)`
-- `VBD.Events.onChange(executionContext, recipeKey)`
-- `VBD.Events.onSave(executionContext, recipeKey)`
+- `VBD.Commands.run(primaryControl, commandKey)`
+- `VBD.Commands.runGrid(selectedControl, selectedReferences, commandKey, entityType?)`
+- `VBD.Events.onLoad(executionContext, commandKey)`
+- `VBD.Events.onChange(executionContext, commandKey)`
+- `VBD.Events.onSave(executionContext, rules, options?)`
+
+commandKey is configurationName/profileKey in schema version 1. This is not a
+generic function/recipe dispatcher. Maker command/load errors are presented once
+and return an explicit failed outcome; presentation failure rejects. The typed
+core throws. OnSave validates synchronously and prevents before returning;
+neither registration nor a promise enables platform async app settings.
 
 The catalog documents operation contracts, not promises that every platform
 designer exposes every parameter type. Validate actual parameter support per
@@ -113,8 +122,10 @@ codes above remain proposed. Diagnostic reporting derives messages from a fixed
 code map and never serializes the original cause, native message, stack, or input.
 An explicit sink is required; sink failure is an error, not a reporting receipt.
 
-The core throws; maker entry points present an appropriate user-facing error
-once and retain diagnostic correlation. No broad catch-and-return-default paths.
+The core throws; maker command/load entry points present an appropriate user-facing
+error once and retain diagnostic correlation in a discriminated failed outcome.
+There is no success-shaped fallback. OnSave prevents first and propagates
+unexpected failures for the native synchronous error path.
 
 ## Surface and capability policy
 
@@ -183,3 +194,9 @@ credentials, and long-running work. A recipe spanning confirmation, email,
 record creation, and navigation cannot be rolled back as one client transaction.
 Server work can use any compatible approved API; the toolkit does not assume
 or install the owner's Workflow/Interaction Framework.
+
+The data subset uses explicit scalar-write field allowlists, exact delete
+confirmation and declared action metadata. Conditional updates require an
+atomic adapter or fail before dispatch. Transport/scope/response failures can
+leave a mutation outcome uncertain; there is no automatic retry or rollback.
+Paging is bounded and not a server snapshot/transaction.
