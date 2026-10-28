@@ -1,10 +1,11 @@
 # Foundation and configuration functions
 
-34 entries are implemented locally: Context 10, Config's validate/register/get,
-Diagnostics 4, Environment 10, and Utils 7.
-The other 11 entries in this
+43 entries are implemented locally: Context 10, Config 5, Bindings 2, Cache 3,
+Security 2, Diagnostics 4, Environment 10, and Utils 7.
+The other 2 entries in this
 file remain planned. See [catalog conventions](../function-catalog.md) and
-[current usage](../getting-started.md); no entry is Dataverse-deployed yet.
+[current usage](../getting-started.md). The bundle is deployed in BvB for
+testing; this is not live certification of every function.
 `R1`/`R2`/`R3` indicate earliest delivery phase, not implementation status.
 
 ## VBD.Context
@@ -49,20 +50,26 @@ never defaults or Secret values. See [runtime signatures](../environment-launchi
 
 ## VBD.Config
 
-Implemented subset: validate/register/get for the portable version-1 declaration
-schema only. `load` and `resolve` remain planned. Registration rejects duplicate
+Implemented subset: validate/register/get/load/resolve for the portable version-1
+declaration schema. Loading uses an explicitly approved typed JSON adapter;
+resolution reads declared variables without arbitrary overrides. Registration rejects duplicate
 keys by default, accepts explicit `{ replace: true }`, validates options, and
 copies stored/retrieved configuration to prevent caller mutation.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Config.load` | Approved JSON webresource/config source, schema/version | Validated configuration | Load only registered sources; no arbitrary script loading. | R1 |
+| `VBD.Config.load` | Name, approved trustedJson loader and context/replace options | Validated registered declaration copy | Bounded JSON text only; no built-in fetch/script loader, races cannot overwrite newer configuration. | R1 |
 | `VBD.Config.register` | Name, validated in-memory configuration | Registration result | Reject duplicate/incompatible definitions unless explicit replacement allowed. | R1 |
 | `VBD.Config.get` | Name, expected configuration kind | Registered configuration | Missing required configuration is actionable. | R1 |
-| `VBD.Config.resolve` | Name/options, ctx, permitted overrides | Resolved typed configuration | Apply documented precedence and binding allowlists. | R1 |
+| `VBD.Config.resolve` | Registry name, context/cache TTL, exact variable policies | Copied declarations and typed resolved values | Declared variables only; no invocation-value/security/origin overrides. Optional absence remains explicit. | R1 |
 | `VBD.Config.validate` | Unknown configuration, schema/version | Validation report | No effects; include invalid paths and unsupported operations. | R1 |
 
 ## VBD.Bindings
+
+Implemented typed runtime binding graphs are separate from portable schema v1.
+Exact field/environment/result/registered-variable approvals, safe own-property
+paths, cycle/depth/count/byte limits and synchronous predicates are mandatory
+where documented. See [runtime contracts](../environment-and-configuration.md).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -71,16 +78,26 @@ copies stored/retrieved configuration to prevent caller mutation.
 
 ## VBD.Cache
 
+Implemented memory-only cache requires approved configuration/metadata purpose,
+an explicit revision and runtime guard, TTL and environment/user/language scope.
+It is not a record/secret/token store. Generic cache invalidation does not
+silently invalidate the separate Environment/prepared-launch state.
+
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.Cache.getOrLoad` | Scoped key, safe loader, TTL/size policy | Loaded/cached value | Deduplicate in-flight reads; no persistent record/secret caching by default. | R1 |
-| `VBD.Cache.invalidate` | Namespace/key/dependency | Invalidated-entry count | Invalidate dependent prepared configuration where applicable. | R1 |
+| `VBD.Cache.invalidate` | Namespace and optional key/dependency, current read scope | Invalidated-entry count including pending slots | Prevent stale repopulation of this generic cache; no browser storage or implicit Environment mutation. | R1 |
 | `VBD.Cache.clear` | Explicit environment/user cache scope | Cleared-entry count | Do not clear unrelated app/browser storage. | R1 |
 
 ## VBD.Security
 
 Assessments return allowed/denied/unknown plus reason and scope. Effective server
 authorization still governs every operation; incomplete metadata cannot mean allowed.
+assessTable/hasPrivilege are implemented; assessRecord remains R2/planned.
+The native client depth encoding is not documented, so matching native
+privileges produce unknown/unverified-depth rather than guessed allows.
+Trusted adapters can attest a supported verified encoding; see
+[Security usage](../core-usage.md#security--privilege-ux-hints-not-authorization).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

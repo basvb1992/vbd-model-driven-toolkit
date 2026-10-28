@@ -1,10 +1,50 @@
 # Environment reads and prepared app launching
 
 The environment/launcher subset introduced in 0.2.0 continues in the broader
-0.4.0 core. See [core usage](core-usage.md) for prepared-profile form/grid
+0.5.0 core. See [core usage](core-usage.md) for prepared-profile form/grid
 handlers and native navigation. Record bindings in app-window profiles,
-arbitrary external app-window destinations, non-popup openProfile and workflow
-execution remain out of scope. No tenant deployment is included.
+arbitrary external app-window destinations and workflow
+execution remain out of scope. The bundle is installed in BvB for testing;
+consumer environment bindings and form/ribbon wiring are not automatically installed.
+
+## Same-window profile requests
+
+The 0.5.0 `Launch.openProfile(options)` path supports only a registered
+modelDrivenApp profile with `presentation: "sameWindow"`. Supply the existing
+configurationName/profileKey and optional ReadContext/ttlMs, plus an optional
+trusted `SameWindowHost`. Its `navigateSameWindow(url)` method may return void
+or Promise<void>; it must request navigation in the same window, not a popup.
+An explicit adapter is trusted application code, never loaded from JSON.
+
+Profile/environment/origin validation is shared with preparation. Scope,
+registry revision, environment generation and freshness are rechecked before
+dispatch. The receipt is status=requested, outcome=unknown,
+presentation=sameWindow: neither host completion nor URL construction proves
+that the app loaded or that access was granted. A host failure may occur after
+the native request; no rollback or automatic retry is implied.
+
+The default adapter uses standard `location.assign` in the current top-level
+browser only. An embedded form/webresource frame is rejected; it never
+reaches into a parent DOM or silently redirects another frame. Embedded hosts
+need an explicit reviewed adapter implementing their supported navigation path.
+This deliberately does not use openUrl as an asynchronous popup workaround.
+
+New-window profiles still require prepareProfile/openPrepared and active user
+activation. openProfile rejects them before any environment reads; preparing a
+sameWindow profile also fails before reads. Existing prepared-profile form/grid
+registrations remain newWindow-only, rather than automatically changing their
+click behavior.
+
+```typescript
+await VBD.Launch.openProfile({
+  configurationName: "workspace", profileKey: "sameWindowWorkspace",
+  host: reviewedSameWindowNavigationHost
+});
+```
+
+Declare that profile with sameWindow presentation and its required text
+environment bindings, using the existing Config registration contract. This
+does not create apps, grant access, or install consumer configuration.
 
 ## Context and permissions
 

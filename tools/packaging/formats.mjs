@@ -100,7 +100,8 @@ export function crc32(bytes) {
 }
 // No entry is ever extracted. Central AND local paths/headers are checked before
 // decompressing; ZIP64, encryption, symlinks, overlapping entries are rejected.
-export function readZip(bytes) {
+export function readZip(bytes, { format = "pac" } = {}) {
+  requireThat(["pac", "dataverseExport"].includes(format), "ZIP", "Unsupported ZIP dialect.");
   requireThat(Buffer.isBuffer(bytes) && bytes.length >= 22 && bytes.length <= limits.archive,
     "ZIP_LIMIT", "ZIP must be 22 bytes through 16 MiB.");
   try {
@@ -138,7 +139,11 @@ export function readZip(bytes) {
       "ZIP", "Local header mismatch.");
       const localN = bytes.readUInt16LE(offset + 26), localExtra = bytes.readUInt16LE(offset + 28);
       const dataStart = offset + 30 + localN + localExtra, dataEnd = dataStart + compressed;
-      requireThat(localExtra === 0 && dataEnd <= start && decode(bytes.subarray(offset + 30, offset + 30 + localN)) === name,
+      const padding = bytes.subarray(offset + 30 + localN, dataStart);
+      const exportPadding = format === "dataverseExport" && localExtra === 28 &&
+        padding.toString("hex") === "20a2180028a014000000000000000000000000000000000000000000";
+      requireThat((localExtra === 0 || exportPadding) && dataEnd <= start &&
+        decode(bytes.subarray(offset + 30, offset + 30 + localN)) === name,
         "ZIP", "Local path or entry boundary mismatch.");
       if (!(flags & 8)) requireThat(bytes.readUInt32LE(offset + 14) === crc
         && bytes.readUInt32LE(offset + 18) === compressed && bytes.readUInt32LE(offset + 22) === length,

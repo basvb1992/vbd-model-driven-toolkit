@@ -3,6 +3,8 @@ import { VbdError } from "./errors.js";
 import { safePath } from "./findings.js";
 import type { Finding } from "./findings.js";
 import { identifierSchema as identifier, logicalNameSchema as schemaName } from "./validation.js";
+import { configurationRuntime } from "./configuration-runtime.js";
+import { assertRuntimeStructure } from "./configuration-values.js";
 const binding = z.object({ environmentVariable: schemaName }).strict();
 const variable = z.object({
   schemaName,
@@ -14,7 +16,7 @@ const profile = z.object({
   destinationKind: z.literal("modelDrivenApp"),
   appId: binding,
   environmentUrl: binding.optional(),
-  presentation: z.literal("newWindow"),
+  presentation: z.enum(["newWindow", "sameWindow"]),
   allowedOrigins: z.array(binding).min(1).max(20)
 }).strict();
 const registration = z.object({
@@ -85,6 +87,12 @@ const configurationSchema = z.object({
         message: "Registration references an undeclared profile. Use its exact key.",
         path: ["registrations", index, "profileKey"]
       });
+    } else if (config.launchProfiles.find(profile => profile.key === item.profileKey)?.presentation !== "newWindow") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Prepared form/grid commands require a newWindow profile.",
+        path: ["registrations", index, "profileKey"]
+      });
     }
   });
 });
@@ -96,6 +104,21 @@ export type ConfigurationValidation =
   | { valid: false; findings: Finding[] };
 
 function validate(input: unknown): ConfigurationValidation {
+  try {
+    // Keep the legacy schema's full declared capacities; the loader's 256 KiB
+    // transport budget must not become a new limit on validate/register/get.
+    assertRuntimeStructure(input);
+  } catch (cause) {
+    if (!(cause instanceof VbdError)) throw cause;
+    return {
+      valid: false,
+      findings: [{
+        id: "CONFIG_INVALID", capabilityId: "C01", status: "fail", path: "$",
+        message: "Configuration must be bounded, acyclic, plain JSON without unsafe properties.",
+        remediation: "Use the documented declaration-only schema and limits.", evidence: "source"
+      }]
+    };
+  }
   const result = configurationSchema.safeParse(input);
   if (!result.success) {
     return {
@@ -173,4 +196,5 @@ function get(name: string): ToolkitConfiguration {
   return configurationSchema.parse(value);
 }
 
-export const Config = Object.freeze({ validate, register, get });
+const runtime = configurationRuntime({ get, register, revision: configurationRevision });
+export const Config = Object.freeze({ validate, register, get, load: runtime.load, resolve: runtime.resolve });

@@ -19,6 +19,9 @@ import { Data } from "./data.js";
 import { Query } from "./query.js";
 import { Actions } from "./actions.js";
 import { SidePanes } from "./side-panes.js";
+import { Security } from "./security.js";
+import { Bindings } from "./bindings.js";
+import { Cache } from "./cache.js";
 
 if (Object.prototype.hasOwnProperty.call(globalThis, "VBD")) {
   throw new VbdError("DUPLICATE_INITIALIZATION", { operation: "initialize" });
@@ -27,7 +30,8 @@ Object.defineProperty(globalThis, "VBD", {
   value: Object.freeze({
     Config, Diagnostics, Environment, Links, Launch, Windows,
     Utils, Context, Navigation, Dialogs, UI, Fields, Forms, Controls, Layout,
-    Lookups, Choices, Validation, Events, Commands, Grids, Data, Query, Actions, SidePanes
+    Lookups, Choices, Validation, Events, Commands, Grids, Data, Query, Actions,
+    SidePanes, Security, Bindings, Cache
   }),
   enumerable: true,
   writable: false,

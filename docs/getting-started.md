@@ -1,7 +1,7 @@
 # Getting started: source implementation
 
 This is an early source implementation with local unmanaged packaging,
-not an import-tested Dataverse release.
+with a verified unmanaged BvB test installation, not a production-ready release.
 Requires Node.js 24+ and npm. The npm package is private and not published.
 Building and local delivery tools need no environment login, Xrm, Studio, or
 Workflow/Interaction Framework. Runtime environment reads use the caller's
@@ -26,8 +26,12 @@ Built output is described in [distribution](distribution.md).
 Inside a configured local workspace, developer code can import the ESM package
 as `import * as VBD from "vbd-model-driven-toolkit"`. After loading the built
 browser bundle once, implemented modules are under global `VBD`.
-No webresource upload or registration has been performed.
-The 0.4.0 core interaction/form/data and owned-pane subset is documented in [core usage](core-usage.md).
+The toolkit resources are imported/published in BvB; no consumer form/ribbon
+registration has been performed.
+The 0.5.0 core interaction/form/data, owned-pane and Security subsets are documented in [core usage](core-usage.md).
+Approved configuration loading/resolution, bindings and memory caching are
+documented in [configuration runtime](environment-and-configuration.md).
+See [BvB testing](testing-in-bvb.md) before wiring a consumer-owned test form.
 The new environment/launcher methods are documented separately in
 [environment reads and app launching](environment-launching.md).
 

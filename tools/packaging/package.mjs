@@ -189,12 +189,13 @@ function empty(node) {
   requireThat(!node.children.length && !node.text.trim() && !Object.keys(node.attrs).length,
     "DEPENDENCY", "Unexpected component, dependency or environment setting.");
 }
-function metadata(bytes) {
+function metadata(bytes, exported = false) {
   noSensitiveContent(bytes);
   const root = xml(bytes);
   function visit(node) {
     const attributes = {
-      ImportExportXml: ["version", "SolutionPackageVersion", "languagecode", "generatedBy", "xmlns:xsi"],
+      ImportExportXml: ["version", "SolutionPackageVersion", "languagecode", "generatedBy", "xmlns:xsi",
+        ...(exported ? ["OrganizationVersion", "OrganizationSchemaType", "CRMServerServiceabilityVersion"] : [])],
       WebResource: ["xmlns:xsi"], RootComponent: ["type", "schemaName", "behavior"],
       LocalizedName: ["description", "languagecode"], Description: ["description", "languagecode"]
     };
@@ -203,7 +204,12 @@ function metadata(bytes) {
     for (const [key, val] of Object.entries(node.attrs)) {
       if (key === "xmlns:xsi") requireThat(val === "http://www.w3.org/2001/XMLSchema-instance", "XML", "Unexpected schema namespace.");
       if (key === "version") version(val);
-      if (key === "SolutionPackageVersion") requireThat(val === "9.1", "XML", "Unsupported solution package format version.");
+      if (key === "SolutionPackageVersion") requireThat(val === (exported ? "9.2" : "9.1"), "XML", "Unsupported solution package format version.");
+      if (key === "OrganizationVersion" || key === "CRMServerServiceabilityVersion") {
+        requireThat(/^\d{1,5}(?:\.\d{1,5}){3}$/.test(val) && val.split(".").every(part => Number(part) <= 65535),
+          "XML", "Unsupported organization build metadata.");
+      }
+      if (key === "OrganizationSchemaType") requireThat(val === "Full", "XML", "Unsupported organization schema metadata.");
       if (key === "generatedBy") requireThat(val === "CrmLive", "XML", "Unsupported solution generator.");
       if (key === "languagecode") requireThat(val === "1033", "XML", "Unsupported metadata language.");
       if (key === "xsi:nil") requireThat(val === "true" && !node.children.length && !node.text.trim(), "XML", "Nil metadata must be empty.");
@@ -248,8 +254,8 @@ function localization(node, element, expected) {
     && Object.keys(node.children[0].attrs).length === 2 && !node.children[0].children.length
     && !node.children[0].text.trim(), "IDENTITY", "Unexpected localized value.");
 }
-function manifest(bytes, expectedVersion, kind) {
-  const root = metadata(bytes);
+function manifest(bytes, expectedVersion, kind, exported = false) {
+  const root = metadata(bytes, exported);
   requireThat(root.name === "ImportExportXml", "XML", "Expected supported ImportExportXml metadata.");
   childrenOnly(root, ["SolutionManifest"]);
   const m = child(root, "SolutionManifest");
@@ -262,9 +268,9 @@ function manifest(bytes, expectedVersion, kind) {
   const p = child(m, "Publisher");
   childrenOnly(p, ["UniqueName", "LocalizedNames", "Descriptions", "CustomizationPrefix", "CustomizationOptionValuePrefix",
     "EMailAddress", "SupportingWebsiteUrl", "Addresses"]);
-  requireThat(value(p, "UniqueName") === "VBD" && value(p, "CustomizationPrefix") === "vbd"
+  requireThat(value(p, "UniqueName") === "VBDModelDrivenToolkit" && value(p, "CustomizationPrefix") === "vbd"
     && value(p, "CustomizationOptionValuePrefix") === "59926", "PREFIX", "Only the independent VBD publisher is accepted.");
-  localization(child(p, "LocalizedNames"), "LocalizedName", "VBD");
+  localization(child(p, "LocalizedNames"), "LocalizedName", "VBD Toolkit");
   empty(child(p, "Descriptions")); empty(child(m, "MissingDependencies"));
   blankPublisherDetails(p);
   const roots = child(m, "RootComponents");
@@ -279,10 +285,16 @@ function manifest(bytes, expectedVersion, kind) {
   requireThat(names.size === resources.length && resources.every((item) => names.has(item.name)),
     "COMPONENT", "Toolkit root component names do not match.");
 }
-function descriptor(node, item, expectedVersion, staged) {
+function exportResourcePath(item) {
+  return `WebResources/${item.name.replace(/[/.]/g, "")}${componentId(item.name).replace(/[{}]/g, "").toUpperCase()}`;
+}
+function descriptor(node, item, expectedVersion, staged, exported = false) {
   requireThat(node.name === "WebResource", "COMPONENT", "Expected WebResource.");
   childrenOnly(node, ["WebResourceId", "Name", "DisplayName", "WebResourceType", "IsCustomizable", "IntroducedVersion",
-    "IsEnabledForMobileClient", "IsAvailableForMobileOffline", "FileName"]);
+    "IsEnabledForMobileClient", "IsAvailableForMobileOffline", "FileName",
+    ...(exported ? ["CanBeDeleted", "IsHidden"] : [])]);
+  if (exported) requireThat(value(node, "CanBeDeleted") === "1" && value(node, "IsHidden") === "0",
+    "COMPONENT", "Unexpected exported webresource properties.");
   requireThat(value(node, "Name") === item.name && value(node, "WebResourceType") === item.type
     && value(node, "IntroducedVersion") === expectedVersion
     && value(node, "IsCustomizable") === "1" && value(node, "IsEnabledForMobileClient") === "0"
@@ -290,6 +302,8 @@ function descriptor(node, item, expectedVersion, staged) {
     && value(node, "DisplayName") === (item.type === "3" ? "VBD Toolkit" : "VBD Toolkit Third-Party Notices"),
   "COMPONENT", "Webresource name/type/version/flags do not match the toolkit contract.");
   const file = value(node, "FileName");
+  if (exported) requireThat(file === `/${exportResourcePath(item)}`,
+    "COMPONENT", "Unexpected exported payload identity/path.");
   requireThat(file.startsWith("/WebResources/"), "PATH", "Webresource payload must be in WebResources.");
   safeEntry(file.slice(1));
   if (staged) requireThat(value(node, "WebResourceId").toLowerCase() === componentId(item.name).toLowerCase(),
@@ -299,11 +313,14 @@ function descriptor(node, item, expectedVersion, staged) {
     && file === `/WebResources/${item.file}`, "COMPONENT", "Source identity is derived, not environment-specific.");
   return file.slice(1);
 }
-function customizations(bytes, expectedVersion, staged) {
-  const root = metadata(bytes);
+function customizations(bytes, expectedVersion, staged, exported = false) {
+  const root = metadata(bytes, exported);
   requireThat(root.name === "ImportExportXml", "XML", "Expected customizations XML.");
   childrenOnly(root, [...emptyCollections, "Languages", "WebResources"]);
-  for (const name of emptyCollections) empty(child(root, name));
+  for (const name of emptyCollections) {
+    if (exported && name === "SolutionPluginAssemblies" && !root.children.some(node => node.name === name)) continue;
+    empty(child(root, name));
+  }
   const languages = child(root, "Languages");
   childrenOnly(languages, ["Language"]);
   requireThat(value(languages, "Language") === "1033", "COMPONENT", "Only the source base language is accepted.");
@@ -313,7 +330,7 @@ function customizations(bytes, expectedVersion, staged) {
   return resources.map((item) => {
     const matches = web.children.filter((node) => value(node, "Name") === item.name);
     requireThat(matches.length === 1, "COMPONENT", "Missing or duplicate toolkit webresource.");
-    return descriptor(matches[0], item, expectedVersion, true);
+    return descriptor(matches[0], item, expectedVersion, true, exported);
   });
 }
 export async function inputs(root = repository) {
@@ -368,33 +385,44 @@ export async function inputs(root = repository) {
   for (const [file, bytes] of reproduced.files) hashes[file] = sha256(bytes);
   return { version: expectedVersion, source, payloads, hashes, runtimeDependencies: reproduced.packages };
 }
-export function inspectArchive(bytes, expected, { kind = "unmanaged", checksum } = {}) {
+export function inspectArchive(bytes, expected, { kind = "unmanaged", checksum, format = "pac" } = {}) {
   requireThat(["unmanaged", "managed"].includes(kind), "KIND", "Only unmanaged or managed-export inspection is supported.");
   requireThat(typeof checksum === "string" && /^[a-f0-9]{64}$/.test(checksum), "CHECKSUM", "An explicit lowercase SHA-256 is required.");
   requireThat(sha256(bytes) === checksum, "CHECKSUM", "Archive SHA-256 mismatch.");
-  const entries = readZip(bytes);
+  const entries = readZip(bytes, { format });
+  const exported = format === "dataverseExport";
   const get = (name) => {
     requireThat(entries.has(name), "COMPONENT", `Missing required archive entry ${name}.`);
     return entries.get(name);
   };
-  manifest(get("solution.xml"), expected.version, kind, true);
-  const paths = customizations(get("customizations.xml"), expected.version, true);
+  manifest(get("solution.xml"), expected.version, kind, exported);
+  const paths = customizations(get("customizations.xml"), expected.version, true, exported);
   const allowed = ["solution.xml", "customizations.xml", "[Content_Types].xml", ...paths];
   requireThat(new Set(paths).size === resources.length && entries.size === allowed.length
     && [...entries.keys()].every((name) => allowed.includes(name)),
   "COMPONENT", "Archive has extra components/files or duplicate payload references.");
   const types = xml(get("[Content_Types].xml"));
+  const contentTypesValid = exported
+    ? types.children.filter(node => node.name === "Default").length === 1
+      && types.children.filter(node => node.name === "Override").length === 2
+      && new Set(types.children.filter(node => node.name === "Override").map(node => node.attrs.PartName)).size === 2
+      && types.children.every(node =>
+        ((node.name === "Default" && node.attrs.Extension === "xml") ||
+         (node.name === "Override" && paths.some(path => node.attrs.PartName === `/${path}`)))
+        && node.attrs.ContentType === "application/octet-stream" && Object.keys(node.attrs).length === 2
+        && !node.children.length && !node.text.trim())
+    : new Set(types.children.map(node => node.attrs.Extension)).size === 3
+      && types.children.every(node => node.name === "Default" && ["xml", "html", "js"].includes(node.attrs.Extension)
+        && node.attrs.ContentType === "application/octet-stream" && Object.keys(node.attrs).length === 2
+        && !node.children.length && !node.text.trim());
   requireThat(types.name === "Types" && types.attrs.xmlns === "http://schemas.openxmlformats.org/package/2006/content-types"
     && Object.keys(types.attrs).length === 1 && !types.text.trim() && types.children.length === 3
-    && new Set(types.children.map((node) => node.attrs.Extension)).size === 3
-    && types.children.every((node) => node.name === "Default" && ["xml", "html", "js"].includes(node.attrs.Extension)
-      && node.attrs.ContentType === "application/octet-stream" && Object.keys(node.attrs).length === 2
-      && !node.children.length && !node.text.trim()), "COMPONENT", "Unexpected package content types.");
+    && contentTypesValid, "COMPONENT", "Unexpected package content types.");
   paths.forEach((path, index) => {
     requireThat(sha256(get(path)) === sha256(expected.payloads[index]), "CHECKSUM", "Packaged payload does not match this build/notice.");
   });
   return {
-    solution: identity, version: expected.version, kind, sha256: checksum,
+    solution: identity, version: expected.version, kind, format, sha256: checksum,
     components: resources.map((item, index) => ({ name: item.name, type: item.type, path: paths[index], sha256: sha256(get(paths[index])) })),
     dependencies: [], runtimeDependencies: expected.runtimeDependencies,
     importTested: false, publicReleaseReady: false,
@@ -466,7 +494,7 @@ export async function build({ root = repository, out, pac = "pac", kind = "unman
   const wanted = ["Other/Solution.xml", "Other/Customizations.xml",
     ...resources.flatMap((item) => [`WebResources/${item.name}`, `WebResources/${item.name}.data.xml`])].sort();
   requireThat(JSON.stringify(actual) === JSON.stringify(wanted), "ROUNDTRIP", "PAC unpacked component inventory differs.");
-  manifest(await boundedFile(root, `${unpacked}/Other/Solution.xml`, limits.xml), expected.version, "unmanaged", true);
+  manifest(await boundedFile(root, `${unpacked}/Other/Solution.xml`, limits.xml), expected.version, "unmanaged");
   customizations(await boundedFile(root, `${unpacked}/Other/Customizations.xml`, limits.xml), expected.version, false);
   for (const [index, item] of resources.entries()) {
     descriptor(metadata(await boundedFile(root, `${unpacked}/WebResources/${item.name}.data.xml`, limits.xml)), item, expected.version, true);
@@ -491,20 +519,20 @@ export async function build({ root = repository, out, pac = "pac", kind = "unman
   await writeFile(join(output, "SHA256SUMS"), `${report.sha256}  ${name}\n${sha256(roundtrip)}  roundtrip.zip\n${sha256(Buffer.from(`${JSON.stringify(receipt, null, 2)}\n`))}  evidence.json\n`, { flag: "wx" });
   return receipt;
 }
-export async function verify({ root = repository, file, checksum, kind = "unmanaged" } = {}) {
+export async function verify({ root = repository, file, checksum, kind = "unmanaged", format = "pac" } = {}) {
   file = portableInput(file);
   requireThat(typeof file === "string" && file.startsWith("artifacts/") && file.endsWith(".zip"),
     "PATH", "Copy an existing export into ignored artifacts/ under this worktree before inspection.");
   safeEntry(file);
   const expected = await inputs(root);
-  return inspectArchive(await boundedFile(root, file, limits.archive), expected, { kind, checksum });
+  return inspectArchive(await boundedFile(root, file, limits.archive), expected, { kind, checksum, format });
 }
 export async function cli(args) {
   const [command, ...rest] = args;
   requireThat(["build", "verify"].includes(command), "USAGE",
-    "build --out artifacts/<new-name> [--pac <executable>] [--kind unmanaged] | verify --file artifacts/<file.zip> --sha256 <hex> [--kind managed]");
+    "build --out artifacts/<new-name> [--pac <executable>] [--kind unmanaged] | verify --file artifacts/<file.zip> --sha256 <hex> [--kind managed] [--format dataverseExport]");
   const options = {};
-  const allowed = command === "build" ? ["out", "pac", "kind"] : ["file", "sha256", "kind"];
+  const allowed = command === "build" ? ["out", "pac", "kind"] : ["file", "sha256", "kind", "format"];
   for (let i = 0; i < rest.length; i += 2) {
     const key = rest[i].slice(2);
     const storedKey = key === "sha256" ? "checksum" : key;

@@ -1,10 +1,12 @@
 # Core interaction, form, and data usage
 
-The 0.4.0 source adds seven APIs to the 0.3.0 core: 125 of 198 are implemented across
-25 namespaces. These are bounded source contracts, not certification of every
+The 0.5.0 source adds the final ten R1 APIs: 135 of 198 are implemented across
+28 namespaces. These are bounded source contracts, not certification of every
 SDK feature, client, tenant, form, or permission configuration.
-No live deployment or managed export is part of this milestone. Local unmanaged
-PAC packaging is documented [separately](solution-packaging.md).
+The standalone 0.5.0.0 unmanaged toolkit is imported/published in BvB and genuine
+managed/unmanaged exports are verified. No consumer wiring or clean managed
+target import is implied. See [testing](testing-in-bvb.md) and
+[packaging evidence](solution-packaging.md).
 
 All methods are under global `VBD` in the browser bundle, or available through
 `import * as VBD from "vbd-model-driven-toolkit"` in a configured local workspace.
@@ -295,3 +297,139 @@ Every caller-supplied SDK context, callback, and operation validator is trusted
 application code. It is not executed from untrusted JSON. Native server access,
 actual form layouts, async app settings, all browsers/mobile/offline variants,
 and tenant/solution deployment remain unverified unless separately evidenced.
+
+## Security — privilege UX hints, not authorization
+
+This source module implements **only** the existing R1 `VBD.Security.assessTable`
+and `VBD.Security.hasPrivilege` contracts, exported through the package/browser
+namespace and TypeScript declarations. The signatures are:
+
+```typescript
+Security.hasPrivilege(identity: PrivilegeIdentity, options?: SecurityOptions): Promise<AccessAssessment>;
+Security.assessTable(table: string, operation: TableOperation, options?: SecurityOptions): Promise<AccessAssessment>;
+
+type PrivilegeIdentity = { id: string; name?: never } | { name: string; id?: never };
+type PrivilegeDepth = "basic" | "local" | "deep" | "global";
+type TableOperation = "create" | "read" | "write" | "delete" | "assign" | "share" | "append" | "appendTo";
+interface SecurityOptions { requiredDepth?: PrivilegeDepth; context?: SecurityContext }
+```
+
+`requiredDepth` defaults to `basic`, a **minimum** privilege depth. An assessment
+contains `state: "allowed" | "denied" | "unknown"`, a fixed `SecurityReason`,
+`requiredDepth`, optional semantic `grantedDepth`, and `SecurityObservationScope`.
+Scope identifies the basis (`current-user-table-privileges`), source (`xrm` or
+`adapter`), observation (`current`, `changed`, `unavailable`) and, when available,
+language ID. Environment and user are explicitly redacted; no table/privilege,
+business-unit or user IDs/names are returned. This is **not effective access**
+to every row, field, action or business unit. Sharing, ownership, hierarchy,
+team membership, licensing and server business rules can change actual access.
+The server always enforces authorization; do not turn an allowed hint into an
+authorization decision or use an unknown hint as permission to proceed.
+
+```typescript
+import { Security } from "vbd-model-driven-toolkit";
+
+const hint = await Security.assessTable("account", "read", { requiredDepth: "local" });
+if (hint.state === "unknown") {
+  // Show neutral/unavailable UX, not "authorized" or "no privilege".
+}
+const namedHint = await Security.hasPrivilege(
+  { name: "prvReadAccount" }, { requiredDepth: "basic" }
+);
+// Handle allowed/denied/unknown explicitly; neither call accesses business rows.
+```
+
+### Supported reads and exact encodings
+
+The native path uses supported
+[`userSettings.getSecurityRolePrivilegesInfo()`](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/xrm-utility/getglobalcontext/usersettings#getsecurityroleprivilegesinfo-method)
+and [`Xrm.Utility.getEntityMetadata(table, [])`](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/xrm-utility/getentitymetadata#privilege-object).
+No role display-name matching, guessed `prv<operation><table>` names, table
+existence inference, Web API fallback/export, writes or arbitrary operations
+are used. Table operations map only through the returned `Privileges` metadata:
+Create=1, Read=2, Write=3, Delete=4, Assign=5, Share=6, Append=7, AppendTo=8.
+None=0 is not an operation. These are **not access-right bit masks**; see also
+the official [PrivilegeType enum](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/reference/privilegetype).
+
+The user-settings page describes a complete GUID-keyed privilege dictionary,
+but lists `depth` as both String and number and **does not document its numeric
+encoding** (checked 2026-10-28). Therefore a matching native entry returns
+`unknown / unverified-depth`, never allowed from a guessed number. A validated
+complete native dictionary can still establish `denied / privilege-absent`.
+Missing APIs, rejected/denied reads, incomplete, malformed or ambiguous data
+are unknown, not absence.
+
+The official
+[SDK PrivilegeDepth enum and LINQ mask constants](https://learn.microsoft.com/en-us/dotnet/api/microsoft.crm.sdk.messages.privilegedepth?view=dataverse-sdk-latest)
+and [Web API PrivilegeDepth enum](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/reference/privilegedepth)
+establish **different encodings**. Only an explicit trusted adapter may attest
+which applies to its read:
+
+| Adapter `depthEncoding` | Basic | Local | Deep | Global |
+| --- | --- | --- | --- | --- |
+| `semantic` | `"basic"` | `"local"` | `"deep"` | `"global"` |
+| `sdk-enum` | 0 | 1 | 2 | 3 |
+| `privilege-mask` | 1 | 2 | 4 | 8 |
+
+`RecordFilter=4` in the SDK/Web API enum is **not** global; it is unsupported.
+Composite masks, numeric strings and other undocumented depths are not coerced.
+Do not label raw client depths `sdk-enum` or `privilege-mask` without independent
+evidence. The adapter is trusted application code, not an authorization oracle.
+
+### Read-only typed adapter, scope and failure bounds
+
+```typescript
+type SecurityDepthEncoding = "semantic" | "sdk-enum" | "privilege-mask" | "unverified";
+type SecurityScope = Readonly<ReadScope>; // environmentUrl, userId, languageId, online
+interface SecurityPrivilegeRead {
+  readonly scope: SecurityScope;
+  readonly complete: boolean;
+  readonly depthEncoding: SecurityDepthEncoding;
+  readonly privileges: unknown;
+}
+interface SecurityTableRead {
+  readonly scope: SecurityScope;
+  readonly complete: boolean;
+  readonly metadata: unknown;
+}
+interface SecurityContext {
+  getScope(): SecurityScope;
+  getSecurityRolePrivilegesInfo?(): Promise<SecurityPrivilegeRead>;
+  getEntityMetadata?(table: string): Promise<SecurityTableRead>;
+}
+```
+
+Pass `{ context: adapter }` in either API's options. `getScope` must synchronously
+read the **current** host environment/user/language on every call, not replay a
+captured scope. Scope requires an HTTPS environment root without credentials,
+path, query or fragment; GUID user ID; integer language ID 1..65535; and
+`online: true`. Every response must carry its observation scope. GUID formatting
+and equivalent origin casing are normalized. Scope is checked before/after
+async reads and before returning, including failed reads; a mismatch yields
+`unknown / scope-changed`. Transient changes that revert between observations
+cannot be detected. No result or access/service failure is cached or deduplicated.
+
+`privileges` must be a complete GUID-keyed dictionary whose entries have matching
+`id`, GUID `businessUnitId`, stable `privilegeName` beginning `prv`, and `depth`.
+`metadata` must include the requested `LogicalName` and the documented
+`Privileges` array, including identity/type and all six `CanBe*` flags. A mapped
+user privilege must agree by ID/name and have a table-supported granted depth.
+Dictionary validation examines all entries; duplicate normalized IDs/names,
+duplicate table operation mappings and malformed/partial responses never allow.
+Limits are 10000 dictionary entries and 32 table privilege entries; exceeding
+them is unknown, not a truncated passing assessment.
+
+Invalid identities, table names, operation/depth options and supplied scopes
+reject with existing `VbdError` codes. Recognized operations absent from table
+metadata yield `unknown / operation-unavailable`; arbitrary operations are
+rejected. Read failures return unknown with a non-enumerable `diagnostic`
+(`VbdError`) retaining causes for authorized diagnosis. Use
+`Diagnostics.report(hint.diagnostic, { operation: "security.read", sink })` with
+an approved sink when present. Assessment JSON is a small safe projection;
+never log raw causes, adapter payloads or host context.
+
+SENTINEL handoff: verify native client behavior and rendered/input handling of
+all three states after parent export integration. No tenant access, live
+authorization validation or deployment is included. AXIOM/CANVAS handoff:
+explicitly wire the form/ribbon handler and neutral unknown-state UX; this
+module does not configure them. R2 `Security.assessRecord` is **not implemented**.

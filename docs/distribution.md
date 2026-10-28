@@ -1,7 +1,8 @@
 # Repository and solution distribution
 
-Local source builds, CLI tools, and offline unmanaged solution packaging now
-exist. Managed export, clean imports and public distribution remain gated.
+Local source builds, CLI tools, offline unmanaged packaging, a verified BvB
+unmanaged import and genuine paired exports now exist. Clean managed-target
+imports and public binary distribution remain gated.
 See [getting started](getting-started.md),
 [consultant tools](consultant-tools.md), and
 [solution packaging](solution-packaging.md).
@@ -88,15 +89,18 @@ an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
 
-The current 0.4.0 source maps to solution version `0.4.0.0`. Local PAC builds
+The current 0.5.0 source maps to solution version `0.5.0.0`. Local PAC builds
 contain exactly the browser `VBD` resource and complete escaped third-party
 notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
 zero Dataverse dependencies from the nine bundled runtime packages.
 Build and inspection use the shared browser/notice contract and locked inputs.
-No managed build is fabricated: it fails `MANAGED_EXPORT_REQUIRED` before
-creating output. The [packaging guide](solution-packaging.md) records the local
-evidence and future authorized export path. Neither variant is import-tested,
-tagged or approved for redistribution.
+No offline managed build is fabricated: it fails `MANAGED_EXPORT_REQUIRED`
+before creating output. The [packaging guide](solution-packaging.md) records
+the successful BvB source installation and genuine native managed/unmanaged
+exports. Raw exported bytes are inspected with explicit `dataverseExport`
+format, never rewritten to make them pass. The unmanaged source installation
+is verified; clean managed-target install/upgrade and public redistribution
+approval remain outstanding.
 
 | Artifact | Intended use |
 | --- | --- |
@@ -136,7 +140,8 @@ to the consuming organization. Uninstall dependency and data impacts need review
 
 ## Access and license
 
-The repository was created private. The owner can share access with collaborators.
-A public repository and redistribution license are not yet approved. Do not
-publish reusable solution binaries or a package without resolving the license,
-ownership of included assets, and release governance.
+The repository was created private and is now public. Source visibility does
+not grant redistribution rights: the package remains private/UNLICENSED and no
+open-source license is selected. Until the owner confirms the license, prepare
+a draft GitHub test release rather than publishing reusable binary assets.
+Resolve ownership of included assets and release governance before publication.

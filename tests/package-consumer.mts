@@ -83,3 +83,30 @@ void recordLink;
 void viewLink;
 void capabilities;
 void pane;
+
+const resolvedConfig: Promise<VBD.ResolvedConfiguration> = VBD.Config.resolve("workspace", { context });
+const loadedConfig: Promise<ToolkitConfiguration> = VBD.Config.load("workspace", {
+  kind: "trustedJson", approved: true, loadJson: async (_maximumBytes) => { void _maximumBytes; return "{}"; }
+}, { context });
+const bound: Promise<unknown> = VBD.Bindings.resolve({
+  source: { kind: "literal", value: false }, type: "boolean"
+}, { context });
+const cached: Promise<{ enabled: boolean }> = VBD.Cache.getOrLoad({ namespace: "settings", key: "enabled" }, {
+  context, approved: true, purpose: "configuration", revision: "v1", ttlMs: 1000,
+  load: async () => ({ enabled: false }),
+  validate: (value: unknown): value is { enabled: boolean } =>
+    typeof value === "object" && value !== null && "enabled" in value && typeof value.enabled === "boolean"
+});
+const hint: Promise<VBD.AccessAssessment> = VBD.Security.hasPrivilege(
+  { name: "prvReadAccount" }, { requiredDepth: "local" }
+);
+const sameWindow: Promise<VBD.SameWindowResult> = VBD.Launch.openProfile({
+  configurationName: "workspace", profileKey: "sameWindowWorkspace", context,
+  host: { navigateSameWindow: (_url) => { void _url; } }
+});
+void resolvedConfig;
+void loadedConfig;
+void bound;
+void cached;
+void hint;
+void sameWindow;
