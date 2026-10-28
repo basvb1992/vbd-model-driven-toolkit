@@ -120,5 +120,8 @@ describe("optional companion resource boundaries", () => {
     const sitemap = await readFile("playground/solution/AppModuleSiteMaps/vbd_ToolkitPlayground/AppModuleSiteMap.xml", "utf8");
     expect(sitemap).toContain('Url="$webresource:vbd_/playground/vbd.playground.html"');
     expect(sitemap).not.toContain("https://");
+    const app = await readFile("playground/solution/AppModules/vbd_ToolkitPlayground/AppModule.xml", "utf8");
+    expect(app).toContain('<AppModuleComponent type="62" schemaName="vbd_ToolkitPlayground"');
+    expect(app).not.toContain('<AppModuleComponent type="61"');
   });
 });

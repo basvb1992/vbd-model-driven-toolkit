@@ -7,9 +7,6 @@
   <statecode>0</statecode><statuscode>1</statuscode>
   <FormFactor>1</FormFactor><ClientType>4</ClientType><NavigationType>0</NavigationType>
   <AppModuleComponents>
-    <AppModuleComponent type="61" schemaName="vbd_/playground/vbd.playground.html" />
-    <AppModuleComponent type="61" schemaName="vbd_/playground/vbd.playground.js" />
-    <AppModuleComponent type="61" schemaName="vbd_/playground/vbd.playground.svg" />
     <AppModuleComponent type="62" schemaName="vbd_ToolkitPlayground" />
   </AppModuleComponents>
   <AppModuleRoleMaps />

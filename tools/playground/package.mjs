@@ -60,6 +60,11 @@ export function inspectPlayground(bytes) {
   if (value(app, "UniqueName") !== "vbd_ToolkitPlayground" || child(app, "AppModuleRoleMaps").children.length !== 0) {
     throw new Error("Unexpected app identity or app-role changes.");
   }
+  const appComponents = child(app, "AppModuleComponents").children;
+  if (appComponents.length !== 1 || appComponents[0].attrs.type !== "62" ||
+      appComponents[0].attrs.schemaName !== "vbd_ToolkitPlayground") {
+    throw new Error("The Playground app must reference only its sitemap, not unresolved webresource app-component IDs.");
+  }
   const allowed = new Set(["solution.xml", "customizations.xml", "[Content_Types].xml", ...payloads.map(item => item.path)]);
   if (entries.size !== allowed.size || [...entries.keys()].some(name => !allowed.has(name))) {
     throw new Error("Unexpected extra Playground archive content.");

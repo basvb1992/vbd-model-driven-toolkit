@@ -379,6 +379,16 @@ only when an authenticated browser session can open it; otherwise record that
 boundary and provide the direct app link. Core's existing tag/draft/assets and
 unrelated applications must remain unchanged.
 
+Actual evidence: corrected companion import and targeted app/sitemap/resource
+publication succeeded, with zero component failures and matching server/served
+resource hashes. The published app collection contains the active named app;
+Core remains unchanged. The first import's unresolved redundant webresource
+AppModuleComponent entries were removed after confirming the failure left no
+companion records. Browser fixtures cover the read-only UI at desktop/mobile
+widths, keyboard focus and 200% zoom. Live native launch reaches Microsoft
+sign-in; authenticated native rendering remains unverified because the
+automation browser has no BvB session. See [deployment details](playground.md).
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface

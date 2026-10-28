@@ -52,6 +52,13 @@ and exact built resource hashes. Existing outputs are never overwritten.
 Source is in `playground/`; compiled assets stay ignored in `dist/playground/`.
 No extra npm dependencies or third-party assets are bundled.
 
+The app's component list references its sitemap only. The three webresources
+are separate solution roots and the sitemap opens the HTML resource. Import
+rejects webresource AppModuleComponent entries that specify only schemaName
+without an object ID; do not add those redundant entries. A failed initial
+attempt was inspected and confirmed to leave no companion solution/app/resources
+before applying this targeted correction.
+
 The UI uses familiar system/Segoe typography, restrained Fluent-aligned colors,
 native labelled controls, visible keyboard focus and a responsive two-to-one
 column layout. Loading disables conflicting actions; errors recover controls;
@@ -71,3 +78,33 @@ Do not grant extra roles just to suppress an access error. App visibility and
 Dataverse read permissions remain the platform's responsibility. The companion
 does not modify unrelated apps or the existing Core release. Public binary
 publication remains draft-only while the toolkit is UNLICENSED.
+
+## BvB deployment evidence
+
+The optional companion **0.1.0.0** is imported and published in BvB Demo Apps.
+The corrected native package SHA-256 is
+`c27d38b456630008f0ed624d7a74f99e44cd982b92e4320bef0441b24e07e7af`,
+retained locally in ignored `artifacts\PlaygroundDeployment-02`.
+Staging passed without missing dependencies/validation findings. Import
+completed native state=3/status=30, progress=100 and zero component failures.
+
+Read-back confirmed exactly **one active named app, one sitemap and three
+webresources**, with no tables/flows/security-role components. Targeted
+PublishXml published only those companion IDs. The app became visible in
+`appmodules` after publication; checking that published collection before
+publishing would incorrectly report a missing app.
+
+The actual sitemap opens the expected companion HTML resource. All resource
+content hashes match the built inputs; the published HTML endpoint returned
+HTTP 200 and SHA-256
+`341712d511e9981c5c382424cf24121c0c3ecf934762e0f33a1e6ba20a13f12a`.
+No role grants, consumer wiring or business-data changes were made.
+
+Source verification passed **29 test files / 1038 tests**, including the
+existing actual Core PAC integration and the companion's actual native
+pack/unpack/no-overwrite check. Browser fixtures exercised the compiled UI,
+supported global-context adapter and no automatic data reads, without fabricating
+Xrm. The live app URL correctly reaches the organization's Microsoft sign-in;
+the automation browser has no signed-in BvB session, so authenticated native-app
+rendering and every user's app visibility remain **unverified**, not assumed
+from the successful import or fixture screenshot.
