@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>vbd_/toolkit/vbd.toolkit.js</Name>
+  <DisplayName>VBD Toolkit</DisplayName>
+  <WebResourceType>3</WebResourceType>
+  <IsCustomizable>1</IsCustomizable>
+  <IntroducedVersion>0.2.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <FileName>/WebResources/vbd_toolkit.js</FileName>
+</WebResource>
