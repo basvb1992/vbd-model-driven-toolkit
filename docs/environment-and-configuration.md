@@ -1,7 +1,10 @@
 # Environment variables and configuration
 
 All ten Environment APIs now have a bounded source implementation alongside
-Config.validate/register/get. See [runtime usage](environment-launching.md),
+Config.validate/register/get. Config.load/resolve, Bindings.resolve/resolveMany,
+and Cache.getOrLoad/invalidate/clear now have focused source implementations;
+package/browser export integration and availability counts are owned by the
+parent integration lane. See [runtime usage](environment-launching.md),
 [getting started](getting-started.md), and the [catalog](catalog/foundation.md).
 Live Dataverse installation/resolution is not yet verified.
 
@@ -63,21 +66,11 @@ actionable configuration error rather than sorting by creation time and guessing
 
 ## Configuration sources
 
-`VBD.Config.resolve` has an explicit, documented precedence:
-
-1. Allowed per-invocation options.
-2. Named configuration/recipe values.
-3. Declared environment-variable bindings.
-4. Toolkit defaults for non-sensitive presentation settings.
-
-This does not change current/default precedence within an environment variable.
-Only explicitly overridable settings can be overridden. A recipe's origin
-allowlist, operation allowlist, or mandatory confirmation cannot be disabled by
-an arbitrary field value or URL parameter.
-
-Start with validated JSON webresource configuration supplied by the consuming
-solution. A configuration table and VBD Studio are optional later enhancements.
-Do not require a custom table merely to open a dialog.
+The R1 implementation is deliberately **not** a general configuration/recipe
+engine. It offers no invocation-value overrides, interpolation, operation
+dispatch, security overrides, or presentation defaults. Registered declarations
+select typed environment reads, whose existing explicit current/default
+precedence remains unchanged.
 
 Current schema version 1 supports only model-driven app profile declarations,
 required text environment bindings for app/origin/environment references, and
@@ -88,9 +81,94 @@ Preparing a registered profile now resolves its declared bindings through the
 typed environment API; it does not extend the configuration schema to arbitrary
 expressions, records, credentials, or workflow execution.
 
+`presentation` remains `newWindow` only, including form/grid registrations.
+No same-window dispatch, profile preparation, or launch changes are made here.
+
 The local snapshot format describes definition type and value presence/access
 only. Passing these checks does not prove a URL is allowed, an app is accessible,
 or an effective value has the correct content.
+
+### Source-module signatures
+
+These are named source exports pending parent-owned package/browser integration.
+`ReadContext` is the existing supported online environment-read adapter.
+
+```ts
+Config.load(
+  name: string,
+  source: TrustedConfigurationSource,
+  options?: ConfigurationLoadOptions
+): Promise<ToolkitConfiguration>
+
+Config.resolve(
+  name: string,
+  options?: ConfigurationResolveOptions
+): Promise<ResolvedConfiguration>
+
+interface TrustedConfigurationSource {
+  kind: "trustedJson";
+  approved: true;
+  loadJson(maximumBytes: number): Promise<string>;
+}
+interface ConfigurationLoadOptions { context?: ReadContext; replace?: boolean }
+interface ConfigurationVariablePolicy {
+  allowEmpty?: boolean;
+  validate?: (value: unknown) => boolean;
+}
+interface ConfigurationResolveOptions {
+  context?: ReadContext;
+  cacheTtlMs?: number;
+  variables?: Readonly<Record<string, ConfigurationVariablePolicy>>;
+}
+interface ResolvedConfiguration {
+  name: string;
+  revision: number;
+  configuration: ToolkitConfiguration;
+  values: Record<string, ResolvedValue<unknown> | undefined>;
+}
+```
+
+`Config.load` accepts **only an explicitly approved trusted typed adapter**.
+There is no URL, script, dynamic import, fetch, or generic webresource-name
+overload. The consuming solution must supply audited adapter code; `approved`
+is an explicit trust assertion, not a discovery/authorization mechanism.
+The adapter must allowlist its JSON source in the current environment, use a
+supported same-origin read if reading a webresource, reject redirects outside
+that policy, avoid credentials/tokens in configuration, and cap response bytes
+**before materializing text** using the supplied 262,144-byte budget. Toolkit
+code independently checks returned UTF-8 bytes, parses JSON, checks bounded
+JSON structure, validates version 1, then registers under the requested name.
+Source exceptions remain failures; existing `VbdError`s are preserved, other
+adapter exceptions become `DATA_READ_FAILED`. Malformed JSON is `INVALID_JSON`.
+No network operation is built into this module.
+
+Replacement is explicit, like `Config.register`. Revision, scope and environment
+generation are captured before invoking the loader and rechecked before
+registration. Concurrent replacement wins over stale work; stale work cannot
+overwrite it. Returned declarations are copies. Legacy validate/register/get
+retain their declaration schema and capacities, independently of load's smaller
+transport budget.
+
+`Config.resolve` reads **all** environment declarations in a registered version-1
+configuration, sequentially (maximum 200). It returns copied declarations and
+typed `ResolvedValue` envelopes by exact schema name. Required declarations fail
+on absence. `required: false` explicitly permits either a missing definition or
+an unconfigured value; its own result property is `undefined`, not a default or
+`null`. Denied, malformed, ambiguous, unsupported and service failures still
+fail the operation. Text is not trimmed and rejects empty by default; exact
+per-variable `{ allowEmpty: true }` preserves `""`. False and zero remain values.
+JSON declarations always require a synchronous runtime `validate` predicate,
+even when optional. Number/boolean conversion uses the existing typed APIs.
+Policies for undeclared variables, wrong-type policies, and unknown options
+are rejected before reads. JSON predicates receive copies; mutating a predicate
+argument does not alter returned values.
+
+TTL is 60 seconds by default, configurable from 0 through 300,000 ms, and uses
+the **unchanged existing raw Environment cache**, not the generic Cache below.
+Revision, normalized environment/user/language scope, and environment generation
+are rechecked around asynchronous work and predicates. A successful resolution
+does not validate destinations or prove effective authorization. Profile launch
+preparation and dispatch remain separate APIs.
 
 ## Proposed toolkit-owned examples
 
@@ -121,6 +199,89 @@ own schema names. Avoid embedding deployment-specific current values in releases
 No JavaScript expressions, string-to-function conversion, unescaped FetchXML
 substitution, or unrestricted URL interpolation.
 
+### Implemented binding subset
+
+```ts
+Bindings.resolve(binding: ValueBinding, options?: BindingOptions): Promise<unknown>
+Bindings.resolveMany(
+  bindings: Readonly<Record<string, ValueBinding>>, options?: BindingOptions
+): Promise<Record<string, unknown>>
+
+type BindingType = "text" | "number" | "boolean" | "json" | "date" | "lookup" | "choices";
+type BindingSource =
+  | { kind: "literal"; value: unknown }
+  | { kind: "context"; key: "record" | "selection" | "userId" | "languageId" | "environmentUrl" }
+  | { kind: "field"; column: string }
+  | { kind: "environment"; schemaName: string }
+  | { kind: "config"; key: string }
+  | { kind: "config"; name: string; variable: string }
+  | { kind: "result"; path: readonly string[] };
+interface ValueBinding {
+  source: BindingSource;
+  type: BindingType;
+  allowEmpty?: boolean;
+  nullable?: boolean;
+  validate?: (value: unknown) => boolean;
+}
+interface BindingOptions {
+  context?: ReadContext;
+  operationContext?: OperationContext;
+  fields?: readonly string[];
+  environment?: readonly string[];
+  resultPaths?: readonly (readonly string[])[];
+  results?: Readonly<Record<string, unknown>>;
+  configuration?: Readonly<Record<string, ValueBinding>>;
+  registered?: readonly { name: string; variable: string }[];
+  configurationOptions?: Readonly<Record<string, Omit<ConfigurationResolveOptions, "context">>>;
+}
+```
+
+- Every binding declares an expected runtime type. JSON additionally requires a
+  real synchronous predicate; an unchecked generic is not an output schema.
+  Async predicates (including rejecting/never-settling ones) are rejected
+  promptly and their rejections are observed. Additional predicates for other
+  types may narrow allowed values.
+- A literal is copied at invocation. Context supports only saved record,
+  supplied selection, and normalized scope values; no app/global property
+  traversal. Record/selection require an existing toolkit `OperationContext`.
+  An unsaved record fails. Field reads use `Fields.get`, require an exact
+  `fields` approval and matching operation context, and fail if not loaded.
+- Environment sources require exact `environment` approvals and support only
+  text/number/boolean/JSON through the existing typed APIs, with no optional
+  fallback. `config.key` follows the caller's bounded runtime `configuration`
+  binding graph; it is **not** extra portable JSON schema or a workflow.
+  `config.name/variable` selects an explicitly approved registered declaration
+  after `Config.resolve`; the entire registered configuration is resolved, so
+  its JSON policies must be provided in `configurationOptions`.
+- Result paths are arrays of exact own-data property segments, with an exact
+  matching `resultPaths` approval. No dot-string parser, getters, inherited
+  properties, wildcards, or prototype/constructor/getMetadata traversal.
+  Approved results and literals are copied before asynchronous work; other
+  input definitions/policies are also captured, not read live from caller maps.
+- Date bindings return new `Date` instances representing the same instant,
+  never JSON strings. Lookup bindings return copied, strict `EntityRef[]`,
+  normalizing IDs/table names and rejecting duplicates. Choices are integer
+  arrays. Dates are unsupported inside JSON; there is no silent date/lookup
+  conversion to unrelated text/scalars. Date custom properties are not copied.
+  `nullable: true` admits null for typed non-JSON values; JSON null is decided by
+  its required predicate. Empty text needs `allowEmpty: true`. Missing values
+  never become null/empty/success-shaped defaults.
+- Maximum 100 named outputs, graph definitions, approvals per list and
+  configuration-options entries; maximum 100 expanded binding visits,
+  reference depth 8, path length 8, and a 262,144-byte cumulative value-work
+  budget (including copied literal/result snapshots and expanded results).
+  Cycles fail; repeated references still count as work.
+- JSON copies additionally enforce depth 8, 10,000 nodes, 1,000 array entries,
+  512 object members, 65,536 characters per string, finite numbers and a
+  262,144-byte serialized budget. They reject cycles, accessors, symbols,
+  non-plain objects and unsafe own keys. No eval, free interpolation, stored
+  binding state or secrets store exists.
+- Scope/environment-generation checks span the entire batch and predicates;
+  relevant registered revisions are captured before its first await.
+  Forms/results are not a transactional server snapshot, and this cannot prove
+  effective access to records. Any failure rejects the batch without partial
+  success output.
+
 ## Caching and flags
 
 - Cache keys include environment, user/security scope, and language where relevant.
@@ -131,9 +292,87 @@ substitution, or unrestricted URL interpolation.
   tokens; selected cache entries themselves are removed only in the chosen scope.
 - Expose effective feature flags for UX only; server authorization is independent.
 - Do not store secrets, tokens, or arbitrary fetched record payloads in browser
-  storage. Persistent caching is opt-in and limited to approved safe metadata.
+  storage. This implementation has **no persistent caching option**.
 - A cache hit is not a guarantee of immediately reflecting an administrator's
   last edit; document the freshness policy and refresh mechanism.
+
+### Generic memory-cache contract
+
+```ts
+Cache.getOrLoad<T>(key: CacheKey, options: CacheLoadOptions<T>): Promise<T>
+Cache.invalidate(selection: CacheInvalidation, options?: CacheScopeOptions): number
+Cache.clear(options?: CacheScopeOptions): number
+
+interface CacheKey { namespace: string; key: string }
+interface CacheLoadOptions<T> {
+  context?: ReadContext;
+  approved: true;
+  purpose: "configuration" | "metadata";
+  revision: string;
+  ttlMs: number;
+  maxBytes?: number;
+  dependencies?: readonly string[];
+  load(): Promise<unknown>;
+  validate(value: unknown): value is T;
+}
+interface CacheInvalidation { namespace: string; key?: string; dependency?: string }
+interface CacheScopeOptions { context?: ReadContext }
+```
+
+The cache is module-instance, **memory-only**, for explicitly caller-approved
+safe configuration/metadata JSON. It cannot detect disguised secrets. Consumers
+must never approve records, secrets, credentials or tokens; the purpose label
+and predicate are responsibilities, not content classification or authorization.
+There is no browser storage, cross-tab coordination, tenant mutation, or network
+loader built into Cache. Scope always includes normalized environment, user,
+and language; offline/unsupported scope fails rather than sharing a global key.
+
+Keys use the existing bounded identifier syntax. Revision is a required
+1–128-character caller contract/freshness revision. Changing revision or other
+cache policy for the same scoped namespace/key disconnects prior in-flight
+work. Consumers must invalidate/re-request with the changed revision when
+their source/schema changes; this does not watch arbitrary external mutations.
+Dependencies are up to 32 unique identifier labels; callers own the mapping
+from source/registry changes to invalidation. Generic Cache does not change
+Environment's raw cache or automatically invalidate prepared-launch tokens.
+Environment.invalidate continues to increment its existing generation, which
+also conservatively expires generic cached/in-flight values.
+
+TTL is required, finite integer 1–300,000 ms, measured from validated load
+completion; backwards clock movement expires stored entries. There are at most
+128 entries (including pending keys), 64 active loads, 1 MiB total serialized
+stored values and 262,144 bytes per value (optionally lower via `maxBytes`).
+The JSON-copy limits above also apply. Capacity evicts oldest inserted entries,
+not LRU; eviction can expire pending callers. Invalidated loads remain in the
+active-load budget until they settle; invalidation does not cancel external work.
+
+Concurrent identical scoped keys/policies coalesce the loader. Each caller
+revalidates an isolated copy, including on hits. A predicate cannot mutate the
+stored/returned canonical value. Callers must agree on one validator/loader
+contract per key/revision; a failed coalesced caller may conservatively expire
+other waiters. Loader/validation failures are never cached. Existing `VbdError`s
+are preserved; untyped loader errors become `DATA_READ_FAILED`.
+
+Invalidation matches current scope plus namespace, and optional key **and**
+dependency (intersection when both supplied). It removes pending-key coalescing
+as well as stored values and returns the removed slot count. `clear` removes all
+namespaces only in the explicitly resolved current scope. Neither touches
+unrelated browser/app storage. Strong slot identity, scope and environment
+generation checks before/after loads and predicates prevent stale work from
+returning successfully or repopulating a replaced/invalidated slot. TTL alone
+is not immediate source freshness or authoritative effective authorization.
+
+### Maker and release handoff
+
+Consuming solution owners (AXIOM/CANVAS) must approve/wire a trusted JSON source,
+create/populate declared environment definitions, provide exact binding
+approvals and runtime predicates, and own source-revision/dependency invalidation.
+Do not embed deployment values or credentials into the portable declaration.
+No maker or tenant changes are performed by these modules. Parent owns root/
+browser exports, catalog availability/version counts, and any separate
+same-window implementation. SENTINEL must verify actual host context/permissions
+and trusted adapter source/streaming policy before release; live model-driven
+input, tenant behavior and release packaging are not verified by unit tests.
 
 ## Acceptance scenarios
 
