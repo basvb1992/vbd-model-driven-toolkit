@@ -1,6 +1,7 @@
 # Getting started: source implementation
 
-This is an early development slice, not an installable Dataverse solution.
+This is an early source implementation with local unmanaged packaging,
+not an import-tested Dataverse release.
 Requires Node.js 24+ and npm. The npm package is private and not published.
 Building and local delivery tools need no environment login, Xrm, Studio, or
 Workflow/Interaction Framework. Runtime environment reads use the caller's
@@ -26,7 +27,7 @@ Inside a configured local workspace, developer code can import the ESM package
 as `import * as VBD from "vbd-model-driven-toolkit"`. After loading the built
 browser bundle once, implemented modules are under global `VBD`.
 No webresource upload or registration has been performed.
-The 0.3.0 core interaction/form/data subset is documented in [core usage](core-usage.md).
+The 0.4.0 core interaction/form/data and owned-pane subset is documented in [core usage](core-usage.md).
 The new environment/launcher methods are documented separately in
 [environment reads and app launching](environment-launching.md).
 
@@ -38,6 +39,7 @@ The new environment/launcher methods are documented separately in
 | Diagnostics.normalizeError | `normalizeError(error, { operation })` returns a structured VbdError with correlation and original non-serialized cause. |
 | Diagnostics.report | `report(error, { operation, sink })` awaits an explicit safe sink and returns a receipt; sink failure throws. |
 | Diagnostics.getVersion | `getVersion()` returns the toolkit source version. |
+| Diagnostics.getCapabilities | `getCapabilities()` returns present/absent SDK-method observations only; no invocation, values, access or installation checks. |
 
 For example, with configuration loaded by the calling application:
 

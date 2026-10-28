@@ -39,7 +39,10 @@ const messages = {
   DIRTY_FORM: "The form has unsaved edits. Choose an explicit save policy before refreshing or navigating.",
   PARTIAL_FAILURE: "The native host failed after part of the operation completed. Inspect and reconcile; no rollback is implied.",
   ERROR_PRESENTATION_FAILED: "The original error could not be presented. Both errors are retained for authorized diagnostics.",
-  OPERATION_FAILED: "The operation failed. Use the correlation ID for diagnosis."
+  OPERATION_FAILED: "The operation failed. Use the correlation ID for diagnosis.",
+  RESOURCE_CONFLICT: "The resource identity or options conflict with another instance. No ownership was taken.",
+  RESOURCE_NOT_FOUND: "The owned resource is missing, closed, replaced or no longer belongs to this host.",
+  RESOURCE_BUSY: "The resource has an operation in progress. Wait for it before changing its lifecycle."
 } as const;
 
 export type ErrorCode = keyof typeof messages;

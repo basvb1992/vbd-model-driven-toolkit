@@ -4,13 +4,13 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: early source implementation (0.3.0). 118 functions, local delivery
+**Status: early source implementation (0.4.0). 125 functions, local delivery
 tools, and offline unmanaged solution packaging are implemented. No Dataverse deployment,
 live form/ribbon installation, Studio, or public npm release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
-118 are locally implemented; the other 80 remain planned.
+125 are locally implemented; the other 73 remain planned.
 
 ## Available now
 
@@ -25,6 +25,8 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
   app destinations prepared before a synchronous isolated click request.
 - Native context, navigation/dialog, progress/notification, grid and prepared-profile
   ribbon adapters, with explicit lifecycle/cancellation/failure outcomes.
+- Owned desktop-Web side panes, pure approved-origin record/view links, and
+  read-only method-presence diagnostics (not access or installation checks).
 - Typed field/control/form/layout helpers, owned lookup/event registration, choices
   and bounded synchronous validation; no automatic save or server-rule bypass.
 - Bounded OData/FetchXML data/query helpers and explicit operation contracts,

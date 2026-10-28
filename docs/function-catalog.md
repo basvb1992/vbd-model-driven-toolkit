@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**118 functions have a local implementation; the other 80 remain planned.**
+**125 functions have a local implementation; the other 73 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -44,6 +44,7 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Data.retrieveMany`
 - `VBD.Data.retrieveRelated`
 - `VBD.Data.update`
+- `VBD.Diagnostics.getCapabilities`
 - `VBD.Diagnostics.getVersion`
 - `VBD.Diagnostics.normalizeError`
 - `VBD.Diagnostics.report`
@@ -95,6 +96,8 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Layout.setTabExpanded`
 - `VBD.Layout.setTabVisible`
 - `VBD.Links.app`
+- `VBD.Links.record`
+- `VBD.Links.view`
 - `VBD.Lookups.addFilter`
 - `VBD.Lookups.pick`
 - `VBD.Lookups.removeFilter`
@@ -113,6 +116,10 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Query.executeOData`
 - `VBD.Query.iteratePages`
 - `VBD.Query.retrieveAll`
+- `VBD.SidePanes.close`
+- `VBD.SidePanes.createOrGet`
+- `VBD.SidePanes.navigate`
+- `VBD.SidePanes.select`
 - `VBD.UI.clearNotification`
 - `VBD.UI.hideProgress`
 - `VBD.UI.notify`

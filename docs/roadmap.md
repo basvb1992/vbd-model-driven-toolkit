@@ -1,6 +1,6 @@
 # Roadmap
 
-118 catalog functions have a local implementation; the other 80 are planned.
+125 catalog functions have a local implementation; the other 73 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
@@ -29,9 +29,14 @@ adds the selected 97 interaction/form/data APIs described in
 Data/Query/Actions entries, and 44 Context/Utils/navigation/dialog/UI/grid/command
 entries. It does not complete all R1 options or the full roadmap.
 
-The remaining 17 R1 entries are configuration load/resolve, bindings, generic
-cache, table/privilege hints, capability reporting, side-pane helpers, record/view
-links and non-popup openProfile. R2/R3 extensions remain separate scoped work.
+[Issue #13](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/13)
+adds seven source APIs in 0.4.0: owned side-pane create/navigate/select/close,
+record/view links and read-only capability observations. See
+[current usage](core-usage.md#owned-side-panes-and-deep-links).
+The remaining ten R1 entries are configuration load/resolve, bindings, generic
+cache, table/privilege hints and non-popup openProfile. R2/R3 extensions remain
+separate scoped work. Pane rendering/access and client compatibility still need
+live Dynamics verification; SDK fixtures are not a completed R1 release.
 
 ## Integrated local delivery
 

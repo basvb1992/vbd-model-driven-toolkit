@@ -1,8 +1,8 @@
 # Foundation and configuration functions
 
-33 entries are implemented locally: Context 10, Config's validate/register/get,
-Diagnostics' normalizeError/report/getVersion, Environment 10, and Utils 7.
-The other 12 entries in this
+34 entries are implemented locally: Context 10, Config's validate/register/get,
+Diagnostics 4, Environment 10, and Utils 7.
+The other 11 entries in this
 file remain planned. See [catalog conventions](../function-catalog.md) and
 [current usage](../getting-started.md); no entry is Dataverse-deployed yet.
 `R1`/`R2`/`R3` indicate earliest delivery phase, not implementation status.
@@ -90,17 +90,19 @@ authorization still governs every operation; incomplete metadata cannot mean all
 
 ## VBD.Diagnostics
 
-Implemented subset: normalizeError/report/getVersion. Reporting requires an
+Implemented subset: normalizeError/report/getVersion/getCapabilities. Reporting requires an
 explicit sink, with fixed safe messages and no serialized original cause/stack.
-`getCapabilities` remains planned. Version reporting alone does not certify
-client compatibility or installation.
+`getCapabilities` observes supported SDK method presence without invoking APIs
+or reading values; present does not mean authorized, enabled, compatible with
+every client/option, or successfully installed. Version reporting alone does
+not certify client compatibility or installation.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.Diagnostics.normalizeError` | Unknown error, safe operation metadata | `VbdError` | Preserve cause/correlation without logging sensitive payloads. | R1 |
 | `VBD.Diagnostics.report` | Structured error/event, approved sink | Report receipt | Redact secrets, tokens, record payloads, and sensitive query parameters. | R1 |
 | `VBD.Diagnostics.getVersion` | None | Toolkit/build/API version | Detect incompatible bundles; no environment enumeration. | R1 |
-| `VBD.Diagnostics.getCapabilities` | ctx, requested modules | Capability report | Explain supported/unsupported surfaces without executing business actions. | R1 |
+| `VBD.Diagnostics.getCapabilities` | None; observes the current Xrm host | Method-presence report | Explicit present/absent; no SDK calls, access checks or client certification. Probe failures are errors. | R1 |
 
 ## VBD.Utils
 

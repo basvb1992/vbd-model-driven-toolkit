@@ -1,8 +1,8 @@
 # Navigation, app launcher, and window functions
 
-19 entries are implemented locally: the eight non-generative Navigation methods,
-Dialogs 6, Links.app, Launch.getProfile/prepareProfile/openPrepared, and Windows.open.
-The other 10 remain planned.
+25 entries are implemented locally: the eight non-generative Navigation methods,
+Dialogs 6, Links 3, SidePanes 4, Launch.getProfile/prepareProfile/openPrepared, and Windows.open.
+The other 4 remain planned.
 See [catalog conventions](../function-catalog.md),
 [current runtime usage](../environment-launching.md), and the mandatory
 [app/window contract](../app-launching.md).
@@ -44,13 +44,17 @@ does not prove a record saved. Refresh policies must account for that distinctio
 
 Persistent app panes are a separate feature from side-positioned modal dialogs.
 Use stable pane identities to avoid creating duplicates on every click.
+The implemented subset is online desktop Web only, at most 32 tracked IDs per
+SDK host, with matching creation options and original native-instance ownership.
+No foreign-pane adoption, automatic retry/rollback, external URL or arbitrary iframe.
+See [usage and lifecycle](../core-usage.md#owned-side-panes-and-deep-links).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.SidePanes.createOrGet` | Pane ID, title, supported width/options | Supported pane reference/token | Reuse matching pane; reject incompatible/unsupported options. | R1 |
 | `VBD.SidePanes.navigate` | Pane token/ID, supported page input | Navigation completion | Do not promise arbitrary external iframe embedding. | R1 |
-| `VBD.SidePanes.select` | Pane ID | Selection result | Require an existing supported pane. | R1 |
-| `VBD.SidePanes.close` | Pane ID | Close result | Close owned/requested pane, not unrelated app panes. | R1 |
+| `VBD.SidePanes.select` | Original pane handle or explicitly owned ID | Selection request receipt | Require the current original owned instance; reject active navigation. | R1 |
+| `VBD.SidePanes.close` | Original pane handle or explicitly owned ID | Native close completion | Close owned panes only; no close during active navigation or ownership takeover. | R1 |
 | `VBD.SidePanes.update` | Pane ID, supported title/badge/properties | Applied result | Capability-check individual platform properties. | R2 |
 
 ## VBD.Links
@@ -60,9 +64,9 @@ keys, IDs, and encoding. Never forward the entire form or current URL by default
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Links.record` | Approved environment/app identity, ref, supported form options | Validated URL | Build a documented model-driven record deep link. | R1 |
+| `VBD.Links.record` | AppLinkOptions plus record reference and optional formId | Validated URL | Pure record deep link; formId is encoded within extraqs. Does not expand Windows.open policy. | R1 |
 | `VBD.Links.app` | Explicit root environment, one app ID/unique name, approved origins | Validated URL | Pure HTTPS app-link construction; no implicit global environment lookup. | R1 |
-| `VBD.Links.view` | Approved environment/app, table, view identity/type | Validated URL | Use documented list/view addressing only. | R1 |
+| `VBD.Links.view` | AppLinkOptions plus entityName, viewId and savedquery/userquery type | Validated URL | Pure list/view link; type codes 1039/4230, no arbitrary query forwarding. | R1 |
 
 ## VBD.Launch
 

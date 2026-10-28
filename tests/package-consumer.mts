@@ -64,3 +64,22 @@ void controls;
 void report;
 void data;
 void operationResult;
+
+const recordLink: string = VBD.Links.record({
+  environmentUrl: "https://target.example", allowedOrigins: ["https://target.example"],
+  appName: "vbd_Workspace", record: { entityType: "account", id: "00000000-0000-0000-0000-000000000001" }
+});
+const viewLink: string = VBD.Links.view({
+  environmentUrl: "https://target.example", allowedOrigins: ["https://target.example"],
+  appName: "vbd_Workspace", entityName: "account",
+  viewId: "00000000-0000-0000-0000-000000000001", viewType: "savedquery"
+});
+const capabilities: VBD.CapabilityReport = VBD.Diagnostics.getCapabilities();
+const pane: Promise<VBD.SidePaneHandle> = VBD.SidePanes.createOrGet({ paneId: "vbd_help", title: "Help" });
+declare const paneHandle: VBD.SidePaneHandle;
+const page: VBD.SidePanePage = { pageType: "custom", name: "vbd_summary" };
+void VBD.SidePanes.navigate(paneHandle, page);
+void recordLink;
+void viewLink;
+void capabilities;
+void pane;

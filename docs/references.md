@@ -17,6 +17,8 @@ recheck the exact API and client support before implementation.
 | Effective-value alternative | [RetrieveEnvironmentVariableValue](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/reference/retrieveenvironmentvariablevalue?view=dataverse-latest) | Evaluated alternative; not called by the explicit-provenance current/default resolver. |
 | Lookup pre-search | [addPreSearch](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/controls/addpresearch) | Apply supported lookup filtering at the correct lifecycle point. |
 | App side panes | [Create app side panes](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/create-app-side-panes) | A persistent app pane is not a right-positioned modal dialog. |
+| Pane creation | [createPane](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/xrm-app/xrm-app-sidepanes/createpane) | Supported creation options and explicit stable pane identity. |
+| Pane lifecycle | [AppSidePane](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/xrm-app-appsidepane) | Native navigate/select/close contracts and public pane properties. |
 | Dataverse client API | [Xrm.WebApi](https://learn.microsoft.com/en-us/power-apps/developer/model-driven-apps/clientapi/reference/xrm-webapi) | Supported online/offline capabilities differ by method. |
 
 Browser popup activation, opener isolation, named-target reuse, and outcome

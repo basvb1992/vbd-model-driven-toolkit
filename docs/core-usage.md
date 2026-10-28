@@ -1,9 +1,10 @@
 # Core interaction, form, and data usage
 
-The 0.3.0 source adds 97 catalog functions: 118 of 198 are implemented across
-24 namespaces. These are bounded source contracts, not certification of every
+The 0.4.0 source adds seven APIs to the 0.3.0 core: 125 of 198 are implemented across
+25 namespaces. These are bounded source contracts, not certification of every
 SDK feature, client, tenant, form, or permission configuration.
-No live deployment or managed/unmanaged package is part of this milestone.
+No live deployment or managed export is part of this milestone. Local unmanaged
+PAC packaging is documented [separately](solution-packaging.md).
 
 All methods are under global `VBD` in the browser bundle, or available through
 `import * as VBD from "vbd-model-driven-toolkit"` in a configured local workspace.
@@ -54,6 +55,71 @@ completed, not that record content or access was independently verified.
 Record new-window mode is deliberately not implemented here: it is not simulated
 with unsupported URLs or a main-form Quick Create callback.
 App windows use the separately documented [prepared launch path](environment-launching.md).
+
+## Owned side panes and deep links
+
+The four SidePanes APIs use supported `Xrm.App.sidePanes` and `AppSidePane`
+methods, initially on **online desktop Web only**. Native players, tablet/phone
+form factors and offline state fail explicitly, even if a method is present.
+
+```typescript
+const pane = await VBD.SidePanes.createOrGet({
+  paneId: "vbd_customerSummary", title: "Customer summary", width: 500
+});
+await VBD.SidePanes.navigate(pane, {
+  pageType: "custom", name: "vbd_summary",
+  entityName: "account", recordId: savedRecord.id
+});
+VBD.SidePanes.select(pane);
+// Close explicitly when the pane is no longer needed:
+VBD.SidePanes.close(pane);
+```
+
+In a form/ribbon handler, obtain `savedRecord` with the existing Context adapter
+and `Context.requireSavedRecord`; pass the actual custom-page name. The toolkit
+does not install the page or wire this handler automatically.
+
+Creation requires an explicit stable paneId and nonblank title (max 256), width
+300..1600 pixels (default 400), and optional canClose/hideHeader/isSelected
+booleans (defaults true/false/false). Unknown options fail. Identical concurrent
+creation coalesces; compatible reuse returns the same frozen opaque handle.
+At most 32 IDs, including pending creation, are tracked per SDK-host/page instance.
+Externally closed panes free capacity on the next create. Ownership is not a
+server authorization assessment.
+
+Navigation accepts only persisted entityrecord (entityName/entityId/formId),
+custom page (name and optional entityName/recordId), or HTML webresource
+(webresourceName ending .htm/.html and optional data, max 262144 UTF-16 units).
+RecordId requires its table; webresource path segments cannot be empty, dot or
+parent segments. Inputs are copied/validated; no external URLs or DOM access.
+Completion is navigation, never proof that a record saved.
+
+Select/close/navigate accept the original handle or an explicit **owned** ID.
+Foreign IDs, forged handles and closed/replaced/renamed native instances fail.
+Create/reuse rejects incompatible creation options or changed title/width/canClose.
+Later resizing/property changes do not prevent lifecycle calls on an otherwise
+owned instance. Do not retain native pane objects yourself.
+Navigation is serialized per pane; close/select/reuse during navigation fails
+RESOURCE_BUSY. A host replacement is detected before queued create dispatch and
+after async completion. SDK errors remain explicit; native side effects may
+already have occurred. There is no automatic retry, adoption or close rollback.
+If creation failed after native creation, that pane is not automatically adopted.
+
+`Links.record({...appOptions, record, formId?})` and
+`Links.view({...appOptions, entityName, viewId, viewType})` are pure builders.
+App options require an HTTPS root, exact approved origins and exactly one appId
+or appName. Record/form/view GUIDs are normalized, formId is nested in extraqs,
+and viewType maps savedquery/userquery to 1039/4230. Unknown fields and arbitrary
+query forwarding fail. Links do not check record/view access and do not navigate.
+They deliberately remain outside Windows.open's app-only prepared-window policy;
+do not bypass that policy by forwarding them to a prepared app launcher.
+
+`Diagnostics.getCapabilities()` returns toolkitVersion, basis=methodPresenceOnly
+and explicit present/absent observations for navigation, Quick Create, lookups,
+environment reads, side-pane manager methods and global notifications.
+It invokes none of them and reads no user/config values. Presence is not
+permission, licensing, installation or support for every client/option.
+Getter/probe failures throw SDK_OPERATION_FAILED rather than reporting absence.
 
 ## Field and control behavior
 
