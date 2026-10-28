@@ -6,6 +6,9 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { Buffer } from "node:buffer";
 import {
+  browserBuildOptions, collectBundleNotices, NOTICE_HEADER, packageRootForInput
+} from "../../scripts/bundle-contract.mjs";
+import {
   PackagingError, requireThat, limits, sha256, decode, xml, child, value,
   childrenOnly, readZip, safeEntry
 } from "./formats.mjs";
@@ -22,6 +25,19 @@ const sourceFiles = [
 ].sort();
 const solutionInventory = Object.freeze({ files: 16, nodes: 32, depth: 4 });
 const runtimeInventory = Object.freeze({ files: 512, nodes: 512, depth: 8 });
+const runtimePackages = new Set([
+  "@nodable/entities", "anynum", "fast-xml-builder", "fast-xml-parser", "is-unsafe",
+  "path-expression-matcher", "strnum", "xml-naming", "zod"
+]);
+function runtimeInputPath(file) {
+  if (file.startsWith("src/")) { safeEntry(file); return; }
+  const packageRoot = packageRootForInput(file);
+  const name = packageRoot?.slice("node_modules/".length);
+  requireThat(packageRoot === `node_modules/${name}` && runtimePackages.has(name)
+    && file.startsWith(`${packageRoot}/`), "BUILD_DEPENDENCY",
+  "Only reviewed Core runtime packages are allowed; no framework/Studio/delivery dependencies.");
+  safeEntry(file.slice(packageRoot.length + 1));
+}
 // Caller-owned filesystem paths accept either separator. Do not resolve dot
 // segments here: validation must still reject traversal after normalization.
 function portableInput(path) {
@@ -56,9 +72,9 @@ export function noSensitiveContent(bytes) {
   "SENSITIVE_INPUT", "Possible credential or tenant URL detected. Use a reviewed, environment-neutral build.");
 }
 export function noticesHtml(bytes) {
-  requireThat(bytes.length > 100 && bytes.length <= limits.notice && decode(bytes).startsWith("Zod\n")
-    && decode(bytes).includes("MIT License") && decode(bytes).includes("Permission is hereby granted"),
-  "NOTICES", "Build must include the complete Zod third-party notice.");
+  requireThat(bytes.length > NOTICE_HEADER.length && bytes.length <= limits.notice
+    && decode(bytes).startsWith(NOTICE_HEADER),
+  "NOTICES", "Build must include the complete canonical bundled third-party notice.");
   return Buffer.from(`<!doctype html><meta charset="utf-8"><title>VBD Toolkit third-party notices</title><pre>${
     decode(bytes).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
   }</pre>\n`);
@@ -70,9 +86,7 @@ async function reproduceBrowser(root) {
   try {
     // Same browser-only options as scripts/build.mjs. No files are emitted.
     const result = await esbuild.build({
-      absWorkingDir: root, entryPoints: ["src/browser.ts"], outfile: "dist/vbd.toolkit.js",
-      bundle: true, format: "iife", platform: "browser", target: "es2022",
-      legalComments: "eof", write: false, logLevel: "silent", metafile: true
+      ...browserBuildOptions, absWorkingDir: root, write: false, logLevel: "silent"
     });
     requireThat(result.outputFiles.length === 1 && result.outputFiles[0].contents.length <= limits.entry,
       "BUILD_ASSET", "Expected one bounded browser bundle.");
@@ -80,17 +94,33 @@ async function reproduceBrowser(root) {
       && Object.keys(result.metafile.inputs).length <= 512,
     "BUILD_DEPENDENCY", "Browser bundle must have no warnings/external imports and at most 512 build inputs.");
     let total = 0;
+    const observed = new Map();
     for (const [file, info] of Object.entries(result.metafile.inputs)) {
-      safeEntry(file);
-      requireThat((file.startsWith("src/") || file.startsWith("node_modules/zod/"))
-        && info.bytes <= limits.entry && (total += info.bytes) <= limits.total,
-      "BUILD_DEPENDENCY", "Only worktree src and bundled Zod are allowed; no framework/Studio/external dependencies.");
-      await regularPath(root, file);
+      runtimeInputPath(file);
+      requireThat(info.bytes <= limits.entry && (total += info.bytes) <= limits.total,
+        "BUILD_DEPENDENCY", "Bundled source exceeds its per-file/total bound.");
+      observed.set(file, await boundedFile(root, file));
     }
-    return Buffer.from(result.outputFiles[0].contents);
+    const notice = await collectBundleNotices(root, Object.keys(result.metafile.inputs), {
+      read: async (file) => {
+        if (file === "third-party/licenses/nodable-entities-3.1.0.txt") safeEntry(file);
+        else runtimeInputPath(file);
+        const bytes = await boundedFile(root, file, limits.notice);
+        observed.set(file, bytes);
+        return bytes;
+      }
+    });
+    const lock = JSON.parse(decode(await boundedFile(root, "package-lock.json")));
+    requireThat(notice.packages.every((pkg) =>
+      lock.packages?.[pkg.root]?.version === pkg.version && typeof lock.packages[pkg.root].integrity === "string"),
+    "BUILD_DEPENDENCY", "Installed runtime package versions must match the reviewed dependency lock.");
+    return {
+      browser: Buffer.from(result.outputFiles[0].contents),
+      notices: Buffer.from(notice.text), files: observed, packages: notice.packages
+    };
   } catch (error) {
     if (error instanceof PackagingError) throw error;
-    throw new PackagingError("BUILD_REPRODUCE", "Cannot reproduce the browser build; run npm ci and npm run build, then inspect current build options.");
+    throw new PackagingError("BUILD_REPRODUCE", "Cannot reproduce the browser/notices; run npm ci and npm run build, then inspect the shared contract and licenses.");
   }
 }
 async function regularPath(root, path) {
@@ -296,6 +326,9 @@ export async function inputs(root = repository) {
   requireThat(typeof pkg.version === "string" && /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(pkg.version),
     "VERSION", "Release packaging requires a stable package semantic version.");
   const expectedVersion = version(`${pkg.version}.0`);
+  requireThat(pkg.dependencies && JSON.stringify(Object.keys(pkg.dependencies).sort()) ===
+    JSON.stringify(["fast-xml-parser", "zod"]), "BUILD_DEPENDENCY",
+  "Runtime dependency declarations differ from the reviewed expanded-core contract.");
   const runtimeVersion = decode(await boundedFile(root, "src/version.ts", limits.xml));
   requireThat(runtimeVersion.trim() === `export const version = "${pkg.version}";`,
     "VERSION", "Runtime source version must match package.json before release packaging.");
@@ -313,25 +346,27 @@ export async function inputs(root = repository) {
   noSensitiveContent(browser);
   requireThat(decode(browser).includes('"VBD"') && decode(browser).includes("DUPLICATE_INITIALIZATION"),
     "BUILD_ASSET", "Expected the compiled VBD browser bundle, not ESM/CLI/source.");
-  requireThat(sha256(browser) === sha256(await reproduceBrowser(root)), "STALE_BUILD",
+  const reproduced = await reproduceBrowser(root);
+  requireThat(sha256(browser) === sha256(reproduced.browser), "STALE_BUILD",
     "dist/vbd.toolkit.js differs from a fresh in-memory build of this source; run npm run build.");
   const notices = await boundedFile(root, "dist/THIRD-PARTY-NOTICES.txt", limits.notice);
   noSensitiveContent(notices);
-  const license = await boundedFile(root, "node_modules/zod/LICENSE", limits.notice);
-  requireThat(decode(notices) === `Zod\n\n${decode(license)}`, "NOTICES", "Notice differs from the installed dependency license; rebuild using the locked dependencies.");
+  requireThat(sha256(notices) === sha256(reproduced.notices), "NOTICES",
+    "Notice differs from all actually bundled dependency licenses; rebuild with the locked dependencies and shared contract.");
   const payloads = [browser, noticesHtml(notices)];
   const hashes = Object.fromEntries([...source].map(([name, bytes]) => [`solution/${name}`, sha256(bytes)]));
   hashes["package.json"] = sha256(packageBytes);
   hashes["dist/vbd.toolkit.js"] = sha256(browser);
   hashes["dist/THIRD-PARTY-NOTICES.txt"] = sha256(notices);
-  for (const file of ["package-lock.json", "scripts/build.mjs", "node_modules/zod/LICENSE",
+  for (const file of ["package-lock.json", "scripts/build.mjs", "scripts/bundle-contract.mjs",
     "tools/packaging/package.mjs", "tools/packaging/formats.mjs", "tsconfig.json", "tsconfig.build.json"]) {
     hashes[file] = sha256(await boundedFile(root, file, limits.entry));
   }
   for (const file of await inventory(root, "src", runtimeInventory)) {
     hashes[`src/${file}`] = sha256(await boundedFile(root, `src/${file}`, limits.entry));
   }
-  return { version: expectedVersion, source, payloads, hashes };
+  for (const [file, bytes] of reproduced.files) hashes[file] = sha256(bytes);
+  return { version: expectedVersion, source, payloads, hashes, runtimeDependencies: reproduced.packages };
 }
 export function inspectArchive(bytes, expected, { kind = "unmanaged", checksum } = {}) {
   requireThat(["unmanaged", "managed"].includes(kind), "KIND", "Only unmanaged or managed-export inspection is supported.");
@@ -361,7 +396,8 @@ export function inspectArchive(bytes, expected, { kind = "unmanaged", checksum }
   return {
     solution: identity, version: expected.version, kind, sha256: checksum,
     components: resources.map((item, index) => ({ name: item.name, type: item.type, path: paths[index], sha256: sha256(get(paths[index])) })),
-    dependencies: [], importTested: false, publicReleaseReady: false,
+    dependencies: [], runtimeDependencies: expected.runtimeDependencies,
+    importTested: false, publicReleaseReady: false,
     taggedSourceVerified: false,
     managedProvenance: kind === "managed" ? "UNVERIFIED: authenticated export evidence and clean import still required" : "not-applicable"
   };

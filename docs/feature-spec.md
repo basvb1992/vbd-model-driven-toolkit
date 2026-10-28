@@ -206,6 +206,34 @@ The inactive attempt produced the second error presentation, not a delayed popup
 Both fixture pages/routes were removed. This is not a real Dynamics form,
 server query/write, authorization, mobile/offline, or tenant deployment check.
 
+## Local delivery integration slice
+
+[Issue #11](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/11)
+integrates the bounded [C05/C08 consultant tools](consultant-tools.md) and
+[offline packaging](solution-packaging.md) with the current 0.3.0 core in an
+isolated branch. User outcome: consultants can compare supplied sanitized
+evidence and build an honest local unmanaged Core artifact from the same
+reviewed sources, without requiring the Workflow/Interaction Framework.
+
+Scope: preserve the 118 runtime exports, exact two-resource solution boundary,
+shared browser build options, current solution/runtime versions, complete notices
+for every bundled dependency, locked-input fingerprints, and original lane
+provenance. No merge, tenant authentication/access, import/export/publish,
+automatic app wiring, license decision or public release is included.
+Assumptions: locked local dependencies, installed native PAC, fresh local output
+paths and caller-supplied sanitized evidence. Reject unknown dependencies,
+stale builds, incomplete notices, mismatched versions, unsafe archives and
+existing outputs. Managed creation remains explicitly blocked.
+
+| Observable acceptance criterion | Verification | Remaining boundary |
+| --- | --- | --- |
+| Integrate exact lane changes without editing original worktrees. | Separate branch and cherry-pick provenance; original heads/dirty states preserved. | Original PRs are not merged. |
+| Current version/build/dependencies/notices agree. | Packaging source tests, shared-contract rebuild, exact notice comparison, scoped/fallback/unknown-package/lock-mismatch regressions. | Fingerprints do not establish trusted tagged provenance. |
+| Package current 0.3.0 / 118-function runtime, not the old baseline. | Explicit actual-PAC pack/unpack/repack; archived JS VM inspection and payload hashes. | Not a live Dynamics installation or query/write test. |
+| Preserve independence, bounded inspection and managed/no-overwrite gates. | Two resources, zero Dataverse dependencies; ZIP/XML/input/managed/no-overwrite tests. | Genuine managed export, clean import/upgrade and public release remain unverified. |
+| Keep consultant reports local and evidence-qualified. | Consultant suites; supplied snapshot/manifest examples and redaction/exit-code tests. | No live collection or authoritative deprecation claims. |
+| Make current delivery scope discoverable. | README, roadmap, distribution and linked usage guides. | Broader runtime catalog and Studio remain planned. |
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -231,10 +259,10 @@ server query/write, authorization, mobile/offline, or tenant deployment check.
 | DOC-01 | Every proposed function has a name, purpose, inputs, output, phase, and relevant constraints. | Catalog inventory and duplicate/coverage check. | Documented; checked in documentation baseline. |
 | DOC-02 | Environment-variable and separate-window contracts are explicit. | Contract review against official references and scenario matrix. | Bounded runtime subset implemented; tenant installation unverified. |
 | DOC-03 | Repository is independently accessible with committed design documents. | GitHub repository, remote commit, and file/link checks. | Documentation baseline delivery. |
-| DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a tooling implemented, broader capabilities planned. |
-| SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Planned; design boundary documented. |
+| DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
+| SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 118-function source namespace; Dataverse assets not created by this milestone. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 118-function source namespace and local two-resource solution inspected; tenant installation unverified. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |
@@ -243,11 +271,11 @@ server query/write, authorization, mobile/offline, or tenant deployment check.
 | FORM-01 | Form values, multiple bound controls, events, and save policies behave explicitly. | Unit tests and model-driven form smoke scenarios. | Native host fixtures cover the bounded subset; live Dynamics form checks unverified. |
 | DATA-01 | Queries respect paging limits; mutations report partial failures and retry safely. | Paging, throttling, concurrency, and failed-record tests. | Bounded paging/conditional/mutation uncertainty fixtures checked; no automatic mutations retry or live writes. |
 | SEC-01 | Client UX never substitutes for server authorization. | Denied-permission tests and unsupported-operation checks. | Planned. |
-| ALM-01 | Managed and unmanaged ZIPs come from the same tagged source. | Reproducible build, solution inspection, and import checks. | Planned; no packages. |
+| ALM-01 | Managed and unmanaged ZIPs come from the same tagged source. | Reproducible build, solution inspection, and import checks. | Local unmanaged PAC packaging checked; genuine managed export, tagged provenance and imports unverified. |
 | ALM-02 | Imports do not overwrite consuming app handlers/configuration automatically. | Clean-environment install and existing-app regression checks. | Planned. |
 | CON-01 | Diagnostics and preflight are read-only and distinguish pass, warning, fail, unknown, and unsupported with evidence. | Known misconfiguration fixtures, denied-access cases, and write-detection checks. | Source/supplied-snapshot semantics verified locally; live checks/panel planned. |
 | CON-02 | Generated handover distinguishes declared configuration from verified deployed registration. | Compare generated Markdown/HTML with fixtures and an inspected deployed sample; confirm redaction. | Markdown fixtures and unverified labels checked; live deployed comparison/HTML planned. |
-| CON-03 | Comparison/upgrade reports identify relevant drift without treating intentional environment differences as errors or exporting sensitive values. | Two sanitized snapshots, expected-difference policy, deprecated-config fixtures, and redaction checks. | Planned. |
+| CON-03 | Comparison/upgrade reports identify relevant drift without treating intentional environment differences as errors or exporting sensitive values. | Two sanitized snapshots, expected-difference policy, deprecated-config fixtures, and redaction checks. | Bounded local C05/C08 tests and supplied evidence checked; live collection and authoritative compatibility policy unverified. |
 | CON-04 | Studio exports configurations that use the same validated contracts as direct developer configuration. | Round-trip configuration and compare runtime behavior; reject workflow-engine definitions and unapproved operations. | Planned. |
 | CON-05 | Patterns, regression packs, and localization remain portable and explicitly versioned. | Generic-table fixtures, negative scenarios, supported-surface checks, and missing-translation behavior. | Planned. |
 

@@ -1,6 +1,8 @@
 # Standalone Core: bounded offline solution packaging
 
-Issue: [#7](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/7).
+Issues: [#7](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/7)
+and [#11](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/11)
+(expanded 0.3.0 core integration).
 This implements the **local unmanaged** portion of the distribution design.
 It does not change the shared roadmap/specification to claim ALM completion.
 No environment access, authentication, deployment, import, publish or release
@@ -22,7 +24,9 @@ The browser contract remains `VBD`. Physical source/package filenames such as
 `WebResources/vbd_toolkit.js` are not the logical Dataverse webresource names.
 PAC unpack uses the logical name as its physical directory hierarchy.
 TXT is not a Dataverse webresource type; the notices are HTML, not mislabeled JS.
-The plain notice must exactly match `Zod\n\n` plus the installed Zod license.
+The plain notice must exactly match the canonical shared build notice for
+**all nine actually bundled packages**, not just Zod. The HTML wrapper escapes
+that complete text without rendering any dependency content as markup.
 
 Only those two resources ship. ESM/declarations, Node delivery tools, consultant
 tools, Studio, sample commands and customer assets are excluded. There is no
@@ -105,7 +109,7 @@ with `CLI_MISSING`, not a constructed ZIP fallback.
 The output directory must be **new**, a direct `artifacts/<run-name>` child.
 Caller filesystem paths accept portable slashes and native Windows backslashes,
 for example `--out artifacts\CoreLocal01` and
-`--file artifacts\CoreLocal01\VBDModelDrivenToolkit_0.2.0.0_unmanaged.zip`.
+`--file artifacts\CoreLocal01\VBDModelDrivenToolkit_0.3.0.0_unmanaged.zip`.
 Both entry points normalize separators once before validation, without resolving
 dot segments. Traversal remains invalid. **ZIP entry paths still require
 forward slashes**; filesystem normalization never applies to archive entries.
@@ -114,7 +118,7 @@ On failure, retain the partial directory for diagnosis and choose a new run
 name. Successful output contains:
 
 - `source/`: materialized real XML source and the two payloads.
-- `VBDModelDrivenToolkit_0.2.0.0_unmanaged.zip`: actual PAC local output.
+- `VBDModelDrivenToolkit_0.3.0.0_unmanaged.zip`: actual PAC local output.
 - `unpacked/`, `roundtrip.zip`: actual PAC roundtrip evidence.
 - `pack.txt`, `unpack.txt`, `repack.txt`: successful offline PAC output.
 - `evidence.json`, `SHA256SUMS`: validated component/payload hashes, input
@@ -129,7 +133,7 @@ Inspect an existing local unmanaged ZIP against this checkout and build:
 
 ```powershell
 $e = Get-Content artifacts/CoreLocal01/evidence.json -Raw | ConvertFrom-Json
-node tools/packaging/package.mjs verify --file artifacts/CoreLocal01/VBDModelDrivenToolkit_0.2.0.0_unmanaged.zip --sha256 $e.sha256
+node tools\packaging\package.mjs verify --file artifacts\CoreLocal01\VBDModelDrivenToolkit_0.3.0.0_unmanaged.zip --sha256 $e.sha256
 ```
 
 The explicit SHA-256 must come from the expected evidence. Computing a digest
@@ -146,14 +150,26 @@ bounded inspection only: it does not extract or execute an input archive.
 - A future release must update these sources together with the owner's package
   version change, then rebuild once from the same reviewed/tagged revision.
 - The tool independently reproduces the browser build **in memory**, using the
-  current `scripts/build.mjs` browser options and existing esbuild. A stale or
+  same `scripts/bundle-contract.mjs` options as `scripts/build.mjs` and existing
+  esbuild. A stale or
   substituted bundle fails `STALE_BUILD`. It emits no rebuilt files.
-- The build graph may include only `src/` and bundled `node_modules/zod/`.
+- The build graph may include only `src/` and these reviewed runtime packages:
+  `@nodable/entities`, `anynum`, `fast-xml-builder`, `fast-xml-parser`,
+  `is-unsafe`, `path-expression-matcher`, `strnum`, `xml-naming`, and `zod`.
   Warnings, runtime external imports, Studio/framework/delivery imports and
-  oversized graphs are rejected. The current `0.2.0` packaging baseline allows
-  **Zod only**. Future Core dependencies or baseline version changes require
-  reviewed notice, dependency-allowlist, source/version and reproducible-build
-  contract updates; the allowlist is not broadened implicitly.
+  oversized graphs are rejected. Root dependencies must remain exactly
+  `fast-xml-parser` and `zod`; observed installed package identities/versions
+  must match the lock. All observed package inputs, metadata and licenses are
+  fingerprinted. Scoped package input handling does not loosen ZIP path rules.
+- The shared collector includes every observed package's complete license/notice
+  files. The exact upstream fallback for `@nodable/entities` is accepted only
+  for version `3.1.0` declaring MIT; missing or empty licenses fail. The
+  packager requires exact equality with the reproduced complete notice.
+  Future dependencies or baseline changes require explicit review of these
+  contracts; no automatic allowlist expansion is performed.
+- Evidence `dependencies: []` means **zero Dataverse solution dependencies**.
+  `runtimeDependencies` separately identifies the nine bundled OSS packages;
+  zero solution dependencies does not mean zero third-party code.
 - Reproducibility means equivalent source, identities, version and content.
   PAC ZIP timestamps/order may differ: byte-identical ZIPs are **not promised**.
   Each actual ZIP has its own checksum.
@@ -209,15 +225,15 @@ Environment URLs are operator variables, never checked-in values:
 
 ```powershell
 # Only in a separately approved deployment task:
-pac solution import --path artifacts/CoreLocal01/VBDModelDrivenToolkit_0.2.0.0_unmanaged.zip --environment $AuthorizedDevUrl
+pac solution import --path artifacts\CoreLocal01\VBDModelDrivenToolkit_0.3.0.0_unmanaged.zip --environment $AuthorizedDevUrl
 
 # A fresh directory; never pass --overwrite.
 New-Item -ItemType Directory artifacts/ManagedEvidence01
-pac solution export --name VBDModelDrivenToolkit --path artifacts/ManagedEvidence01/VBDModelDrivenToolkit_0.2.0.0.zip --managed false --environment $AuthorizedDevUrl
-pac solution export --name VBDModelDrivenToolkit --path artifacts/ManagedEvidence01/VBDModelDrivenToolkit_0.2.0.0_managed.zip --managed true --environment $AuthorizedDevUrl
+pac solution export --name VBDModelDrivenToolkit --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.3.0.0.zip --managed false --environment $AuthorizedDevUrl
+pac solution export --name VBDModelDrivenToolkit --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.3.0.0_managed.zip --managed true --environment $AuthorizedDevUrl
 
 # ExpectedManagedSha256 comes from the operator's recorded genuine export evidence.
-node tools/packaging/package.mjs verify --file artifacts/ManagedEvidence01/VBDModelDrivenToolkit_0.2.0.0_managed.zip --sha256 $ExpectedManagedSha256 --kind managed
+node tools\packaging\package.mjs verify --file artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.3.0.0_managed.zip --sha256 $ExpectedManagedSha256 --kind managed
 ```
 
 Offline managed inspection checks the managed flag, identity/version, stable
@@ -233,12 +249,12 @@ Only after both genuine exports pass inspection, the documented combined-source
 path is (new destinations only; paired filenames above are significant):
 
 ```powershell
-pac solution unpack --zipfile artifacts/ManagedEvidence01/VBDModelDrivenToolkit_0.2.0.0.zip --folder artifacts/ManagedEvidence01/both-source --packagetype Both
+pac solution unpack --zipfile artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.3.0.0.zip --folder artifacts\ManagedEvidence01\both-source --packagetype Both
 pac solution pack --zipfile artifacts/ManagedEvidence01/repacked.zip --folder artifacts/ManagedEvidence01/both-source --packagetype Both
 # Reinspect BOTH produced ZIPs against the same reviewed build/checksums.
 
 # Separate approved clean-target installation, no Studio/framework installed:
-pac solution import --path artifacts/ManagedEvidence01/VBDModelDrivenToolkit_0.2.0.0_managed.zip --environment $AuthorizedCleanTargetUrl
+pac solution import --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.3.0.0_managed.zip --environment $AuthorizedCleanTargetUrl
 ```
 
 That combined-source/export path, clean import, solution checking, live `VBD`
@@ -277,7 +293,8 @@ were exercised locally on 2026-10-28. Logs report `Unmanaged Pack complete`,
 No Dataverse requests, authentication/token commands, imports/publishes,
 release upload, commit or publication are part of this acceptance evidence.
 
-Verification on this isolated branch (2026-10-28):
+Historical verification on the original isolated **0.2.0** packaging branch
+(2026-10-28), before current-core integration:
 
 - Focused run: **91 passed, 1 explicitly skipped** (actual-PAC opt-in unset).
 - Explicit actual-PAC selection: **1 passed, 91 unselected/skipped**, using
@@ -291,3 +308,33 @@ Verification on this isolated branch (2026-10-28):
 
 These are local acceptance observations, not a genuine managed export or
 licensed/public/import-tested release.
+
+### Integrated 0.3.0 evidence
+
+The separate integration branch combines core commit `98bc9dc`, consultant
+commit `d281dd0` and packaging commit `66e42eb`, then reconciles the shared
+build/notice contract, reviewed dependency graph and versioned descriptors.
+The historical 0.2.0 observations above are not reused as current-core proof.
+
+- Full `npm run check` with explicit native PAC: **21 test files, 640 tests
+  passed**; includes strict types, lint, build and package-consumer checks.
+  Without the opt-in, the actual-PAC test remains explicitly skipped.
+- PAC `2.12.2+ga6b1ffa` performed actual unmanaged pack/unpack/repack over the
+  current 0.3.0 source. The archived browser resource itself reports **0.3.0
+  and 118 methods**; its SHA-256 is
+  `b61140ae532e75820221e3dcc7815d45bd770da2a49af79d25d11090b7e02d08`.
+- Exactly **two webresources, zero Dataverse dependencies and nine bundled
+  runtime packages** were inspected. Complete notices include `anynum`, the
+  transitive dependency of `strnum`, and the version-bound scoped-package fallback.
+- Reusable local artifact:
+  `artifacts\CoreIntegration-1793189236176\VBDModelDrivenToolkit_0.3.0.0_unmanaged.zip`.
+  SHA-256:
+  `719a15eeb3fe129c6780efb256531763887ec32f23c4271f46931ee2b7e5a43c`.
+  Its adjacent receipt, checksums and PAC logs remain local ignored outputs.
+- The previous coordinator's 0.2.0 artifact was read-only checked and retains
+  SHA-256 `48c94bfde1bd27de41c600d44ca566bd7b834ebc39473cec8e09d2ecc9cfc7b6`.
+
+These are local observations, not release provenance. No authentication,
+Dataverse requests, import/export/publish/deploy, managed conversion or public
+binary release was performed. License approval, genuine managed export,
+clean import/upgrade and tagged-source verification remain outstanding.

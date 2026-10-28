@@ -5,11 +5,15 @@ import { join, resolve, dirname } from "node:path";
 import { spawnSync } from "node:child_process";
 import { deflateRawSync } from "node:zlib";
 import { build as esbuild } from "esbuild";
+import { runInNewContext } from "node:vm";
+import { browserBuildOptions, collectBundleNotices, NOTICE_HEADER } from "../../scripts/bundle-contract.mjs";
 import {
   build, cli, inputs, inspectArchive, componentId, version, resources,
   repository, runPac, verify, noSensitiveContent, noticesHtml
 } from "../../tools/packaging/package.mjs";
 import { crc32, decode, limits, readZip, safeEntry, sha256, xml } from "../../tools/packaging/formats.mjs";
+const packageVersion = JSON.parse(await readFile(join(repository, "package.json"), "utf8")).version;
+const solutionVersion = `${packageVersion}.0`;
 
 // These fixtures are CONSTRUCTED archives, not PAC or Dataverse export evidence.
 function zip(entries, { method = 0, flags = 0, mode = 0 } = {}) {
@@ -40,8 +44,8 @@ async function fixture() {
   await mkdir(join(repository, "artifacts"), { recursive: true });
   const root = await mkdtemp(join(repository, "artifacts", "PackagingTest-"));
   await cp(join(repository, "solution"), join(root, "solution"), { recursive: true, force: false, errorOnExist: true });
-  for (const file of ["package.json", "package-lock.json", "scripts/build.mjs",
-    "node_modules/zod/LICENSE", "tools/packaging/package.mjs", "tools/packaging/formats.mjs",
+  for (const file of ["package.json", "package-lock.json", "scripts/build.mjs", "scripts/bundle-contract.mjs",
+    "tools/packaging/package.mjs", "tools/packaging/formats.mjs",
     "tsconfig.json", "tsconfig.build.json"]) {
     await mkdir(dirname(join(root, file)), { recursive: true });
     await cp(join(repository, file), join(root, file), { force: false, errorOnExist: true });
@@ -50,19 +54,40 @@ async function fixture() {
   await mkdir(join(root, "src"));
   // Deliberately tiny compiled synthetic source; NOT the actual runtime bundle.
   await writeFile(join(root, "src/browser.ts"), 'const name="VBD";if(name)throw new Error("DUPLICATE_INITIALIZATION");');
-  await writeFile(join(root, "src/version.ts"), 'export const version = "0.2.0";\n');
+  await writeFile(join(root, "src/version.ts"), `export const version = "${packageVersion}";\n`);
   await esbuild({
-    absWorkingDir: root, entryPoints: ["src/browser.ts"], outfile: "dist/vbd.toolkit.js",
-    bundle: true, format: "iife", platform: "browser", target: "es2022", legalComments: "eof"
+    ...browserBuildOptions, absWorkingDir: root
   });
-  await writeFile(join(root, "dist/THIRD-PARTY-NOTICES.txt"),
-    `Zod\n\n${await readFile(join(root, "node_modules/zod/LICENSE"), "utf8")}`);
+  const notice = await collectBundleNotices(root, ["src/browser.ts"]);
+  await writeFile(join(root, "dist/THIRD-PARTY-NOTICES.txt"), notice.text);
   return root;
 }
 async function replace(root, file, from, to) {
   const path = join(root, file), text = await readFile(path, "utf8");
   expect(text).toContain(from);
   await writeFile(path, text.replace(from, to));
+}
+async function addBundledPackage(root, name, packageVersion = "1.0.1") {
+  const packageRoot = `node_modules/${name}`;
+  await mkdir(join(root, packageRoot), { recursive: true });
+  await writeFile(join(root, packageRoot, "index.js"), 'console.log("Synthetic dependency fixture");');
+  await writeFile(join(root, packageRoot, "package.json"),
+    JSON.stringify({ name, version: packageVersion, license: "MIT", main: "index.js" }));
+  if (name === "@nodable/entities") {
+    await mkdir(join(root, "third-party/licenses"), { recursive: true });
+    await cp(join(repository, "third-party/licenses/nodable-entities-3.1.0.txt"),
+      join(root, "third-party/licenses/nodable-entities-3.1.0.txt"));
+  } else {
+    await writeFile(join(root, packageRoot, "LICENSE"), "Synthetic MIT license fixture, not a distribution notice.\n");
+  }
+  const lock = JSON.parse(await readFile(join(root, "package-lock.json"), "utf8"));
+  lock.packages[packageRoot] = { version: packageVersion, integrity: "sha512-synthetic-fixture" };
+  await writeFile(join(root, "package-lock.json"), JSON.stringify(lock));
+  const source = await readFile(join(root, "src/browser.ts"), "utf8");
+  await writeFile(join(root, "src/browser.ts"), `import "../${packageRoot}/index.js";\n${source}`);
+  await esbuild({ ...browserBuildOptions, absWorkingDir: root });
+  const notice = await collectBundleNotices(root, [`${packageRoot}/index.js`]);
+  await writeFile(join(root, "dist/THIRD-PARTY-NOTICES.txt"), notice.text);
 }
 function metadataWithId(bytes, item) {
   return decode(bytes).replace('<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',
@@ -123,7 +148,7 @@ describe("bounded contracts (unit/constructed, not PAC)", () => {
   });
   it("requires a real third-party notice and escapes HTML", () => {
     expect(() => noticesHtml(Buffer.from("Zod\ntruncated"))).toThrow("NOTICES");
-    const text = `Zod\nMIT License\nPermission is hereby granted\n${"<script>&".repeat(12)}`;
+    const text = `${NOTICE_HEADER}MIT License\nPermission is hereby granted\n${"<script>&".repeat(12)}`;
     expect(decode(noticesHtml(Buffer.from(text)))).toContain("&lt;script&gt;&amp;");
   });
   it("validates stored and actual PAC-style deflate ZIP flags", () => {
@@ -165,10 +190,61 @@ describe("bounded contracts (unit/constructed, not PAC)", () => {
 });
 
 describe("source/build/archive boundary (synthetic builds and constructed archives)", () => {
+  it("fingerprints every expanded-core dependency and complete notice in the real current build", async () => {
+    const expected = await inputs(repository);
+    expect(expected.version).toBe(solutionVersion);
+    expect(expected.runtimeDependencies.map((item) => item.name).sort()).toEqual([
+      "@nodable/entities", "anynum", "fast-xml-builder", "fast-xml-parser", "is-unsafe",
+      "path-expression-matcher", "strnum", "xml-naming", "zod"
+    ]);
+    for (const item of expected.runtimeDependencies) {
+      expect(expected.hashes[`${item.root}/package.json`]).toMatch(/^[a-f0-9]{64}$/);
+    }
+    expect(expected.hashes["node_modules/anynum/LICENSE"]).toMatch(/^[a-f0-9]{64}$/);
+    expect(expected.hashes["third-party/licenses/nodable-entities-3.1.0.txt"]).toMatch(/^[a-f0-9]{64}$/);
+    expect(expected.hashes["scripts/bundle-contract.mjs"]).toMatch(/^[a-f0-9]{64}$/);
+  });
+  it("accepts the exact scoped-package fallback without broadening archive path grammar", async () => {
+    const root = await fixture();
+    await addBundledPackage(root, "@nodable/entities", "3.1.0");
+    const expected = await inputs(root);
+    expect(expected.runtimeDependencies).toEqual([
+      { name: "@nodable/entities", version: "3.1.0", root: "node_modules/@nodable/entities" }
+    ]);
+    expect(() => safeEntry("node_modules/@nodable/entities/index.js")).toThrow("PATH");
+    await writeFile(join(root, "third-party/licenses/nodable-entities-3.1.0.txt"), "");
+    await expect(collectBundleNotices(root, ["node_modules/@nodable/entities/index.js"])).rejects.toThrow("Empty bundled license");
+    await expect(inputs(root)).rejects.toThrow("INPUT_SIZE");
+    await replace(root, "node_modules/@nodable/entities/package.json", "3.1.0", "3.1.1");
+    await expect(inputs(root)).rejects.toThrow("BUILD_REPRODUCE");
+  });
+  it("rejects unreviewed packages even when their local bundle and notices agree", async () => {
+    const root = await fixture();
+    await addBundledPackage(root, "unreviewed-library");
+    await expect(inputs(root)).rejects.toThrow("BUILD_DEPENDENCY");
+  });
+  it("rejects installed dependency versions that differ from the supplied lock", async () => {
+    const root = await fixture();
+    await addBundledPackage(root, "anynum");
+    await expect(inputs(root)).resolves.toHaveProperty("runtimeDependencies");
+    await replace(root, "node_modules/anynum/package.json", "1.0.1", "1.0.2");
+    await expect(inputs(root)).rejects.toThrow("BUILD_DEPENDENCY");
+  });
+  it("rejects incomplete non-Zod notices, empty licenses and mismatched package identities", async () => {
+    const root = await fixture();
+    await addBundledPackage(root, "anynum");
+    await writeFile(join(root, "node_modules/anynum/LICENSE"), "Truncated fixture license.\n");
+    await expect(inputs(root)).rejects.toThrow("NOTICES");
+    await writeFile(join(root, "node_modules/anynum/LICENSE"), "");
+    await expect(inputs(root)).rejects.toThrow("INPUT_SIZE");
+    await expect(collectBundleNotices(root, ["node_modules/anynum/index.js"])).rejects.toThrow("Empty bundled license");
+    await replace(root, "node_modules/anynum/package.json", '"name":"anynum"', '"name":"other-package"');
+    await expect(inputs(root)).rejects.toThrow("BUILD_REPRODUCE");
+  });
   it("accepts only the two independent resources and unchanged build bytes", async () => {
     const expected = await inputs(await fixture()), archive = zip(constructedEntries(expected));
     expect(inspect(archive, expected)).toMatchObject({
-      version: "0.2.0.0", dependencies: [], importTested: false, publicReleaseReady: false
+      version: solutionVersion, dependencies: [], runtimeDependencies: [], importTested: false, publicReleaseReady: false
     });
     expect(inspect(archive, expected).components.map((c) => c.name)).toEqual(resources.map((r) => r.name));
     expect(() => inspect(archive, expected, { checksum: "0".repeat(64) })).toThrow("CHECKSUM");
@@ -176,7 +252,7 @@ describe("source/build/archive boundary (synthetic builds and constructed archiv
   });
   it.each([
     ["Other/Solution.xml", "<MissingDependencies />", '<MissingDependencies><MissingDependency /></MissingDependencies>', "DEPENDENCY"],
-    ["Other/Solution.xml", "<Version>0.2.0.0</Version>", "<Version>1.0.0.0</Version>", "IDENTITY"],
+    ["Other/Solution.xml", `<Version>${solutionVersion}</Version>`, "<Version>1.0.0.0</Version>", "IDENTITY"],
     ["Other/Solution.xml", "<CustomizationPrefix>vbd</CustomizationPrefix>", "<CustomizationPrefix>new</CustomizationPrefix>", "PREFIX"],
     ["Other/Solution.xml", "<Managed>0</Managed>", "<Managed>1</Managed>", "IDENTITY"],
     ["Other/Customizations.xml", "<Entities />", "<Entities><Entity /></Entities>", "DEPENDENCY"],
@@ -217,7 +293,7 @@ describe("source/build/archive boundary (synthetic builds and constructed archiv
   });
   it("rejects unstable/mismatched package and runtime versions", async () => {
     const root = await fixture();
-    await replace(root, "package.json", '"version": "0.2.0"', '"version": "0.2.0-beta.1"');
+    await replace(root, "package.json", `"version": "${packageVersion}"`, `"version": "${packageVersion}-beta.1"`);
     await expect(inputs(root)).rejects.toThrow("VERSION");
     const mismatch = await fixture();
     await writeFile(join(mismatch, "src/version.ts"), 'export const version = "9.0.0";');
@@ -228,15 +304,14 @@ describe("source/build/archive boundary (synthetic builds and constructed archiv
     await symlink(join(root, "dist"), join(root, "solution", "link"), process.platform === "win32" ? "junction" : "dir");
     await expect(inputs(root)).rejects.toThrow("PATH");
   });
-  it("rejects runtime imports outside Core/Zod and records runtime source fingerprints", async () => {
+  it("rejects runtime imports outside the reviewed Core packages and records source fingerprints", async () => {
     const root = await fixture();
     expect((await inputs(root)).hashes["src/browser.ts"]).toMatch(/^[a-f0-9]{64}$/);
     await mkdir(join(root, "studio"));
     await writeFile(join(root, "studio/example.js"), 'console.log("Studio dependency");');
     await writeFile(join(root, "src/browser.ts"), 'import "../studio/example.js";const name="VBD";if(name)throw new Error("DUPLICATE_INITIALIZATION");');
     await esbuild({
-      absWorkingDir: root, entryPoints: ["src/browser.ts"], outfile: "dist/vbd.toolkit.js",
-      bundle: true, format: "iife", platform: "browser", target: "es2022", legalComments: "eof"
+      ...browserBuildOptions, absWorkingDir: root
     });
     await expect(inputs(root)).rejects.toThrow("BUILD_DEPENDENCY");
   });
@@ -282,7 +357,7 @@ describe("source/build/archive boundary (synthetic builds and constructed archiv
     const root = await fixture();
     await replace(root, "solution/Other/Solution.xml", "<Descriptions />",
       '<Descriptions /><EMailAddress xsi:nil="true"></EMailAddress><Addresses><Address><AddressNumber>1</AddressNumber><AddressTypeCode>1</AddressTypeCode><City xsi:nil="true"></City></Address></Addresses>');
-    await expect(inputs(root)).resolves.toHaveProperty("version", "0.2.0.0");
+    await expect(inputs(root)).resolves.toHaveProperty("version", solutionVersion);
     await replace(root, "solution/Other/Solution.xml", '<EMailAddress xsi:nil="true"></EMailAddress>', "<EMailAddress>SECRET_CANARY@example.invalid</EMailAddress>");
     await expect(inputs(root)).rejects.toThrow("SENSITIVE_INPUT");
   });
@@ -385,10 +460,22 @@ describe.skipIf(!process.env.VBD_PACKAGING_PAC)("actual local PAC offline integr
     expect(report.validation).toContain("local PAC pack/unpack/repack");
     expect(report.importTested).toBe(false);
     expect(report.dependencies).toEqual([]);
+    expect(report.version).toBe(solutionVersion);
+    expect(report.runtimeDependencies.map(item => item.name)).toEqual(expect.arrayContaining([
+      "zod", "fast-xml-parser", "@nodable/entities"
+    ]));
     const file = `${out}\\VBDModelDrivenToolkit_${report.version}_unmanaged.zip`;
     for (const input of [file, file.replaceAll("\\", "/")]) {
       expect((await verify({ file: input, checksum: report.sha256 })).sha256).toBe(report.sha256);
     }
+    const archive = readZip(await readFile(join(repository, portableOut, `VBDModelDrivenToolkit_${report.version}_unmanaged.zip`)));
+    const browser = archive.get(report.components[0].path);
+    expect(browser).toBeDefined();
+    const runtime = runInNewContext(`${decode(browser)}\nJSON.stringify({
+      version: VBD.Diagnostics.getVersion(),
+      count: Object.values(VBD).reduce((total, methods) => total + Object.keys(methods).length, 0)
+    })`, { crypto: globalThis.crypto }, { timeout: 5000 });
+    expect(JSON.parse(runtime)).toEqual({ version: packageVersion, count: 118 });
     await expect(build({ out: portableOut, pac: process.env.VBD_PACKAGING_PAC })).rejects.toThrow("NO_OVERWRITE");
     await expect(verify({ file, checksum: "0".repeat(64) })).rejects.toThrow("CHECKSUM");
   }, 120000);

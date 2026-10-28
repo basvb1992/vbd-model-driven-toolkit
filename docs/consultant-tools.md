@@ -22,7 +22,8 @@ The comparison example exits **0**: two exact presence differences are expected.
 The upgrade example exits **2**: a synthetic deprecation and declared-only
 registration require review. **The example manifest is invented test metadata,
 not a published compatibility matrix or an assertion that any version/API is
-deprecated.** It does not establish that `0.3.0` exists.
+deprecated.** It does not establish a published `0.3.0` release or any real
+compatibility/deprecation policy; the current source version is separate evidence.
 
 Default output is JSON on stdout; `--format markdown` selects Markdown.
 Optionally add `--output new-report.json` or, for Markdown,
