@@ -27,7 +27,7 @@ export function generateHandover(
     "## Scope and limitations", "",
     "This document records declared configuration, not proof of installation.",
     "Snapshot findings are supplied evidence, not independently verified live access.",
-    "The launch runtime, environment-value resolution, and command entry points are not implemented.",
+    "Environment reads and prepared app launches are implemented; they were not executed here. The command entry points are not implemented.",
     "No apps were opened, business records read, or environment components changed.",
     "Raw current/default values, destinations, credentials, and record payloads are omitted.",
     "The Workflow/Interaction Framework is not a dependency.", "",

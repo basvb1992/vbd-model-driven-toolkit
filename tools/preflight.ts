@@ -133,14 +133,21 @@ export function preflight(input: unknown, options: PreflightOptions = {}): Prefl
     });
     validation.configuration.launchProfiles.forEach((_profile, index) => {
       findings.push({
-        id: "LAUNCH_RUNTIME_UNAVAILABLE", capabilityId: "C02", status: "unsupported",
+        id: "LAUNCH_DESTINATION_UNVERIFIED", capabilityId: "C02", status: "unknown",
         path: `launchProfiles[${index}]`,
-        message: "Profile declaration is validated, but the launch runtime is not implemented.",
-        remediation: "Do not wire or execute this profile until environment resolution and launch adapters are available.",
-        evidence: "source"
+        message: "Launcher source is available, but destination values, origin policy, app access, and browser behavior were not checked.",
+        remediation: "Prepare the profile in a supported authorized client and verify its destination and user-gesture behavior separately.",
+        evidence: "unverified"
       });
     });
     validation.configuration.registrations.forEach((_registration, index) => {
+      findings.push({
+        id: "COMMAND_RUNTIME_UNAVAILABLE", capabilityId: "C02", status: "unsupported",
+        path: `registrations[${index}]`,
+        message: "Generic form/grid command adapters are not implemented.",
+        remediation: "Use the typed launcher API only; do not register the planned generic command templates yet.",
+        evidence: "source"
+      });
       findings.push({
         id: "REGISTRATION_UNVERIFIED", capabilityId: "C02", status: "unknown",
         path: `registrations[${index}]`,

@@ -2,9 +2,7 @@ import { z } from "zod";
 import { VbdError } from "./errors.js";
 import { safePath } from "./findings.js";
 import type { Finding } from "./findings.js";
-
-const identifier = z.string().regex(/^[A-Za-z][A-Za-z0-9._-]{0,127}$/);
-const schemaName = z.string().regex(/^[A-Za-z][A-Za-z0-9_]{0,127}$/);
+import { identifierSchema as identifier, logicalNameSchema as schemaName } from "./validation.js";
 const binding = z.object({ environmentVariable: schemaName }).strict();
 const variable = z.object({
   schemaName,
@@ -131,6 +129,11 @@ function validate(input: unknown): ConfigurationValidation {
 }
 
 const registry = new Map<string, ToolkitConfiguration>();
+const revisions = new Map<string, number>();
+
+export function configurationRevision(name: string): number {
+  return revisions.get(name) ?? 0;
+}
 
 function requireName(name: string): void {
   if (!identifier.safeParse(name).success) {
@@ -157,6 +160,7 @@ function register(
     throw new VbdError("CONFIG_ALREADY_REGISTERED", { operation: "config.register" });
   }
   registry.set(name, result.configuration);
+  revisions.set(name, configurationRevision(name) + 1);
   return { name, schemaVersion: 1, replaced };
 }
 

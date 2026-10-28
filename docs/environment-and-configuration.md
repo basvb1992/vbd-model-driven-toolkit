@@ -1,9 +1,9 @@
 # Environment variables and configuration
 
-Environment retrieval/resolution below remains proposed. The implemented
-Config.validate/register/get subset validates and stores version-1 declarations;
-it does not read actual environment values. See [getting started](getting-started.md)
-and the [catalog](catalog/foundation.md) for exact availability.
+All ten Environment APIs now have a bounded source implementation alongside
+Config.validate/register/get. See [runtime usage](environment-launching.md),
+[getting started](getting-started.md), and the [catalog](catalog/foundation.md).
+Live Dataverse installation/resolution is not yet verified.
 
 ## Why this belongs in core
 
@@ -13,23 +13,27 @@ environment and supported configuration resolution over hardcoded tenant values.
 
 ## Environment-variable API
 
-`VBD.Environment` will provide required and optional reads, typed text/number/
+`VBD.Environment` provides required and optional reads, typed text/number/
 boolean/JSON reads, definition inspection, bulk resolution, and preload/invalidate
 operations.
 
-Use the platform's `RetrieveEnvironmentVariableValue` contract for effective-value
-resolution where suitable, alongside supported metadata retrieval for definition
-type and diagnostics. Do not assume an SDK method shown in documentation is
-itself a browser API; the implementation must use the supported Web API contract.
+The current implementation uses supported Xrm.WebApi definition/value queries
+with explicit current/default provenance and ambiguity rejection. Metadata type
+is selected before any current/default value. It does not choose a newest row
+or claim equivalence with opaque platform solution-layer resolution.
 
-Proposed behavior:
+The platform `RetrieveEnvironmentVariableValue` function remains a future
+alternative when its different provenance/ambiguity contract is explicitly
+selected. An SDK method is not itself a browser API.
+
+Implemented behavior:
 
 1. Validate the schema name and caller's expected type.
 2. Retrieve/validate the definition without exposing protected values.
 3. Reject Secret definitions before any secret retrieval.
-4. Resolve the effective current/default value through the supported contract.
+4. Read at most one explicit current candidate; only if absent/null read the default.
 5. Convert and validate against the declared type and supplied runtime schema.
-6. Apply only explicitly declared optional-value/caller-fallback policies.
+6. Apply only explicitly declared optional absence policies; no caller-value fallback is implemented.
 7. Cache successful safe results within the requested scope and TTL.
 
 A current value takes precedence over a definition default. The default applies
@@ -41,9 +45,8 @@ Distinguish a missing definition, no configured value, an empty value, a malform
 value, a denied read, and a failed service request. An optional read may return
 absence only for documented missing cases, not for access or transport failures.
 
-Provenance can be `current`, `default`, `platform`, or `callerFallback`.
-Report `current`/`default` only when verified from the supported response and
-metadata. If provenance is not observable, use `platform`; do not fabricate it.
+Current provenance is `current` or `default`, observed from those explicit reads.
+`platform`/`callerFallback` are reserved design options, not implemented modes.
 If explicit table inspection finds ambiguous candidate value rows, report an
 actionable configuration error rather than sorting by creation time and guessing.
 
@@ -53,7 +56,7 @@ actionable configuration error rather than sorting by creation time and guessing
 | --- | --- |
 | Text | Text, with explicit trim/empty policies. |
 | Decimal number | Finite number with documented invariant parsing and optional range validation. |
-| Two options | Boolean using the platform's documented representation; not generic string truthiness. |
+| Two options | Explicit case-insensitive true/false and yes/no strings after trimming; 0/1 and other strings are rejected. |
 | JSON | Parsed unknown value validated by a runtime schema/validator. A TypeScript generic alone is insufficient. |
 | Data source | Unsupported in the initial typed getters; require a separately defined supported metadata contract. Never treat it as connection credentials. |
 | Secret | Reject with `SECRET_NOT_SUPPORTED`; retrieve/use secrets only on an authorized server path. |
@@ -81,6 +84,9 @@ required text environment bindings for app/origin/environment references, and
 declared form/grid commands. Other variable declarations may use text, number,
 boolean, or JSON. All properties are allowlisted; unknown fields, raw values,
 Secret/Data source types, and workflow definitions are rejected.
+Preparing a registered profile now resolves its declared bindings through the
+typed environment API; it does not extend the configuration schema to arbitrary
+expressions, records, credentials, or workflow execution.
 
 The local snapshot format describes definition type and value presence/access
 only. Passing these checks does not prove a URL is allowed, an app is accessible,
@@ -121,6 +127,8 @@ substitution, or unrestricted URL interpolation.
 - Use bounded TTL, size, and explicit invalidate/preload operations.
 - Coalesce identical concurrent reads; never cache permission failures as absence.
 - Prepared launches expire/invalidate when their configuration or scope changes.
+- Any explicit environment invalidation conservatively expires all prepared
+  tokens; selected cache entries themselves are removed only in the chosen scope.
 - Expose effective feature flags for UX only; server authorization is independent.
 - Do not store secrets, tokens, or arbitrary fetched record payloads in browser
   storage. Persistent caching is opt-in and limited to approved safe metadata.

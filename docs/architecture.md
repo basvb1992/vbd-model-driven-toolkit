@@ -1,7 +1,8 @@
 # Architecture
 
-Most contracts below are proposed. The six implemented configuration/diagnostic
+Most contracts below are proposed. The implemented configuration/diagnostic
 functions and local delivery tools are described in [getting started](getting-started.md).
+The scoped environment/app-launch subset is in [runtime usage](environment-launching.md).
 Their source-level checks are not Dataverse installation or live-app evidence.
 
 ## Product and framework separation
@@ -48,9 +49,11 @@ only the opted-in interaction, not Core installation or unrelated operations.
 - Stable registered operation names for recipes; extensions register trusted
   functions in code, not unrestricted global names supplied by configuration.
 
-The first slice uses strict TypeScript, Zod schemas, esbuild browser/ESM/CLI
-bundles, ESLint, and Vitest. Browser code has no Node, Xrm, DOM, or framework
-dependency; local tools import the same validation/diagnostic contracts.
+The source uses strict TypeScript, Zod schemas, esbuild browser/ESM/CLI bundles,
+ESLint, and Vitest. Loading the browser bundle needs no Node, Xrm, DOM, or
+framework. Environment reads lazily require a supported online Xrm context
+or explicit typed ReadContext; window requests require a supported browser
+or explicit typed WindowHost. Local tools never invoke these live adapters.
 Duplicate global initialization fails instead of replacing an existing `VBD`.
 
 ## Context and entry points
@@ -87,12 +90,12 @@ requests on every ribbon reevaluation.
 | `EntityRef` | `{ entityType, id, name? }`, with validated GUID where required. |
 | `OperationContext` | Surface, form/grid where supplied, current/selected references, app, client, and user scope. |
 | `ValueBinding` | Explicit literal, context value, field, environment variable, configuration key, or previous-step result. |
-| `ResolvedValue<T>` | Value, schema name/type, cache metadata, and provenance only when observable. |
+| `ResolvedValue<T>` | Value, schema name/type, fetched/expiry times, cache status, and explicit current/default provenance. |
 | `Page<T>` | Items and supported continuation information; never an implicit unbounded result. |
 | `OperationResult<T>` | Successful result or explicit cancellation/skipped outcome where the operation supports it. |
 | `BatchResult` | Per-operation outcomes and summary; partial failure remains visible. |
-| `LaunchResult` | Requested/observably blocked/unknown status and safe metadata; not proof that the destination loaded. |
-| `PreparedLaunch` | Validated destination/options and scope/version/expiry; no credentials or user record payloads. |
+| `LaunchResult` | Currently requested/unknown with isolation metadata; no returned handle or proof that the destination loaded. |
+| `PreparedLaunch` | Frozen opaque identity/expiry token; its approved destination, scope, revision and freshness are private in-memory state. |
 | `Disposable` | Explicit removal of a registered handler, subscription, or scoped resource. |
 
 Unexpected errors reject/throw a structured `VbdError` with code, safe message,
@@ -144,6 +147,13 @@ policy. Optional fallbacks must be configured and reported to the caller.
 - Redacted diagnostics: no tokens, secret values, full record payloads, or
   sensitive URL query strings by default.
 - Event disposables and idempotent registration rather than accumulating handlers.
+
+The implemented environment cache has explicit entry/character/in-flight limits.
+It is not the future generic Cache module. Invalidation removes selected cached
+names in the chosen scope and conservatively expires all prepared launches;
+no values are stored in browser storage. Prepared state is capped at 128 tokens.
+Replacing registered configuration changes its revision, invalidating prior
+tokens without automatically mutating Dataverse or another app.
 
 ## Bounded interaction contract
 

@@ -1,7 +1,10 @@
 # Navigation, app launcher, and window functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md) and
-the mandatory [app/window contract](../app-launching.md).
+Five entries are implemented locally: Links.app, Launch.getProfile/prepareProfile/
+openPrepared, and Windows.open. The other 24 remain planned.
+See [catalog conventions](../function-catalog.md),
+[current runtime usage](../environment-launching.md), and the mandatory
+[app/window contract](../app-launching.md).
 
 ## VBD.Navigation
 
@@ -55,19 +58,22 @@ keys, IDs, and encoding. Never forward the entire form or current URL by default
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.Links.record` | Approved environment/app identity, ref, supported form options | Validated URL | Build a documented model-driven record deep link. | R1 |
-| `VBD.Links.app` | Approved environment and app identity | Validated URL | Current environment by default; cross-environment must be explicit. | R1 |
+| `VBD.Links.app` | Explicit root environment, one app ID/unique name, approved origins | Validated URL | Pure HTTPS app-link construction; no implicit global environment lookup. | R1 |
 | `VBD.Links.view` | Approved environment/app, table, view identity/type | Validated URL | Use documented list/view addressing only. | R1 |
 
 ## VBD.Launch
 
 Profiles bind environment variables and immediate context to supported destinations.
 These are launch configuration helpers, not authentication or app provisioning.
+The current profile schema supports modelDrivenApp/newWindow only, without
+record/field parameters. The three implemented methods do not provide ribbon
+handlers or non-popup openProfile behavior.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Launch.getProfile` | Registered profile key | Validated unresolved profile | Check destination/presentation/override policy. | R1 |
-| `VBD.Launch.prepareProfile` | Profile key, safe ctx, TTL/scope | `PreparedLaunch` | Resolve async configuration early; expire on dependency/scope change. | R1 |
-| `VBD.Launch.openPrepared` | Prepared launch, immediate permitted bindings | Synchronous `LaunchResult` | Validate and request browser opening during user activation; no await before open. | R1 |
+| `VBD.Launch.getProfile` | Configuration name and profile key | Validated unresolved profile copy | Check the supported declaration; do not resolve values. | R1 |
+| `VBD.Launch.prepareProfile` | Configuration/profile identity, optional read context, TTL | Opaque `PreparedLaunch` | Resolve async configuration early; expire on freshness/revision/scope/invalidation changes. | R1 |
+| `VBD.Launch.openPrepared` | Original prepared token, optional dimensions/trusted host | Synchronous `LaunchResult` | Require active user activation; no async reads, URL overrides, or record bindings. | R1 |
 | `VBD.Launch.openProfile` | Profile key, ctx, supported non-popup presentation | Navigation request/result | Async convenience for inline/dialog/pane/host navigation; independent windows require openPrepared. | R1 |
 
 ## VBD.Windows
@@ -77,5 +83,5 @@ readiness. Isolated-window and reusable-connected-window modes are distinct.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Windows.open` | Already validated app/external URL, isolated target/size/referrer policy | Synchronous `LaunchResult` | Not a replacement for native form navigation; no async resolution; no opener by default; null handle alone is not proof of blocking. | R1 |
+| `VBD.Windows.open` | App URL, approved origins, optional pixel dimensions/trusted host | Synchronous `LaunchResult` | Current scope is model-driven app links only; _blank/noopener/noreferrer; a null handle is not proof of blocking. | R1 |
 | `VBD.Windows.openNamed` | Approved URL, stable name, explicit connected-mode policy | Request result and permitted handle/token | Optional reuse; cannot guarantee isolation/reuse together or manage cross-origin internals. | R3 |

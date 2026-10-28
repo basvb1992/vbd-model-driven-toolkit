@@ -10,6 +10,23 @@ const messages = {
   INPUT_UNREADABLE: "An input file could not be read as a regular UTF-8 JSON file.",
   OUTPUT_EXISTS: "The output file already exists. Choose a new path.",
   OUTPUT_UNWRITABLE: "The output file could not be written.",
+  UNSUPPORTED_SURFACE: "This operation requires a supported online model-driven app or an explicit typed context.",
+  DATA_READ_FAILED: "A configuration read failed. Inspect the retained cause using authorized diagnostics.",
+  DATA_RESPONSE_INVALID: "The configuration service returned an unexpected response shape.",
+  ACCESS_DENIED: "Configuration read access was denied. No missing-value fallback was applied.",
+  CONFIG_AMBIGUOUS: "Configuration contains multiple or incompletely paged candidates. Resolve the ambiguity explicitly.",
+  CONFIG_VALUE_MISSING: "The variable has no configured current or default value.",
+  CONFIG_TYPE_MISMATCH: "The variable definition type does not match the requested type.",
+  CONFIG_VALUE_INVALID: "The configuration value does not satisfy its declared type or validation policy.",
+  SECRET_NOT_SUPPORTED: "Secret environment variables cannot be retrieved by the client toolkit.",
+  UNSUPPORTED_VARIABLE_TYPE: "This environment-variable type is not supported for the requested client operation.",
+  CONFIG_NOT_READY: "The prepared launch token is unknown. Prepare the registered profile first.",
+  CONFIG_EXPIRED: "Configuration scope, freshness, or revision changed. Resolve and prepare it again.",
+  LIMIT_EXCEEDED: "The operation exceeds the documented bounded capacity.",
+  ENVIRONMENT_BATCH_FAILED: "An environment-variable batch failed. No partial success result was returned.",
+  INVALID_URL: "The destination must satisfy the documented HTTPS app-link and approved-origin policy.",
+  USER_ACTIVATION_REQUIRED: "A direct active user gesture is required before requesting a new window.",
+  WINDOW_REQUEST_FAILED: "The browser window operation failed. Destination readiness is not known.",
   OPERATION_FAILED: "The operation failed. Use the correlation ID for diagnosis."
 } as const;
 

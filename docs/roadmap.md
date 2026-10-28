@@ -1,10 +1,10 @@
 # Roadmap
 
-Six catalog functions have a local implementation; the other 192 are planned.
+Twenty-one catalog functions have a local implementation; the other 177 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
-## Current progress: C1a
+## Current progress: C1a and C1b
 
 [Issue #1](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/1) scopes
 the first implementation: six configuration/diagnostic APIs, strict schema,
@@ -13,8 +13,13 @@ handover. See [getting started](getting-started.md).
 
 Local verification includes strict types/lint/build, NodeNext consumer types,
 CLI behavior, redaction/bounds tests, and browser-bundle VM smoke checks.
-This is not a completed R1 release: no live environment reads, launcher/command
-execution, diagnostic panel, Dataverse import, or solution package exists.
+[Issue #3](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/3) adds
+ten environment APIs, approved app links, prepared profile tokens, and synchronous
+isolated app-window requests. See [runtime usage](environment-launching.md).
+
+This is not a completed R1 release: no generic command adapters, diagnostic
+panel, Dataverse import, or solution package exists. Supported Xrm reads and
+browser requests are implemented, but actual tenant integration remains unverified.
 
 ## D0: Documentation baseline
 
