@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "targetAlias": "source.example",
+  "observedAt": "2026-10-28T10:00:00.000Z",
+  "environmentVariables": [
+    {
+      "schemaName": "vbd_ExampleSetting",
+      "status": "available",
+      "type": "text",
+      "hasCurrentValue": true,
+      "hasDefaultValue": false
+    }
+  ]
+}

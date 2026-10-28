@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "syntheticExampleOnly",
+  "observedAt": "2026-10-28T10:00:00.000Z",
+  "versions": [
+    {
+      "version": "0.2.0",
+      "status": "supported",
+      "functions": [
+        { "name": "VBD.Config.validate", "status": "supported" }
+      ],
+      "configurations": [
+        { "key": "toolkitConfiguration.v1", "status": "supported" }
+      ]
+    },
+    {
+      "version": "0.3.0",
+      "status": "supported",
+      "functions": [
+        { "name": "VBD.Config.validate", "status": "deprecated", "replacement": "VBD.Config.get" },
+        { "name": "VBD.Config.get", "status": "supported" }
+      ],
+      "configurations": [
+        { "key": "toolkitConfiguration.v1", "status": "supported" }
+      ]
+    }
+  ]
+}
