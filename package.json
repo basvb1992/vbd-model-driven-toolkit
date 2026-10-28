@@ -19,11 +19,12 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node scripts/build.mjs",
+    "build:playground": "tsc --noEmit && node scripts/build-playground.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "docs:availability": "node scripts/update-availability.mjs",
     "typecheck:package": "tsc --strict --noEmit --module NodeNext --target ES2022 --types node tests/package-consumer.mts",
-    "test": "npm run build && npm run typecheck:package && vitest run",
+    "test": "npm run build && npm run build:playground && npm run typecheck:package && vitest run",
     "check": "npm run typecheck && npm run lint && npm test"
   },
   "dependencies": {

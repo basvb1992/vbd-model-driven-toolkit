@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VBD Toolkit Playground</title>
+  <style>
+    :root{font-family:"Segoe UI",Arial,sans-serif;color:#242424;background:#fafafa;font-size:16px}
+    *{box-sizing:border-box}body{margin:0}main{max-width:1240px;margin:auto;padding:28px}
+    header{display:flex;align-items:start;justify-content:space-between;gap:16px;margin-bottom:24px}
+    h1{font-size:1.75rem;margin:0 0 8px}h2{font-size:1.2rem;margin:0 0 12px}
+    p{line-height:1.5;margin:0 0 12px;max-width:75ch}.muted{color:#424242}
+    .version{white-space:nowrap;border:1px solid #d1d1d1;border-radius:4px;padding:8px 12px;background:#fff}
+    .notice{background:#eef6fc;border:1px solid #b4d6fa;padding:14px 16px;margin-bottom:24px}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+    section{background:#fff;border:1px solid #d1d1d1;border-radius:4px;padding:20px;margin-bottom:20px;min-width:0}
+    label{display:block;font-weight:600;margin:12px 0 6px}input,select,textarea,button{font:inherit}
+    input,select,textarea{width:100%;border:1px solid #707070;border-radius:3px;padding:8px;color:#242424;background:#fff}
+    textarea{min-height:110px;resize:vertical}button{border:1px solid #707070;border-radius:4px;background:#fff;color:#242424;padding:9px 14px;cursor:pointer}
+    button:hover{background:#f0f0f0}button:active{background:#e0e0e0}button.primary{background:#0f6cbd;color:#fff;border-color:#0f6cbd}
+    button.primary:hover{background:#115ea3}button:disabled{background:#f0f0f0;color:#616161;border-color:#d1d1d1;cursor:default}
+    :focus-visible{outline:3px solid #0f6cbd;outline-offset:3px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .fields{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.check{display:flex;align-items:center;gap:8px;font-weight:400}.check input{width:auto}
+    pre{background:#f5f5f5;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;min-height:180px;max-height:620px;overflow:auto;font-size:.875rem}
+    #status{padding:10px 0;overflow-wrap:anywhere}#status[data-kind=error]{color:#a4262c}#status[data-kind=success]{color:#107c10}
+    a{color:#0f548c}small{font-size:.875rem;line-height:1.5}.full{grid-column:1/-1}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}main{padding:16px}header{flex-direction:column}.fields{grid-template-columns:1fr}}
+  </style>
+  <script src="../../ClientGlobalContext.js.aspx"></script>
+  <script src="../toolkit/vbd.toolkit.js"></script>
+  <script defer src="vbd.playground.js"></script>
+</head>
+<body>
+<main>
+  <header><div><h1>VBD Toolkit Playground</h1><p class="muted">Try the installed library through safe, explicit examples.</p></div><span class="version" id="version" role="status">Loading Core...</span></header>
+  <div class="notice"><strong>Optional test app, not a configuration Studio.</strong> Core remains a separate reusable library. These examples do not create or update records, install handlers, or change server configuration.</div>
+  <div class="layout">
+    <div>
+      <section aria-labelledby="health-heading">
+        <h2 id="health-heading">Library and local examples</h2>
+        <p>Inspect the loaded version and API presence, or exercise literal bindings and copy-isolated memory caching. Neither action queries business records.</p>
+        <div class="actions"><button id="inspect" class="primary">Inspect library</button><button id="local">Run local examples</button></div>
+        <p class="muted" style="margin-top:14px"><small>Native form, ribbon, lookup and dialog APIs require their actual supported host. A sitemap HTML page does not provide <code>Xrm</code>; absent capabilities here are expected.</small></p>
+      </section>
+      <section aria-labelledby="variable-heading">
+        <h2 id="variable-heading">Read an environment variable</h2>
+        <p>Only your explicit request performs a bounded current-user read. Values are hidden by default; protected types are rejected by Core.</p>
+        <label for="schema-name">Schema name</label><input id="schema-name" maxlength="128" placeholder="vbd_YourVariable" autocomplete="off">
+        <label for="variable-type">Expected type</label><select id="variable-type"><option value="text">Text</option><option value="number">Number</option><option value="boolean">Boolean</option></select>
+        <label class="check" for="reveal"><input id="reveal" type="checkbox">Reveal non-secret value in the local result</label>
+        <div class="actions"><button id="read-variable">Read variable</button></div>
+      </section>
+      <section aria-labelledby="config-heading">
+        <h2 id="config-heading">Validate a declaration</h2>
+        <p>Paste a portable schema-v1 declaration. Validation does not register it or resolve values. Do not paste credentials or customer data.</p>
+        <label for="config-json">Configuration JSON (maximum 256 KiB)</label><textarea id="config-json" maxlength="262144" spellcheck="false">{}</textarea>
+        <div class="actions"><button id="validate">Validate JSON</button></div>
+      </section>
+    </div>
+    <div>
+      <section aria-labelledby="link-heading">
+        <h2 id="link-heading">Build a record or view link</h2>
+        <p>Preview a same-environment link without navigating or checking record access. Use an app, table and ID you are authorized to test.</p>
+        <button id="current-app">Use current environment and app</button>
+        <label for="environment-url">Environment root URL</label><input id="environment-url" type="url" autocomplete="off" placeholder="Use the current app button">
+        <label for="app-id">App ID</label><input id="app-id" maxlength="38" autocomplete="off">
+        <div class="fields"><div><label for="table">Table logical name</label><input id="table" maxlength="128" value="account" autocomplete="off"></div><div><label for="link-mode">Destination</label><select id="link-mode"><option value="record">Record</option><option value="systemView">System view</option><option value="personalView">Personal view</option></select></div></div>
+        <label for="record-id">Record or view ID</label><input id="record-id" maxlength="38" autocomplete="off">
+        <div class="actions"><button id="build-link" class="primary">Build link</button><button id="copy-link" disabled>Copy link</button></div>
+        <label for="generated-link">Generated URL</label><textarea id="generated-link" readonly aria-describedby="link-heading"></textarea>
+      </section>
+      <section aria-labelledby="result-heading">
+        <h2 id="result-heading">Result</h2>
+        <p id="status" role="status" aria-live="polite">Choose an example to see its result. No example has run yet.</p>
+        <pre id="result" tabindex="0" aria-label="Example result" aria-busy="false">Results appear here. No customer data is queried on page load.</pre>
+        <a href="https://github.com/basvb1992/vbd-model-driven-toolkit/blob/v0.5.0-test.1/docs/testing-in-bvb.md" target="_blank" rel="noopener noreferrer">Read the form and ribbon testing guide</a>
+      </section>
+    </div>
+  </div>
+</main>
+</body>
+</html>
