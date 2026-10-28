@@ -1,7 +1,8 @@
 # Foundation and configuration functions
 
-Six entries are implemented locally: Config's validate/register/get and
-Diagnostics' normalizeError/report/getVersion. The other 39 entries in this
+Sixteen entries are implemented locally: Config's validate/register/get,
+Diagnostics' normalizeError/report/getVersion, and all ten Environment APIs.
+The other 29 entries in this
 file remain planned. See [catalog conventions](../function-catalog.md) and
 [current usage](../getting-started.md); no entry is Dataverse-deployed yet.
 `R1`/`R2`/`R3` indicate earliest delivery phase, not implementation status.
@@ -26,6 +27,9 @@ file remain planned. See [catalog conventions](../function-catalog.md) and
 Typed getters return promises of `ResolvedValue<T>`, not untyped raw database
 rows. Required reads reject missing/invalid values. Optional reads distinguish
 absence from access/service failure. See the [resolution contract](../environment-and-configuration.md).
+The implemented resolver uses explicit unambiguous current/default reads, not
+opaque solution-layer selection. Metadata inspection returns identity/type only,
+never defaults or Secret values. See [runtime signatures](../environment-launching.md).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -33,9 +37,9 @@ absence from access/service failure. See the [resolution contract](../environmen
 | `VBD.Environment.getOptional` | Schema name, expected type, declared absence policy | Optional `ResolvedValue<unknown>` | Absence only for declared missing cases, not service errors. | R1 |
 | `VBD.Environment.getText` | Schema name, trim/allowEmpty policy | `ResolvedValue<string>` | Preserve explicit empty handling; validate text definition. | R1 |
 | `VBD.Environment.getNumber` | Schema name, range policy | `ResolvedValue<number>` | Finite invariant parsing; zero is a value. | R1 |
-| `VBD.Environment.getBoolean` | Schema name | `ResolvedValue<boolean>` | Parse documented Two options representation; false is a value. | R1 |
+| `VBD.Environment.getBoolean` | Schema name, context/cache policy | `ResolvedValue<boolean>` | Explicit true/false and yes/no forms; no generic truthiness. | R1 |
 | `VBD.Environment.getJson` | Schema name, runtime validator | `ResolvedValue<T>` | Parse then validate JSON; no unchecked generic cast. | R1 |
-| `VBD.Environment.getDefinition` | Schema name | Safe definition metadata | Return type/default metadata only under safe redaction policy. | R1 |
+| `VBD.Environment.getDefinition` | Schema name, context | Safe definition metadata | Return identity/schema/type only; never default/current values. | R1 |
 | `VBD.Environment.getMany` | Typed schema requests, bounded concurrency | Keyed resolved values | Failures remain associated with requests; no silent defaults. | R1 |
 | `VBD.Environment.preload` | Typed schema requests, TTL | Preload summary | Resolve early for commands; cache only safe valid results. | R1 |
 | `VBD.Environment.invalidate` | Schema names or current scope | Invalidated-entry count | Remove cached/prepared dependencies; no Dataverse mutation. | R1 |

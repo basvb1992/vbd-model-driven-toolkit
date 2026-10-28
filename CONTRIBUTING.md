@@ -1,7 +1,7 @@
 # Contributing
 
 This repository contains an early implementation alongside the broader design.
-Only the six functions listed as implemented in the catalog are callable.
+Only functions listed as implemented in the catalog are callable.
 Do not treat planned entries or generated command templates as existing APIs.
 
 ## Before implementing
@@ -52,6 +52,10 @@ For implementation changes, use Node.js 24+, `npm ci`, and `npm run check`.
 The check includes strict types, lint, build, NodeNext package-consumer types,
 and unit/CLI/browser-bundle VM tests. Commit the dependency lockfile when needed.
 Live model-driven behavior and solution import are separate future checks.
+Environment/launcher adapters must also cover protected-type guards, scope and
+invalidation races, source freshness, origin policy, opaque-token integrity,
+and synchronous user-activation requirements. Never equate a null window handle
+or a valid declaration with a loaded, authorized destination.
 
 ## License and releases
 

@@ -1,8 +1,10 @@
-# Getting started: C1a source implementation
+# Getting started: source implementation
 
 This is an early development slice, not an installable Dataverse solution.
 Requires Node.js 24+ and npm. The npm package is private and not published.
-No environment login, Xrm, Studio, or Workflow/Interaction Framework is needed.
+Building and local delivery tools need no environment login, Xrm, Studio, or
+Workflow/Interaction Framework. Runtime environment reads use the caller's
+supported online Xrm context, or an explicitly supplied typed context.
 
 ## Build and check
 
@@ -22,8 +24,10 @@ Built output is described in [distribution](distribution.md).
 
 Inside a configured local workspace, developer code can import the ESM package
 as `import * as VBD from "vbd-model-driven-toolkit"`. After loading the built
-browser bundle once, the same Config/Diagnostics methods are under global `VBD`.
+browser bundle once, implemented modules are under global `VBD`.
 No webresource upload or registration has been performed.
+The new environment/launcher methods are documented separately in
+[environment reads and app launching](environment-launching.md).
 
 | Function | Current signature / behavior |
 | --- | --- |
@@ -69,8 +73,9 @@ declarations may be optional. All unknown fields, Secret/Data source declaration
 types, literal destinations, workflow definitions, and invalid references fail.
 
 This validates a portable declaration, not actual values, URL origins, app
-availability, command deployment, or browser launching. Runtime resolution,
-launching, and the generated command entry points remain unimplemented.
+availability, command deployment, or browser launching. Runtime preparation
+now resolves and validates a destination, but this source-level report does
+not invoke it. Generated generic command entry points remain unimplemented.
 
 ## Source preflight
 
@@ -88,8 +93,8 @@ and unsupported statuses.
 | 1 | Invalid input, definite failed check, or I/O/reporting failure. |
 | 2 | Evidence incomplete or an expected runtime/check is unsupported. |
 
-**A valid current example returns 2, not 0.** Live verification and the launch/
-command runtime are unavailable, so current valid configurations cannot be
+**A valid current example returns 2, not 0.** Live verification and generic
+command handlers are unavailable, so current valid configurations cannot be
 certified deployment-ready. Do not mask code 2 as success in a deployment gate.
 
 ## Optional sanitized snapshot
@@ -141,6 +146,6 @@ local `reports/` is ignored and nothing is uploaded automatically.
 
 ## Not included yet
 
-Environment-value retrieval, app/window execution, form/ribbon handlers, recipes,
-live metadata/access checks, a diagnostic panel, Studio, solution packages, and
-Dataverse deployment remain future work. The workflow framework stays independent.
+Form/ribbon handlers, non-popup navigation, recipes, live CLI metadata/access
+collection, a diagnostic panel, Studio, solution packages, and Dataverse
+deployment remain future work. The workflow framework stays independent.

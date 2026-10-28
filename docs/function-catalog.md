@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**Six functions have a local implementation; the other 192 remain planned.**
+**Twenty-one functions have a local implementation; the other 177 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -17,11 +17,28 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Diagnostics.normalizeError`
 - `VBD.Diagnostics.report`
 - `VBD.Diagnostics.getVersion`
+- `VBD.Environment.get`
+- `VBD.Environment.getOptional`
+- `VBD.Environment.getText`
+- `VBD.Environment.getNumber`
+- `VBD.Environment.getBoolean`
+- `VBD.Environment.getJson`
+- `VBD.Environment.getDefinition`
+- `VBD.Environment.getMany`
+- `VBD.Environment.preload`
+- `VBD.Environment.invalidate`
+- `VBD.Links.app`
+- `VBD.Launch.getProfile`
+- `VBD.Launch.prepareProfile`
+- `VBD.Launch.openPrepared`
+- `VBD.Windows.open`
 
-These six have local type/lint/build and automated evidence, not Dataverse
+These have local type/lint/build and automated evidence, not Dataverse
 deployment verification. Their exact current schema/signatures and limitations
-are in [getting started](getting-started.md). In particular, environment reads,
-launch execution, command handlers, and recipe execution are not implemented.
+are in [getting started](getting-started.md) and
+[environment/app runtime usage](environment-launching.md). Environment/launcher
+behavior is bounded to that documented subset. Generic command handlers,
+non-popup openProfile, and recipe execution remain planned.
 
 ## Reading the catalog
 

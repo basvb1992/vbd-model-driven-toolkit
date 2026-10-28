@@ -4,13 +4,13 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: early source implementation (0.1.0). Six functions and local
+**Status: early source implementation (0.2.0). Twenty-one functions and local
 source/snapshot delivery tools are implemented. No Dataverse deployment,
-solution ZIP, Studio, launcher runtime, or public npm release exists yet.**
+solution ZIP, Studio, generic ribbon handler, or public npm release exists yet.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
-Six are locally implemented; the other 192 remain planned.
+Twenty-one are locally implemented; the other 177 remain planned.
 
 ## Available now
 
@@ -19,6 +19,10 @@ Six are locally implemented; the other 192 remain planned.
 - `VBD.Diagnostics.normalizeError`, `report`, and `getVersion`: structured
   errors, explicit redacted sinks, and version information.
 - A browser `VBD` bundle, ESM developer bundle, and TypeScript declarations.
+- Ten typed `VBD.Environment` APIs with supported online Xrm reads, explicit
+  current/default precedence, protected-type guards, and scoped bounded caching.
+- `VBD.Links.app`, three `VBD.Launch` APIs, and `VBD.Windows.open` for approved
+  app destinations prepared before a synchronous isolated click request.
 - Local `preflight` JSON and `handover` Markdown tools. These use source and
   optional sanitized supplied evidence; no live environment is queried.
 
@@ -31,9 +35,11 @@ node .\dist\vbd-toolkit.mjs preflight --config .\examples\customer-workspace.jso
 ```
 
 The example preflight intentionally exits **2 (incomplete)**: live deployment
-is unverified and the configured launch/command runtime is not implemented.
+is unverified and generic form/grid command handlers are not implemented.
 See [getting started](docs/getting-started.md) for usable APIs, report generation,
 input limits, and the precise current boundaries.
+See [environment reads and app launching](docs/environment-launching.md) for
+the new runtime contracts, caller-owned setup/click example, and limitations.
 
 ## What we are designing
 
@@ -75,7 +81,8 @@ handover; a visual authoring Studio comes later.
 
 | Document | Contents |
 | --- | --- |
-| [Getting started](docs/getting-started.md) | Build, six implemented APIs, portable schema, preflight, handover, and exit codes |
+| [Getting started](docs/getting-started.md) | Build, configuration/diagnostic APIs, portable schema, preflight, handover, and exit codes |
+| [Environment reads and app launching](docs/environment-launching.md) | Typed reads, scoped cache, approved app links, prepared tokens, and synchronous window requests |
 | [Feature specification](docs/feature-spec.md) | Outcomes, boundaries, acceptance criteria, assumptions, and failure cases |
 | [Function catalog](docs/function-catalog.md) | Complete proposed public API inventory, inputs, outputs, and delivery phases |
 | [Architecture](docs/architecture.md) | Typed APIs, maker adapters, recipes, contexts, errors, and compatibility |

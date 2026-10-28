@@ -1,5 +1,7 @@
 import * as VBD from "vbd-model-driven-toolkit";
-import type { ToolkitConfiguration, Diagnostic } from "vbd-model-driven-toolkit";
+import type {
+  ToolkitConfiguration, Diagnostic, ReadContext, ResolvedValue, PreparedLaunch, LaunchResult
+} from "vbd-model-driven-toolkit";
 
 const result = VBD.Config.validate({});
 if (result.valid) {
@@ -13,3 +15,20 @@ const diagnostic: Promise<{ correlationId: string; reported: true }> =
     sink: (value: Diagnostic): void => { void value; }
   });
 void diagnostic;
+
+declare const context: ReadContext;
+const flag: Promise<ResolvedValue<boolean>> = VBD.Environment.getBoolean("vbd_Flag", { context });
+const prepared: Promise<PreparedLaunch> = VBD.Launch.prepareProfile({
+  configurationName: "customerWorkspace", profileKey: "customerWorkspace", context
+});
+declare const token: PreparedLaunch;
+const opened: LaunchResult = VBD.Launch.openPrepared(token);
+const url: string = VBD.Links.app({
+  environmentUrl: "https://target.example",
+  appName: "vbd_Workspace",
+  allowedOrigins: ["https://target.example"]
+});
+void flag;
+void prepared;
+void opened;
+void url;

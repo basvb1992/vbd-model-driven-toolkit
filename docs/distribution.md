@@ -31,7 +31,7 @@ Current `npm run build` outputs are:
 
 | Output | Current purpose |
 | --- | --- |
-| `dist/vbd.toolkit.js` | Six-function `VBD` browser bundle; duplicate initialization is rejected. |
+| `dist/vbd.toolkit.js` | Implemented `VBD` browser subset; duplicate initialization is rejected, platform adapters are lazy. |
 | `dist/index.mjs` and `dist/types/` | ESM developer API and declarations. |
 | `dist/vbd-toolkit.mjs` | Node.js 24+ local preflight/handover CLI; uses installed declared dependencies. |
 | `dist/THIRD-PARTY-NOTICES.txt` | Bundled Zod license notice. |
