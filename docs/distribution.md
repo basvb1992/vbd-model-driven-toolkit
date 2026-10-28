@@ -1,8 +1,10 @@
 # Repository and solution distribution
 
-Local source builds and CLI tools now exist; solution distribution below remains
-planned. There is no deploy command or managed/unmanaged package yet.
-See [getting started](getting-started.md).
+Local source builds, CLI tools, and offline unmanaged solution packaging now
+exist. Managed export, clean imports and public distribution remain gated.
+See [getting started](getting-started.md),
+[consultant tools](consultant-tools.md), and
+[solution packaging](solution-packaging.md).
 
 ## Repository
 
@@ -85,6 +87,16 @@ must not wait for Studio, and no Delivery Tool may silently import/publish/fix
 an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
+
+The current 0.3.0 source maps to solution version `0.3.0.0`. Local PAC builds
+contain exactly the browser `VBD` resource and complete escaped third-party
+notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
+zero Dataverse dependencies from the nine bundled runtime packages.
+Build and inspection use the shared browser/notice contract and locked inputs.
+No managed build is fabricated: it fails `MANAGED_EXPORT_REQUIRED` before
+creating output. The [packaging guide](solution-packaging.md) records the local
+evidence and future authorized export path. Neither variant is import-tested,
+tagged or approved for redistribution.
 
 | Artifact | Intended use |
 | --- | --- |

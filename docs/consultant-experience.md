@@ -4,6 +4,9 @@
 live deployment checker is available.** C01 has structured diagnostic contracts,
 C02 has source/sanitized-snapshot preflight, and C03 has declared-configuration
 Markdown handover. All broader capability requirements remain planned.
+The bounded C05 sanitized comparison and C08 supplied-manifest upgrade tools
+are also [available locally](consultant-tools.md); live discovery and an
+authoritative published compatibility matrix are not provided.
 This catalog defines experiences built around the runtime library. It does not
 add functions to the 198-function [runtime catalog](function-catalog.md).
 See [getting started](getting-started.md) for current commands and limitations.
@@ -244,7 +247,8 @@ one explicit context, one source/target scope, and deterministic redacted report
 Extend coverage through bounded implementation issues instead of waiting for
 all runtime functions or building Studio first.
 
-Only the scoped C1a source-level behavior has automated evidence. A diagnostic
+The scoped C1a source-level behavior and C05/C08 local reports have automated
+evidence. See [consultant tools](consultant-tools.md). A diagnostic
 panel, live metadata collection, deployed registration verification, and the
 remaining capability requirements are unimplemented/unverified. This catalog
 does not certify those broader behaviors.

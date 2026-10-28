@@ -17,8 +17,8 @@ CLI behavior, redaction/bounds tests, and browser-bundle VM smoke checks.
 ten environment APIs, approved app links, prepared profile tokens, and synchronous
 isolated app-window requests. See [runtime usage](environment-launching.md).
 
-This is not a completed R1 release: no generic command adapters, diagnostic
-panel, Dataverse import, or solution package exists. Supported Xrm reads and
+This is not a completed R1 release: no generic configured-operation command
+adapters, diagnostic panel or Dataverse import exists. Supported Xrm reads and
 browser requests are implemented, but actual tenant integration remains unverified.
 
 ## Next core source milestones
@@ -33,10 +33,19 @@ The remaining 17 R1 entries are configuration load/resolve, bindings, generic
 cache, table/privilege hints, capability reporting, side-pane helpers, record/view
 links and non-popup openProfile. R2/R3 extensions remain separate scoped work.
 
-Independent consultant comparison/upgrade and offline solution-packaging lanes
-are owned by their coordinator in reserved paths/separate worktrees. They are
-not automatically cherry-picked into this active core branch, and no deployment
-is implied by their packaging source.
+## Integrated local delivery
+
+[Issue #11](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/11)
+integrates the independent consultant and packaging lanes into a separate
+branch over the 0.3.0 core; their original worktrees and PRs remain unchanged.
+[Consultant tools](consultant-tools.md) implement the bounded C05/C08 subset.
+[Offline packaging](solution-packaging.md) reconciles the current source/version,
+shared browser build options, nine bundled dependency notices, and actual PAC
+unmanaged pack/unpack/repack. Neither tool changes the 118-function API count.
+
+The package has two webresources and no Dataverse dependencies. This is local
+evidence only: no import, authentication, deployment, merge, genuine managed
+export, license approval or public release is implied.
 
 ## D0: Documentation baseline
 
@@ -113,6 +122,8 @@ reason to merge repositories, solutions, or release dependencies.
 Managed/unmanaged packaging can start once R1 contracts are stable. It is not
 implied by function implementation. First verify BvB Demo target identity and
 publisher without embedding that environment in portable sources.
+The [local unmanaged portion](solution-packaging.md) now exists; managed creation
+fails explicitly until genuine authorized export prerequisites are satisfied.
 
 First distributable release requires ALM acceptance evidence, owner-approved
 license/visibility, tagged reproducible artifacts, and consumer installation

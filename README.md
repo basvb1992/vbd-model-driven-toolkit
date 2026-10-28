@@ -4,8 +4,8 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: early source implementation (0.3.0). 118 functions and local
-source/snapshot delivery tools are implemented. No Dataverse deployment,
+**Status: early source implementation (0.3.0). 118 functions, local delivery
+tools, and offline unmanaged solution packaging are implemented. No Dataverse deployment,
 live form/ribbon installation, Studio, or public npm release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
@@ -31,6 +31,11 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
   field allowlists, delete confirmation and conditional-write policy.
 - Local `preflight` JSON and `handover` Markdown tools. These use source and
   optional sanitized supplied evidence; no live environment is queried.
+- Sanitized snapshot comparison and supplied-manifest upgrade reports, separate
+  from the browser runtime.
+- Local PAC unmanaged pack/unpack/repack with two independent webresources,
+  complete bundled notices and bounded inspection. Managed creation remains
+  blocked pending a genuine authorized Dataverse export.
 
 Requires Node.js 24 or later for development/tools:
 
@@ -48,6 +53,9 @@ See [environment reads and app launching](docs/environment-launching.md) for
 the new runtime contracts, caller-owned setup/click example, and limitations.
 See [core usage](docs/core-usage.md) for the next navigation/form/data milestones,
 native handler parameters, scope bounds and unsupported subsets.
+See [consultant tools](docs/consultant-tools.md) and
+[solution packaging](docs/solution-packaging.md) for current delivery commands,
+evidence limits, and the remaining managed/import/release gates.
 
 ## What we are designing
 
@@ -96,6 +104,8 @@ handover; a visual authoring Studio comes later.
 | [Function catalog](docs/function-catalog.md) | Complete proposed public API inventory, inputs, outputs, and delivery phases |
 | [Architecture](docs/architecture.md) | Typed APIs, maker adapters, recipes, contexts, errors, and compatibility |
 | [Consultant capabilities](docs/consultant-experience.md) | Prioritized diagnostic, delivery, comparison, handover, and Studio experiences |
+| [Consultant tools](docs/consultant-tools.md) | Local sanitized comparison and supplied-manifest upgrade reports |
+| [Solution packaging](docs/solution-packaging.md) | Offline unmanaged PAC packaging, complete notices, inspection and managed prerequisites |
 | [Environment and configuration](docs/environment-and-configuration.md) | Value resolution, types, caching, secrets, feature flags, and bindings |
 | [Apps and independent windows](docs/app-launching.md) | App profiles, deep links, popup restrictions, authentication, and return contracts |
 | [Recipe examples](docs/recipes.md) | Proposed end-to-end interactions and smart mechanisms |
@@ -111,8 +121,8 @@ handover; a visual authoring Studio comes later.
 | Public namespace | `VBD`, for example `VBD.Environment.getText` |
 | Dataverse publisher prefix | `vbd` |
 | Toolkit-owned schema names | `vbd_<name>` |
-| Proposed solution unique name | `VBDModelDrivenToolkit` |
-| Proposed core webresource | `vbd_/toolkit/vbd.toolkit.js` |
+| Core solution unique name | `VBDModelDrivenToolkit` |
+| Core webresource | `vbd_/toolkit/vbd.toolkit.js` |
 | Proposed maker adapter webresource | `vbd_/toolkit/vbd.commands.js` |
 | Repository | `vbd-model-driven-toolkit` |
 
@@ -130,6 +140,7 @@ required in this repository.
 The repository is initially private. Public visibility and a redistribution
 license are pending owner approval. Future tagged releases should provide
 managed and unmanaged solution ZIPs built from the same source revision.
-There are no installable ZIPs yet.
+Local unmanaged ZIPs can be generated and inspected, but have not been
+import-tested. No managed ZIP, tagged release or public distribution is claimed.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing implementation.

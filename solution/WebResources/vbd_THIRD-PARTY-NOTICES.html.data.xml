@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>vbd_/toolkit/THIRD-PARTY-NOTICES.html</Name>
+  <DisplayName>VBD Toolkit Third-Party Notices</DisplayName>
+  <WebResourceType>1</WebResourceType>
+  <IsCustomizable>1</IsCustomizable>
+  <IntroducedVersion>0.3.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <FileName>/WebResources/vbd_THIRD-PARTY-NOTICES.html</FileName>
+</WebResource>

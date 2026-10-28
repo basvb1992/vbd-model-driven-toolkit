@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "policyId": "examplePresencePolicy",
+  "expectedDifferences": [
+    {
+      "schemaName": "vbd_ExampleSetting",
+      "facet": "currentPresence",
+      "left": true,
+      "right": false,
+      "reason": "environmentSpecific"
+    },
+    {
+      "schemaName": "vbd_ExampleSetting",
+      "facet": "defaultPresence",
+      "left": false,
+      "right": true,
+      "reason": "environmentSpecific"
+    }
+  ]
+}
