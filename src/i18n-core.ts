@@ -67,15 +67,34 @@ export function intl<T>(operation: string, run: () => T): T {
   }
 }
 
+export function unsupportedIntl(operation: string): never {
+  throw new VbdError("UNSUPPORTED_SURFACE", { operation });
+}
+/** Optional host capability: inspect only at method use, never at module load. */
+export function intlApi(
+  operation: string,
+  methods: readonly ("getCanonicalLocales" | "NumberFormat" | "DateTimeFormat" | "supportedValuesOf")[]
+): typeof Intl {
+  const api: unknown = Reflect.get(globalThis, "Intl");
+  if (typeof api !== "object" || api === null ||
+      methods.some(method => typeof Reflect.get(api, method) !== "function")) return unsupportedIntl(operation);
+  return api as typeof Intl;
+}
+
 /** Deliberately small BCP47 subset; lookup support alone would permit fallback. */
 export function locale(input: unknown, operation: string): string {
   if (typeof input !== "string" || input.length > 35 ||
       !/^[A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|\d{3}))?$/.test(input)) return invalid(operation);
+  const api = intlApi(operation, ["getCanonicalLocales", "NumberFormat", "DateTimeFormat"]);
   return intl(operation, () => {
-    const canonical = Intl.getCanonicalLocales(input)[0];
-    if (!canonical ||
-        new Intl.NumberFormat(canonical, { localeMatcher: "lookup" }).resolvedOptions().locale !== canonical ||
-        new Intl.DateTimeFormat(canonical, { localeMatcher: "lookup" }).resolvedOptions().locale !== canonical) {
+    const canonical = api.getCanonicalLocales(input)[0];
+    if (!canonical) return invalid(operation);
+    const number = new api.NumberFormat(canonical, { localeMatcher: "lookup" });
+    const date = new api.DateTimeFormat(canonical, { localeMatcher: "lookup" });
+    if (typeof number.resolvedOptions !== "function" || typeof date.resolvedOptions !== "function") {
+      return unsupportedIntl(operation);
+    }
+    if (number.resolvedOptions().locale !== canonical || date.resolvedOptions().locale !== canonical) {
       return invalid(operation);
     }
     return canonical;

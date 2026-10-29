@@ -1,4 +1,4 @@
-import { finite, integer, intl, invalid, keysOnly, locale, oneOf, record } from "./i18n-core.js";
+import { finite, integer, intl, intlApi, invalid, keysOnly, locale, oneOf, record, unsupportedIntl } from "./i18n-core.js";
 
 interface FractionOptions {
   readonly useGrouping?: boolean;
@@ -36,14 +36,19 @@ export function numberFormatter(language: string, input: NumberFormatOptions): I
   if (native.minimumFractionDigits !== undefined && native.maximumFractionDigits !== undefined &&
       native.minimumFractionDigits > native.maximumFractionDigits) return invalid(operation);
   if (style === "currency") {
-    if (typeof options.currency !== "string" || !/^[A-Z]{3}$/.test(options.currency) ||
-        !Intl.supportedValuesOf("currency").includes(options.currency)) return invalid(operation);
+    if (typeof options.currency !== "string" || !/^[A-Z]{3}$/.test(options.currency)) return invalid(operation);
+    if (!intlApi(operation, ["supportedValuesOf"]).supportedValuesOf("currency").includes(options.currency)) {
+      return invalid(operation);
+    }
     native.currency = options.currency;
     if (Object.hasOwn(options, "currencyDisplay")) {
       native.currencyDisplay = oneOf(options.currencyDisplay, ["code", "symbol"], operation);
     }
   }
-  return intl(operation, () => new Intl.NumberFormat(tag, native));
+  const api = intlApi(operation, ["NumberFormat"]);
+  const formatter = intl(operation, () => new api.NumberFormat(tag, native));
+  if (typeof formatter.format !== "function") return unsupportedIntl(operation);
+  return formatter;
 }
 
 export function formatNumber(value: number, language: string, options: NumberFormatOptions): string {
@@ -72,7 +77,10 @@ export function dateFormatter(language: string, input: DateFormatOptions): {
     }
     native.timeZone = options.timeZone;
   }
-  return { behavior, formatter: intl(operation, () => new Intl.DateTimeFormat(tag, native)) };
+  const api = intlApi(operation, ["DateTimeFormat"]);
+  const formatter = intl(operation, () => new api.DateTimeFormat(tag, native));
+  if (typeof formatter.format !== "function") return unsupportedIntl(operation);
+  return { behavior, formatter };
 }
 
 function calendarMilliseconds(input: unknown, independent: boolean): number {

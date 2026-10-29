@@ -44,6 +44,13 @@ same exact runtime support; there is no bundled locale database or locale pack.
 Locale availability and currency/timezone data depend on the host's Intl/ICU.
 Require an Intl-capable modern client, including `Intl.supportedValuesOf` for
 currency validation. Unsupported requests fail, never use OS/browser defaults.
+Intl is optional during Core/module initialization. Locale-dependent method use
+checks the required Intl methods and reports `UNSUPPORTED_SURFACE` if they are
+absent/non-callable (including formatter `resolvedOptions`/`format` methods).
+Currency alone additionally requires `supportedValuesOf`; decimal/percent do
+not. Unmapped `getLanguage` and existing non-localizing Utils remain usable
+without Intl. Malformed locale syntax and normal invalid inputs still use
+`INVALID_ARGUMENT`; there is no catch-all reclassification of host failures.
 Punctuation, nonbreaking spaces, names and rounding follow that runtime's Intl
 data, not a byte-stable cross-ICU serialization format.
 
@@ -322,6 +329,13 @@ Local verification on Node 24.22.1:
   parity check: catalog/count remains 145, while the existing root-exported Utils
   now adds `formatValue` (146 actual). I18n is intentionally not root-wired here.
   This is an explicit parent-owned integration gap, not a bypassed passing check.
+
+Follow-up Intl-capability fix: `tests/localization-capability.test.ts` adds 19
+focused checks for lazy Core loading, missing/partial Intl, currency-only
+capability requirements, formatter methods and unchanged invalid-input errors.
+Together with the four localization/dispatch suites: **179 passed**.
+Strict typecheck, targeted lint and production build also passed for this fix;
+the unrelated full suite was not rerun. Public signatures/exports are unchanged.
 
 SENTINEL/parent: wire root/browser exports and public type exports, reconcile
 catalog/count/parity checks, and validate the resulting browser bundle on the
