@@ -39,6 +39,12 @@ export { Windows } from "./windows.js";
 export type { WindowHost, WindowOptions, LaunchResult } from "./windows.js";
 export type { EntityRef } from "./entity-reference.js";
 export { Utils } from "./utils.js";
+export type { DisplayValue, ValueFormatOptions } from "./utils.js";
+export { I18n } from "./i18n.js";
+export type {
+  LanguageContext, LanguageOptions, LanguageInfo, TranslationScalar, TranslationResources,
+  TranslationOptions, NumberFormatOptions, DateFormatOptions, DateStyle, TimeStyle
+} from "./i18n.js";
 export { Context } from "./context.js";
 export type { OperationContext } from "./context.js";
 export { Navigation, Dialogs } from "./navigation.js";
@@ -83,7 +89,10 @@ export type {
 } from "./security.js";
 export { Execution } from "./execution.js";
 export type {
-  OperationLockKey, OperationLockOptions, CompletedLockResult, BusyLockResult
+  OperationLockKey, OperationLockOptions, CompletedLockResult, BusyLockResult,
+  ReadCallbackContext, ReadOperation, ReadRetryEvidence, ReadRetryPolicy, ReadRetryOptions,
+  PreflightObservation, PreflightCheck, PreflightReason, PreflightEvidence,
+  PreflightCheckResult, PreflightOptions, PreflightReport
 } from "./execution.js";
 export { Metadata } from "./metadata.js";
 export type {
@@ -94,3 +103,7 @@ export type {
   MetadataOptions, MetadataTableOptions, MetadataColumnOptions,
   MetadataChoiceOptions, MetadataRelationshipOptions, MetadataInvalidation
 } from "./metadata.js";
+export { Batch } from "./batch.js";
+export type {
+  ReadBatchRequest, ReadBatchOptions, BatchStopReason, ReadBatchItem, ReadBatchResult
+} from "./batch.js";

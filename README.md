@@ -4,7 +4,7 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: early source implementation (0.6.0), with 145 implemented
+**Status: early source implementation (0.7.0), with 153 implemented
 functions. BvB still runs the verified Core 0.5.0.0 and optional Playground
 0.1.0.0; this R2 source milestone is not deployed. The genuine managed/unmanaged
 exports and draft release remain the 0.5.0 test candidate. No consumer
@@ -13,7 +13,7 @@ release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
-145 are locally implemented; the other 53 remain planned.
+153 are locally implemented; the other 45 remain planned.
 
 ## Available now
 
@@ -37,6 +37,9 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
 - Bounded read-only metadata discovery, advanced choice/form UX and page-local
   duplicate-operation locks in the 0.6.0 source slice; native-host subsets and
   unverified behavior are documented separately.
+- Read-only retry/preflight and parallel read-job batches, plus explicit
+  localization and typed display formatting in the 0.7.0 source slice.
+  These are not mutation retries, server changesets or an HTML/template engine.
 
 Metadata's native path covers selected table and base/Boolean column facts;
 choices, relationships and extended column facts require explicit scope-attested
@@ -120,6 +123,8 @@ handover; a visual authoring Studio comes later.
 | [Metadata discovery](docs/metadata.md) | Supported read-only metadata subsets, language/copy/cache scope and invalidation |
 | [Advanced form helpers](docs/advanced-forms.md) | Choice baselines/restore and safe permitted form switching |
 | [Operation locks](docs/execution.md) | Page-local scoped duplicate policy, ownership and failure semantics |
+| [Read batches](docs/read-batches.md) | Explicit read jobs, concurrency, copied/guarded outcomes and cancellation/limit semantics |
+| [Localization](docs/localization.md) | Explicit locale/language, safe text resources and distinct date/time behavior |
 | [Environment reads and app launching](docs/environment-launching.md) | Typed reads, scoped cache, approved app links, prepared tokens, and synchronous window requests |
 | [Feature specification](docs/feature-spec.md) | Outcomes, boundaries, acceptance criteria, assumptions, and failure cases |
 | [Function catalog](docs/function-catalog.md) | Complete proposed public API inventory, inputs, outputs, and delivery phases |

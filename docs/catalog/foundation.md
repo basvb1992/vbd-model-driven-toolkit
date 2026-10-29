@@ -1,8 +1,8 @@
 # Foundation and configuration functions
 
-43 entries are implemented locally: Context 10, Config 5, Bindings 2, Cache 3,
-Security 2, Diagnostics 4, Environment 10, and Utils 7.
-The other 2 entries in this
+44 entries are implemented locally: Context 10, Config 5, Bindings 2, Cache 3,
+Security 2, Diagnostics 4, Environment 10, and Utils 8.
+The other entry in this
 file remain planned. See [catalog conventions](../function-catalog.md) and
 [current usage](../getting-started.md). The bundle is deployed in BvB for
 testing; this is not live certification of every function.
@@ -123,9 +123,11 @@ not certify client compatibility or installation.
 
 ## VBD.Utils
 
-All except formatValue are implemented. Comparisons are allowlisted and do not
+All eight entries are implemented in documented source subsets. Comparisons are allowlisted and do not
 coerce types; reference/choice arrays compare as multisets. Escaping is scalar,
 not arbitrary query/expression serialization.
+formatValue uses the shared [localization/display contracts](../localization.md),
+not implicit coercion, HTML rendering or query formatting.
 
 Keep this module small; prefer native/platform utilities when they already meet
 the public contract.

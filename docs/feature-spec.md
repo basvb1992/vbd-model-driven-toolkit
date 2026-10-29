@@ -33,9 +33,9 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-145 runtime functions and the bounded local
+153 runtime functions and the bounded local
 tooling subset are implemented; see [getting started](getting-started.md) and
-[environment/launcher usage](environment-launching.md). The remaining 53 functions
+[environment/launcher usage](environment-launching.md). The remaining 45 functions
 are planned; [core usage](core-usage.md) defines current subset limitations.
 
 ## Non-goals
@@ -440,7 +440,62 @@ those worktrees. Parent-owned withLock adds no retries or server operations.
 | Choice baseline/restore ownership, explicit excluded-value policy and native partial failures. | `tests/advanced-forms-choices.test.ts` and compiled original-token set/restore smoke. | Singly bound choice/choices controls with numeric Int32 baselines; nonnumeric blank and multi-bound shapes reject rather than guess. Native ABA edits with identical state cannot be observed. |
 | Permitted target/dirty/save/form identity and reentry safety. | `tests/advanced-forms-switch.test.ts` and compiled target-selector request smoke. | Saved desktop-Web Update forms only; no destination OnLoad/native transition proof. |
 | Bounded duplicate lock, scope/record identity, failure/finally lifecycle. | 32 focused lock cases plus compiled busy/callback smoke and public generic consumer types. | Page-local only; no TTL/queue/retry/distributed locking or rollback. Unobserved away-and-back scope changes cannot be detected. |
-| Existing behavior, public export/type/count and packaging consistency. | Full source gate and current offline PAC artifact checks recorded in [packaging evidence](solution-packaging.md#current-060-r2-source-evidence). | Source 0.6.0 is not the installed/exported BvB 0.5.0 test version. No new import or managed export. |
+| Existing behavior, public export/type/count and packaging consistency. | Full source gate and current offline PAC artifact checks recorded in [packaging evidence](solution-packaging.md#060-r2-source-evidence). | Source 0.6.0 is not the installed/exported BvB 0.5.0 test version. No new import or managed export. |
+
+## R2 safe reads, batches and localization slice
+
+[Issue #21](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/21)
+selects eight source-only APIs: Execution.withRetry/preflight, Batch.execute,
+I18n's four methods and Utils.formatValue. Target source/solution versions are
+0.7.0/0.7.0.0, with 153/198 implemented methods across 32 namespaces. The other
+45 candidates, mutation batching/changesets, durable orchestration and arbitrary
+recipe execution remain outside this slice.
+
+Read-only declarations are explicit trust contracts, not proof a caller's
+JavaScript is pure. Retry is bounded and limited to explicitly approved read
+callbacks and positively classified transient/throttle evidence, never generic
+unknown, access, validation, concurrency or mutation-uncertainty failures.
+Preflight runs only bounded approved read checks and distinguishes fail from
+unknown/unsupported; it does not authorize or execute a business operation.
+
+Batch.execute runs 1..1000 unique named read jobs, concurrency 1..8, with at
+most eight active batches, synchronous runtime output guards, copied finite
+JSON and a bounded total result budget. Preserve input order and explicit
+succeeded/failed/skipped counts; failure/cancellation/limit cannot mean outer
+success. Stop/continue policies never imply atomicity or automatic retries.
+Cancellation prevents new dispatch; started callbacks are drained. Scope and
+generation checks around dispatch, settlement and guards reject stale results.
+
+Localization requires explicit validated locale/language evidence and supported
+Intl options, bounded safe plain-text resource interpolation and explicit
+fallback policy. Date-only, time-zone-independent and user-local inputs remain
+distinct; no implicit UTC/local shift, Windows-zone mapping, browser/tenant
+locale guess, HTML rendering or query-serialization coercion is permitted.
+Utils.formatValue shares those formatting contracts instead of duplicating them.
+
+Two isolated implementation lanes own resilience and localization; the
+integrator owns Batch, shared exports/version/catalog/spec and package evidence.
+Acceptance requires focused bounds/failed/cancelled/partial/redaction/locale/
+timezone/guard/scope tests, compiled browser and consumer types, full gates and
+actual local native PAC verification. Existing BvB versions, prior worktrees,
+PRs, tags and draft artifacts remain unchanged. No tenant calls, auth,
+deployment, record changes, merge, license decision or public release.
+
+### Safe-read/localization evidence
+
+The read-resilience lane is `b01924f`; localization is `0ab5d5a`, followed by
+separate capability correction `771fd3d`. Parent integration supplies Batch,
+root types/exports, source/version/package updates and compiled cross-realm
+consumer checks. Original worktrees remain clean at their delivered heads.
+
+| Acceptance | Verified source evidence | Remaining boundary |
+| --- | --- | --- |
+| Explicit read retry/preflight, safe evidence and unchanged locks. | Retry/preflight plus lock fixtures; compiled 429/Retry-After=0 retry and ready preflight using no native queries. | Trusted read declarations do not establish callback purity or server authorization; no mutation retries. |
+| Exact batch order/count/guard/copy/budget/cancel/partial/fatal lifecycle. | 44 focused cases, including 1000 jobs, eight-way concurrency/eight batches and a pre-dispatch scope rejection counted as zero attempts; compiled partial-result/redaction smoke. | Not a server batch/changeset; started callbacks are drained and cannot be forcibly cancelled. JSON copying does not preserve SDK/token identities. |
+| Explicit locale/resource/placeholder/date/time/value contracts. | 179 focused localization/dispatcher/capability cases plus compiled empty/false/zero text, numbers, date-only and foreign-realm Date with explicit New York time zone. | Constrained supported Intl/locale subset, no browser/tenant/Windows-zone guesses or HTML renderer. |
+| Optional Intl does not break unrelated Core. | Parent sandbox reproduction identified a raw missing-Intl exception; separate guarded-capability fix and 19 regressions pass. Core initializes without Intl, while requested formatting returns UNSUPPORTED_SURFACE. | Native/client locale support still requires supported capabilities, not a universal compatibility claim. |
+| Exact availability and public contracts. | Digit-aware catalog invariant now includes I18n; actual built/archive surface is 153 methods/32 namespaces, with 45 candidates still planned. | No additional planned recipe/file/change-set/native operation is implied. |
+| Reproducible current source package. | Final full gate: 41 files / 1790 tests with both native PAC opt-ins; exact archive/runtime/notices and 215 input fingerprints. See [packaging evidence](solution-packaging.md#current-070-safe-read-and-localization-source-evidence). | 0.7.0 is not deployed, managed-exported or public-release-ready; BvB remains on 0.5.0 Core and 0.1.0 Playground. |
 
 ## Dependencies and assumptions
 
@@ -470,7 +525,7 @@ those worktrees. Parent-owned withLock adds no retries or server operations.
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 145-function source namespace; deployed BvB still has the verified 135-function 0.5.0 version. Full live coverage remains separate. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 153-function source namespace; deployed BvB still has the verified 135-function 0.5.0 version. Full live coverage remains separate. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |

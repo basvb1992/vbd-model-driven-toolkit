@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**145 functions have a local implementation; the other 53 remain planned.**
+**153 functions have a local implementation; the other 45 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -13,6 +13,7 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 
 - `VBD.Actions.executeAction`
 - `VBD.Actions.executeFunction`
+- `VBD.Batch.execute`
 - `VBD.Bindings.resolve`
 - `VBD.Bindings.resolveMany`
 - `VBD.Cache.clear`
@@ -79,7 +80,9 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Events.onSave`
 - `VBD.Events.register`
 - `VBD.Events.unregister`
+- `VBD.Execution.preflight`
 - `VBD.Execution.withLock`
+- `VBD.Execution.withRetry`
 - `VBD.Fields.clear`
 - `VBD.Fields.copy`
 - `VBD.Fields.fireOnChange`
@@ -100,6 +103,10 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Grids.getSelected`
 - `VBD.Grids.openSelected`
 - `VBD.Grids.refresh`
+- `VBD.I18n.formatDate`
+- `VBD.I18n.formatNumber`
+- `VBD.I18n.getLanguage`
+- `VBD.I18n.translate`
 - `VBD.Launch.getProfile`
 - `VBD.Launch.openPrepared`
 - `VBD.Launch.openProfile`
@@ -148,6 +155,7 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Utils.compareValues`
 - `VBD.Utils.escapeODataLiteral`
 - `VBD.Utils.escapeXml`
+- `VBD.Utils.formatValue`
 - `VBD.Utils.isGuid`
 - `VBD.Utils.normalizeGuid`
 - `VBD.Utils.parseNumber`

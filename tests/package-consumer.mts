@@ -147,3 +147,46 @@ void relationships;
 void switched;
 void restored;
 void filtered;
+
+const readBatch: Promise<VBD.ReadBatchResult<{ count: number }>> = VBD.Batch.execute([{
+  id: "count", kind: "read", run: async () => ({ count: 0 }),
+  validate: (value: unknown): value is { count: number } =>
+    typeof value === "object" && value !== null && "count" in value && typeof value.count === "number"
+}], { context, concurrency: 4, failurePolicy: "stop", maxResultBytes: 1048576 });
+declare const batchResult: VBD.ReadBatchResult<{ count: number }>;
+for (const item of batchResult.items) {
+  if (item.status === "succeeded") { const count: number = item.value.count; void count; }
+  else if (item.status === "failed") { const code: string = item.error.code; void code; }
+  else { const reason: Exclude<VBD.BatchStopReason, "none"> = item.reason; void reason; }
+}
+void readBatch;
+
+const retriedRead: Promise<number> = VBD.Execution.withRetry(() => 0, {
+  readOnly: true, context, guard: value => typeof value === "number",
+  policy: { maxAttempts: 3, initialDelayMs: 250 }
+});
+const checkedReads: Promise<VBD.PreflightReport> = VBD.Execution.preflight([{
+  id: "approvedRead", readOnly: true, run: () => ({ status: "pass", reason: "confirmed" })
+}], { context, concurrency: 4 });
+void retriedRead;
+void checkedReads;
+
+const language: VBD.LanguageInfo = VBD.I18n.getLanguage({
+  context: {
+    environmentUrl: "https://fixture.example", userId: "11111111-2222-3333-4444-555555555555", languageId: 1033
+  }
+});
+const translated: string = VBD.I18n.translate("status", "en-US", {
+  resources: { "en-US": { status: "{count}/{enabled}" } },
+  onMissing: "error", values: { count: 0, enabled: false }
+});
+const formattedNumber: string = VBD.I18n.formatNumber(1234.5, "de-DE", { style: "decimal" });
+const formattedDate: string = VBD.I18n.formatDate("2024-02-29", "en-GB", { behavior: "dateOnly", dateStyle: "long" });
+const displayed: string = VBD.Utils.formatValue({
+  kind: "boolean", value: false, labels: { true: "Yes", false: "No" }
+}, { locale: "en-US", nulls: { policy: "error" } });
+void language;
+void translated;
+void formattedNumber;
+void formattedDate;
+void displayed;

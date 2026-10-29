@@ -40,12 +40,12 @@ describe("documentation contracts", () => {
   it("keeps the implemented list aligned with the actual public methods", () => {
     const index = readFileSync(resolve("docs", "function-catalog.md"), "utf8");
     const section = index.split("## Implemented source subset")[1]?.split("## Reading the catalog")[0] ?? "";
-    const documented = [...section.matchAll(/^- `(VBD\.[A-Za-z]+\.[A-Za-z]+)`/gm)]
+    const documented = [...section.matchAll(/^- `(VBD\.[A-Za-z][A-Za-z0-9]*\.[A-Za-z][A-Za-z0-9]*)`/gm)]
       .map((match) => match[1]).sort();
     const actual = Object.entries(library).filter(([, value]) => typeof value === "object" && value !== null)
       .flatMap(([module, methods]) => Object.keys(methods).map((name) => `VBD.${module}.${name}`)).sort();
     expect(documented).toEqual(actual);
-    expect(actual).toHaveLength(145);
+    expect(actual).toHaveLength(153);
   });
 
   it("has no broken local document/example links or undocumented function references", () => {

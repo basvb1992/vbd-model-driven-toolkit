@@ -1,6 +1,7 @@
 # Shared services, files, and recipe functions
 
-The five UI entries and Execution.withLock are implemented; the other 19 remain planned.
+The five UI entries, three Execution entries and four I18n entries are implemented;
+the other 13 remain planned.
 See [catalog conventions](../function-catalog.md) and [core usage](../core-usage.md).
 Optional modules must not become hidden prerequisites for core functions.
 
@@ -22,9 +23,9 @@ unrelated libraries that call the SDK spinner directly.
 
 ## VBD.Execution
 
-Only withLock is implemented in 0.6.0; see [scoped operation locks](../execution.md).
-There is no retry queue, lock TTL, automatic mutation retry or server-side
-coordination. withRetry/preflight remain planned.
+The three methods have bounded source implementations; see [execution](../execution.md).
+The retry/preflight subset is explicitly read-only. There is no durable retry
+queue, lock TTL, automatic mutation retry or server-side coordination.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -72,6 +73,11 @@ without requiring R2 multi-step recipe execution. This preserves a small first
 release while keeping a stable maker entry point.
 
 ## VBD.I18n
+
+The four methods and Utils.formatValue are implemented using the explicit
+[localization/display contract](../localization.md). Language/locale evidence,
+fallback, placeholder and date/time behavior are validated, not inferred from
+tenant/browser names or rendered as HTML.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

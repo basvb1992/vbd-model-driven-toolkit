@@ -1,6 +1,6 @@
 # Roadmap
 
-145 catalog functions have a local implementation; the other 53 are planned.
+153 catalog functions have a local implementation; the other 45 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
@@ -42,7 +42,7 @@ where the SDK contract cannot establish their encoding. This completes the
 release readiness. R2/R3 entries remain separate scoped work.
 See [BvB testing](testing-in-bvb.md) for consumer-owned installation/wiring.
 
-## Current R2 source continuation
+## R2 metadata and form source continuation
 
 [Issue #19](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/19)
 selects five read-only Metadata APIs, three advanced Choices helpers,
@@ -56,6 +56,21 @@ batch/aggregate/files, retries/preflight and recipes, remain planned. This
 source continuation leaves deployed BvB Core 0.5.0 and Playground 0.1.0,
 existing release tags/draft assets and prior PRs untouched. No new deployment,
 public binary publication or license approval is implied.
+
+## Current R2 safe-read and localization continuation
+
+[Issue #21](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/21)
+selects Execution.withRetry/preflight, Batch.execute, four I18n methods and
+Utils.formatValue. Source 0.7.0 has 153/198 implemented methods across 32
+namespaces; the remaining 45 candidates remain planned.
+
+Read-only declarations are caller trust contracts, not an arbitrary operation
+dispatcher or proof of authorization/purity. There are no mutation retries,
+server changesets, durable queues, HTML templates or guessed locale/time zones.
+See [execution](execution.md), [read batches](read-batches.md) and
+[localization](localization.md) for precise supported subsets.
+Deployed BvB Core 0.5.0, Playground 0.1.0, prior source PRs, tags and draft
+assets remain unchanged by this continuation.
 
 ## Integrated local delivery
 

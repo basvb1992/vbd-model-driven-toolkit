@@ -7,10 +7,13 @@ and [#11](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/11)
 (0.4.0 navigation/capability source), and
 [#15](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/15)
 (0.5.0 R1 completion and BvB test-release preparation).
-The current 0.6.0 source continuation is
+The 0.6.0 source continuation is
 [#19](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/19);
 it performs no tenant operations. The BvB installation and genuine exports
 recorded below remain 0.5.0.
+The current 0.7.0 safe-read/localization source slice is
+[#21](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/21);
+it also performs no tenant calls, deployment or release mutation.
 This implements the **local unmanaged** portion of the distribution design.
 It does not change the shared roadmap/specification to claim ALM completion.
 No environment access, authentication, deployment, import, publish or release
@@ -123,7 +126,7 @@ with `CLI_MISSING`, not a constructed ZIP fallback.
 The output directory must be **new**, a direct `artifacts/<run-name>` child.
 Caller filesystem paths accept portable slashes and native Windows backslashes,
 for example `--out artifacts\CoreLocal01` and
-`--file artifacts\CoreLocal01\VBDModelDrivenToolkit_0.6.0.0_unmanaged.zip`.
+`--file artifacts\CoreLocal01\VBDModelDrivenToolkit_0.7.0.0_unmanaged.zip`.
 Both entry points normalize separators once before validation, without resolving
 dot segments. Traversal remains invalid. **ZIP entry paths still require
 forward slashes**; filesystem normalization never applies to archive entries.
@@ -132,7 +135,7 @@ On failure, retain the partial directory for diagnosis and choose a new run
 name. Successful output contains:
 
 - `source/`: materialized real XML source and the two payloads.
-- `VBDModelDrivenToolkit_0.6.0.0_unmanaged.zip`: actual PAC local output.
+- `VBDModelDrivenToolkit_0.7.0.0_unmanaged.zip`: actual PAC local output.
 - `unpacked/`, `roundtrip.zip`: actual PAC roundtrip evidence.
 - `pack.txt`, `unpack.txt`, `repack.txt`: successful offline PAC output.
 - `evidence.json`, `SHA256SUMS`: validated component/payload hashes, input
@@ -147,7 +150,7 @@ Inspect an existing local unmanaged ZIP against this checkout and build:
 
 ```powershell
 $e = Get-Content artifacts/CoreLocal01/evidence.json -Raw | ConvertFrom-Json
-node tools\packaging\package.mjs verify --file artifacts\CoreLocal01\VBDModelDrivenToolkit_0.6.0.0_unmanaged.zip --sha256 $e.sha256
+node tools\packaging\package.mjs verify --file artifacts\CoreLocal01\VBDModelDrivenToolkit_0.7.0.0_unmanaged.zip --sha256 $e.sha256
 ```
 
 The explicit SHA-256 must come from the expected evidence. Computing a digest
@@ -244,15 +247,15 @@ Environment URLs are operator variables, never checked-in values:
 
 ```powershell
 # Only in a separately approved deployment task:
-pac solution import --path artifacts\CoreLocal01\VBDModelDrivenToolkit_0.6.0.0_unmanaged.zip --environment $AuthorizedDevUrl
+pac solution import --path artifacts\CoreLocal01\VBDModelDrivenToolkit_0.7.0.0_unmanaged.zip --environment $AuthorizedDevUrl
 
 # A fresh directory; never pass --overwrite.
 New-Item -ItemType Directory artifacts/ManagedEvidence01
-pac solution export --name VBDModelDrivenToolkit --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.6.0.0.zip --managed false --environment $AuthorizedDevUrl
-pac solution export --name VBDModelDrivenToolkit --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.6.0.0_managed.zip --managed true --environment $AuthorizedDevUrl
+pac solution export --name VBDModelDrivenToolkit --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.7.0.0.zip --managed false --environment $AuthorizedDevUrl
+pac solution export --name VBDModelDrivenToolkit --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.7.0.0_managed.zip --managed true --environment $AuthorizedDevUrl
 
 # ExpectedManagedSha256 comes from the operator's recorded genuine export evidence.
-node tools\packaging\package.mjs verify --file artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.6.0.0_managed.zip --sha256 $ExpectedManagedSha256 --kind managed --format dataverseExport
+node tools\packaging\package.mjs verify --file artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.7.0.0_managed.zip --sha256 $ExpectedManagedSha256 --kind managed --format dataverseExport
 ```
 
 Offline managed inspection checks the managed flag, identity/version, stable
@@ -268,12 +271,12 @@ Only after both genuine exports pass inspection, the documented combined-source
 path is (new destinations only; paired filenames above are significant):
 
 ```powershell
-pac solution unpack --zipfile artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.6.0.0.zip --folder artifacts\ManagedEvidence01\both-source --packagetype Both
+pac solution unpack --zipfile artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.7.0.0.zip --folder artifacts\ManagedEvidence01\both-source --packagetype Both
 pac solution pack --zipfile artifacts/ManagedEvidence01/repacked.zip --folder artifacts/ManagedEvidence01/both-source --packagetype Both
 # Reinspect BOTH produced ZIPs against the same reviewed build/checksums.
 
 # Separate approved clean-target installation, no Studio/framework installed:
-pac solution import --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.6.0.0_managed.zip --environment $AuthorizedCleanTargetUrl
+pac solution import --path artifacts\ManagedEvidence01\VBDModelDrivenToolkit_0.7.0.0_managed.zip --environment $AuthorizedCleanTargetUrl
 ```
 
 That combined-source-repack path, clean managed import, solution checking, live `VBD`
@@ -449,7 +452,7 @@ is a **draft**, not a public binary release or grant of redistribution rights.
 Public publication is pending the owner's license decision; no managed
 clean-target or production-readiness claim is made.
 
-### Current 0.6.0 R2 source evidence
+### 0.6.0 R2 source evidence
 
 The separate R2 source branch integrates metadata lane `2e8df3e` and advanced
 form lane `dbaac9b`, plus parent-owned Execution.withLock and shared exports.
@@ -488,3 +491,43 @@ publish, merge, tag/release mutation or license decision were performed.
 Existing BvB Core 0.5.0.0, Playground 0.1.0.0, genuine 0.5.0 exports and the
 draft `v0.5.0-test.1` remain unchanged. The two existing genuine export hashes
 were rechecked; no older ZIP is reused as proof of the new source.
+
+### Current 0.7.0 safe-read and localization source evidence
+
+This separate source slice integrates read-resilience `b01924f`, localization
+`0ab5d5a` and guarded Intl-capability correction `771fd3d`, plus parent Batch
+and public integration. It adds eight catalog APIs: Execution.withRetry/preflight,
+Batch.execute, four I18n methods and Utils.formatValue. The exact compiled
+surface is **153 APIs / 32 namespaces**; 45 candidates remain planned.
+
+The final `npm run check` passed **41 test files / 1790 tests** with strict
+types, lint, browser/ESM/CLI and optional-companion builds, package-consumer
+signatures, cross-realm compiled read/locale/Date cases and both actual native
+Core/optional-companion PAC integration checks.
+The parent missing-Intl reproduction was fixed rather than ignored; the
+catalog parser was corrected to include digit-bearing I18n names. Batch audit
+counts exclude work rejected by the last scope check before actual dispatch.
+
+Current local source artifact:
+`artifacts\ReadLocalizationSource-1793261409203\VBDModelDrivenToolkit_0.7.0.0_unmanaged.zip`.
+SHA-256:
+`f07186aefb427bd70dd3ce2ee618e09cd49b6c23303c1f649079113bbf691aa1`.
+Browser-resource SHA-256:
+`ddafddfdf7386cbaada97c972018bd3f67f4640601f45e6e145bf075c3ca4e4e`.
+The archive itself reports 0.7.0, 153 methods and 32 namespaces, the exact new
+Batch/Execution/I18n methods and Utils.formatValue. Archived pure formatting
+also preserves zero/false values as expected.
+
+Exactly two webresources, zero Dataverse dependencies, nine complete bundled
+runtime-package notices and **215 matching current build-input fingerprints**
+were verified. Notice-resource SHA-256 remains
+`6454b2f04b4b23775bb853fd1b309b2a50ff5aa46f7e30ac48f9de16ca318703`.
+Adjacent local receipts/logs/checksums are ignored evidence, not signed or
+independently trusted release provenance.
+
+This artifact is **not import-tested**, not a genuine managed export and not
+approved for public redistribution. No tenant calls/auth, deployment/publish,
+record changes, PR merges, tag/draft-release mutation or license decision were
+performed. Existing BvB Core 0.5.0.0, Playground 0.1.0.0 and prior source/release
+artifacts remain separate and unchanged. Native/client runtime and clean-target
+managed import/upgrade require their own authorized verification.
