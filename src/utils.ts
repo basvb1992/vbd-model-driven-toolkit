@@ -3,6 +3,8 @@ import { VbdError } from "./errors.js";
 import { entityReference, entityRefSchema } from "./entity-reference.js";
 import type { EntityRef } from "./entity-reference.js";
 import { guidSchema, parseInput, parseInvariantNumber } from "./validation.js";
+import { formatValue } from "./value-format.js";
+export type { DisplayValue, ValueFormatOptions } from "./value-format.js";
 
 export function dateMilliseconds(value: unknown): number | undefined {
   if (typeof value !== "object" || value === null) {
@@ -120,5 +122,5 @@ function compareValues(
 }
 export const Utils = Object.freeze({
   normalizeGuid, isGuid, toEntityRef, escapeODataLiteral, escapeXml,
-  parseNumber: parseInvariantNumber, compareValues
+  parseNumber: parseInvariantNumber, compareValues, formatValue
 });
