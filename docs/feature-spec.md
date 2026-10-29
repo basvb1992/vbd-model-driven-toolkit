@@ -33,9 +33,9 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-135 runtime functions and the bounded local
+145 runtime functions and the bounded local
 tooling subset are implemented; see [getting started](getting-started.md) and
-[environment/launcher usage](environment-launching.md). The remaining 63 functions
+[environment/launcher usage](environment-launching.md). The remaining 53 functions
 are planned; [core usage](core-usage.md) defines current subset limitations.
 
 ## Non-goals
@@ -389,6 +389,59 @@ widths, keyboard focus and 200% zoom. Live native launch reaches Microsoft
 sign-in; authenticated native rendering remains unverified because the
 automation browser has no BvB session. See [deployment details](playground.md).
 
+## R2 metadata, form UX and operation-lock slice
+
+[Issue #19](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/19)
+selects ten R2 catalog APIs: five Metadata methods, three advanced Choices
+methods, Forms.switchForm and Execution.withLock. Target source/solution versions
+are 0.6.0/0.6.0.0, with 145/198 APIs across 30 namespaces. This does not implement
+retry/preflight, dependency-bound lookups, relationship writes, batch/aggregate,
+files, recipe execution or the other 53 candidates.
+
+Metadata discovery is read-only and bounded, with explicit supported native or
+typed adapter shapes, own safe copied outputs and environment/user/language
+scope. Requested properties, choice labels/language and relationship identities
+must be validated, not guessed from display labels. Unknown/incomplete/denied
+metadata must not become an empty successful result. Caches and invalidation
+must reject stale asynchronous completions and never retain failures.
+
+Choice controls use original owned baseline tokens and supported option APIs.
+Preflight capabilities/values before mutation; preserve/clear/report excluded
+selection only under an explicit documented policy. No implicit OnChange/save
+or imaginary rollback on partial native failure. switchForm uses actual
+permitted formSelector items, explicit dirty behavior and post-save/reentry/
+context checks; completion is a request, not proof of navigation.
+
+withLock reserves a bounded scope/namespace/key/optional-record identity before
+trusted typed callbacks run. Duplicate policy is rejection or an explicit busy
+receipt, never an unbounded queue/reentrant wait. Finally release is
+ownership-safe and scope changes are failures; it is a page-local UX mechanism,
+not server authorization or durable workflow coordination.
+
+Acceptance requires focused bounds/invalid/denied/copy/lifecycle/partial/race
+tests, real browser-bundle and package-consumer parity, full gates and actual
+native PAC unmanaged roundtrip over the current version. Metadata/control
+native Dynamics behavior is not certified by fixtures alone.
+Two isolated implementation lanes own Metadata and form UX; the integrator
+owns locks, shared exports/version/catalog/spec and packaging. BvB's deployed
+0.5.0 Core and 0.1.0 Playground, existing tags/draft assets, unrelated worktrees
+and PRs remain unchanged. No deployment, tenant queries/writes, public binary
+publication, license decision or merge is authorized by this source slice.
+
+### R2 evidence and native limits
+
+The original metadata lane commit is `2e8df3e`; the form/choice lane is
+`dbaac9b`. They are applied in the isolated integration branch without changing
+those worktrees. Parent-owned withLock adds no retries or server operations.
+
+| Acceptance area | Evidence | Explicit limitation |
+| --- | --- | --- |
+| Read-only metadata identity, selected facts, safe copies, labels/relationships and cache races. | 148 focused `tests/metadata.test.ts` cases plus compiled cross-realm adapter smoke. | Native selected table/base/Boolean facts only; choices/relationships/extended facts require scope-attested read-only adapters. No live tenant metadata certification. |
+| Choice baseline/restore ownership, explicit excluded-value policy and native partial failures. | `tests/advanced-forms-choices.test.ts` and compiled original-token set/restore smoke. | Singly bound choice/choices controls with numeric Int32 baselines; nonnumeric blank and multi-bound shapes reject rather than guess. Native ABA edits with identical state cannot be observed. |
+| Permitted target/dirty/save/form identity and reentry safety. | `tests/advanced-forms-switch.test.ts` and compiled target-selector request smoke. | Saved desktop-Web Update forms only; no destination OnLoad/native transition proof. |
+| Bounded duplicate lock, scope/record identity, failure/finally lifecycle. | 32 focused lock cases plus compiled busy/callback smoke and public generic consumer types. | Page-local only; no TTL/queue/retry/distributed locking or rollback. Unobserved away-and-back scope changes cannot be detected. |
+| Existing behavior, public export/type/count and packaging consistency. | Full source gate and current offline PAC artifact checks recorded in [packaging evidence](solution-packaging.md#current-060-r2-source-evidence). | Source 0.6.0 is not the installed/exported BvB 0.5.0 test version. No new import or managed export. |
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -417,7 +470,7 @@ automation browser has no BvB session. See [deployment details](playground.md).
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 135-function namespace and exact two-resource BvB test installation verified; full live function coverage remains separate. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 145-function source namespace; deployed BvB still has the verified 135-function 0.5.0 version. Full live coverage remains separate. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |

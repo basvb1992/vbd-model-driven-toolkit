@@ -22,6 +22,8 @@ import { SidePanes } from "./side-panes.js";
 import { Security } from "./security.js";
 import { Bindings } from "./bindings.js";
 import { Cache } from "./cache.js";
+import { Execution } from "./execution.js";
+import { Metadata } from "./metadata.js";
 
 if (Object.prototype.hasOwnProperty.call(globalThis, "VBD")) {
   throw new VbdError("DUPLICATE_INITIALIZATION", { operation: "initialize" });
@@ -31,7 +33,7 @@ Object.defineProperty(globalThis, "VBD", {
     Config, Diagnostics, Environment, Links, Launch, Windows,
     Utils, Context, Navigation, Dialogs, UI, Fields, Forms, Controls, Layout,
     Lookups, Choices, Validation, Events, Commands, Grids, Data, Query, Actions,
-    SidePanes, Security, Bindings, Cache
+    SidePanes, Security, Bindings, Cache, Execution, Metadata
   }),
   enumerable: true,
   writable: false,

@@ -89,7 +89,7 @@ an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
 
-The current 0.5.0 source maps to solution version `0.5.0.0`. Local PAC builds
+The current 0.6.0 source maps to solution version `0.6.0.0`. Local PAC builds
 contain exactly the browser `VBD` resource and complete escaped third-party
 notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
 zero Dataverse dependencies from the nine bundled runtime packages.
@@ -101,6 +101,9 @@ exports. Raw exported bytes are inspected with explicit `dataverseExport`
 format, never rewritten to make them pass. The unmanaged source installation
 is verified; clean managed-target install/upgrade and public redistribution
 approval remain outstanding.
+The current source package is not the installed/exported test version: BvB,
+the existing genuine paired exports and draft `v0.5.0-test.1` remain at 0.5.0.
+No 0.6.0 import, managed export or public release is claimed by this R2 slice.
 
 | Artifact | Intended use |
 | --- | --- |

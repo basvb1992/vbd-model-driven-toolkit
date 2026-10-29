@@ -556,7 +556,7 @@ describe.skipIf(!process.env.VBD_PACKAGING_PAC)("actual local PAC offline integr
       version: VBD.Diagnostics.getVersion(),
       count: Object.values(VBD).reduce((total, methods) => total + Object.keys(methods).length, 0)
     })`, { crypto: globalThis.crypto }, { timeout: 5000 });
-    expect(JSON.parse(runtime)).toEqual({ version: packageVersion, count: 135 });
+    expect(JSON.parse(runtime)).toEqual({ version: packageVersion, count: 145 });
     await expect(build({ out: portableOut, pac: process.env.VBD_PACKAGING_PAC })).rejects.toThrow("NO_OVERWRITE");
     await expect(verify({ file, checksum: "0".repeat(64) })).rejects.toThrow("CHECKSUM");
   }, 120000);

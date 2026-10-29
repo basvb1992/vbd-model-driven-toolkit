@@ -46,11 +46,16 @@ export type { PresentationOptions, DialogOptions } from "./navigation.js";
 export { UI } from "./ui.js";
 export type { ProgressToken, NotificationToken } from "./ui.js";
 export { Fields, Forms } from "./forms.js";
-export type { FieldKind, FieldValue, FieldWriteOptions } from "./forms.js";
+export type {
+  FieldKind, FieldValue, FieldWriteOptions, FormSwitchOptions, FormSwitchResult
+} from "./forms.js";
 export { Controls, Layout } from "./controls.js";
 export type { BoundControl } from "./controls.js";
 export { Lookups, Choices } from "./lookups.js";
-export type { LookupPickOptions } from "./lookups.js";
+export type {
+  LookupPickOptions, ChoiceOption, ChoiceMutationOptions, ChoiceBaselineToken,
+  ChoiceMutationResult, ChoiceRestoreResult
+} from "./lookups.js";
 export { Validation } from "./form-validation.js";
 export type { ValidationRule, ValidationIssue, ValidationReport } from "./form-validation.js";
 export { Events } from "./events.js";
@@ -76,3 +81,16 @@ export type {
   SecurityDepthEncoding, SecurityScope, SecurityPrivilegeRead, SecurityTableRead,
   SecurityContext, SecurityReason, SecurityObservationScope, AccessAssessment
 } from "./security.js";
+export { Execution } from "./execution.js";
+export type {
+  OperationLockKey, OperationLockOptions, CompletedLockResult, BusyLockResult
+} from "./execution.js";
+export { Metadata } from "./metadata.js";
+export type {
+  MetadataAttributeType, MetadataTableProperty, MetadataColumnProperty,
+  TableMetadata, ColumnMetadata, MetadataChoiceSource, ChoiceMetadata,
+  MetadataRelationshipKind, MetadataRelationship, RelationshipMetadata,
+  MetadataRelationshipSelection, MetadataRead, MetadataContext,
+  MetadataOptions, MetadataTableOptions, MetadataColumnOptions,
+  MetadataChoiceOptions, MetadataRelationshipOptions, MetadataInvalidation
+} from "./metadata.js";

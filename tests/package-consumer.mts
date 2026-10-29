@@ -110,3 +110,40 @@ void bound;
 void cached;
 void hint;
 void sameWindow;
+
+const locked: Promise<VBD.CompletedLockResult<number>> = VBD.Execution.withLock(
+  { namespace: "consumerCommands", key: "load" }, async () => 0, { context }
+);
+const busyOrValue: Promise<VBD.CompletedLockResult<string> | VBD.BusyLockResult> =
+  VBD.Execution.withLock({ namespace: "consumerCommands", key: "submit" }, () => "done",
+    { context, duplicate: "return-busy" });
+declare const thenable: PromiseLike<number>;
+const flattened: Promise<VBD.CompletedLockResult<number>> = VBD.Execution.withLock(
+  { namespace: "consumerCommands", key: "flatten" }, () => thenable, { context }
+);
+void locked;
+void busyOrValue;
+void flattened;
+
+declare const metadataContext: VBD.MetadataContext;
+const tableMetadata: Promise<VBD.TableMetadata> = VBD.Metadata.getTable("account", { context: metadataContext });
+const columnMetadata: Promise<VBD.ColumnMetadata> = VBD.Metadata.getColumn("account", "name", { context: metadataContext });
+const choiceMetadata: Promise<VBD.ChoiceMetadata> = VBD.Metadata.getChoices("account", "accountcategorycode", {
+  context: metadataContext, languageId: 1033
+});
+const relationships: Promise<VBD.RelationshipMetadata> = VBD.Metadata.getRelationships("account", {
+  context: metadataContext, kind: "oneToMany"
+});
+const switched: Promise<VBD.FormSwitchResult> = VBD.Forms.switchForm(form,
+  "00000000-0000-0000-0000-000000000001", { dirtyPolicy: "reject" });
+const optionResult: VBD.ChoiceMutationResult = VBD.Choices.setOptions(form, "choiceControl",
+  [{ value: 0, text: "" }], { excludedValuePolicy: "reject" });
+const restored: VBD.ChoiceRestoreResult = VBD.Choices.restoreOptions(form, "choiceControl", optionResult.baseline);
+const filtered: VBD.ChoiceMutationResult = VBD.Choices.filterOptions(form, "choiceControl", [0]);
+void tableMetadata;
+void columnMetadata;
+void choiceMetadata;
+void relationships;
+void switched;
+void restored;
+void filtered;

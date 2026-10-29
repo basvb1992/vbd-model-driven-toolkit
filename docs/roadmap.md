@@ -1,6 +1,6 @@
 # Roadmap
 
-135 catalog functions have a local implementation; the other 63 are planned.
+145 catalog functions have a local implementation; the other 53 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
@@ -17,9 +17,9 @@ CLI behavior, redaction/bounds tests, and browser-bundle VM smoke checks.
 ten environment APIs, approved app links, prepared profile tokens, and synchronous
 isolated app-window requests. See [runtime usage](environment-launching.md).
 
-This is not a completed R1 release: no generic configured-operation command
-adapters, diagnostic panel or Dataverse import exists. Supported Xrm reads and
-browser requests are implemented, but actual tenant integration remains unverified.
+Those source-only slices did not complete R1 release readiness. The later
+0.5.0 milestone has a verified BvB test installation and genuine exports, not
+full native-client/consumer wiring or production-readiness certification.
 
 ## Next core source milestones
 
@@ -39,8 +39,23 @@ allowlisted bindings, generic scoped memory cache, conservative table/privilege
 hints and sameWindow-only openProfile. Native privilege depths remain unknown
 where the SDK contract cannot establish their encoding. This completes the
 **R1 source inventory**, not all R1 options, live Dynamics verification or
-release readiness. The 63 R2/R3 entries remain separate scoped work.
+release readiness. R2/R3 entries remain separate scoped work.
 See [BvB testing](testing-in-bvb.md) for consumer-owned installation/wiring.
+
+## Current R2 source continuation
+
+[Issue #19](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/19)
+selects five read-only Metadata APIs, three advanced Choices helpers,
+Forms.switchForm and Execution.withLock. This 0.6.0 slice targets 145/198
+implemented methods across 30 namespaces. See [metadata](metadata.md),
+[advanced forms](advanced-forms.md) and [locks](execution.md) for bounded
+native/adapter contracts and failure/lifecycle semantics.
+
+The other 53 APIs, including dependent lookups, relationship writes,
+batch/aggregate/files, retries/preflight and recipes, remain planned. This
+source continuation leaves deployed BvB Core 0.5.0 and Playground 0.1.0,
+existing release tags/draft assets and prior PRs untouched. No new deployment,
+public binary publication or license approval is implied.
 
 ## Integrated local delivery
 

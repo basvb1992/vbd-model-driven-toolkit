@@ -4,10 +4,13 @@ Most contracts below are proposed. The implemented configuration/diagnostic
 functions and local delivery tools are described in [getting started](getting-started.md).
 The scoped environment/app-launch subset is in [runtime usage](environment-launching.md).
 Their source-level checks are not Dataverse installation or live-app evidence.
-The [core usage](core-usage.md) contract describes the 135 implemented methods
-in 0.5.0, including the bounded native UI/data subset, owned side panes and
+The [core usage](core-usage.md) contract describes the 145 implemented methods
+in the 0.6.0 source, including the bounded native UI/data subset, owned side panes and
 conservative Security hints. [Configuration runtime](environment-and-configuration.md)
 defines approved loading, bindings and memory caching without a recipe engine.
+The R2 continuation adds [metadata](metadata.md), [advanced form UX](advanced-forms.md)
+and [scoped operation locks](execution.md). BvB remains on the separately
+verified 0.5.0 test installation until another authorized deployment.
 
 ## Product and framework separation
 

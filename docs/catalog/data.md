@@ -1,7 +1,8 @@
 # Dataverse data and query functions
 
-The 14 R1 Data/Query/Actions entries are implemented in the bounded subset in
-[core usage](../core-usage.md); 11 R2 entries remain planned.
+The 14 R1 Data/Query/Actions entries and five R2 Metadata entries are implemented
+in bounded source subsets. See [core usage](../core-usage.md) and
+[metadata discovery](../metadata.md); six R2 entries here remain planned.
 See [catalog conventions](../function-catalog.md).
 The baseline is online Dataverse in the current environment. Cross-environment
 authentication is not automatically supplied by an app launcher.
@@ -72,6 +73,9 @@ must return synchronous proven JSON. Enumeration metadata remains unsupported.
 
 Scope caches by environment and language. Fetch only required metadata and do
 not assume choice values or relationship names from display labels.
+The implemented 0.6.0 native/typed-adapter subsets, requested-property rules,
+localization policy and invalidation boundaries are in [metadata usage](../metadata.md).
+This is not a live tenant or all-metadata compatibility certification.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

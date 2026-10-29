@@ -6,10 +6,121 @@ import manifest from "../package.json" with { type: "json" };
 import { configuration } from "./helpers.js";
 import { appId, launchFixture } from "./environment-helpers.js";
 import * as library from "../src/index.js";
+import { nativeForm } from "./native-fixture.js";
 
 const bundle = readFileSync(resolve("dist", "vbd.toolkit.js"), "utf8");
 
 describe("browser distribution", () => {
+  it("uses compiled choice baseline tokens and a permitted form selector across realms", async () => {
+    const fixture = nativeForm(), targetFormId = crypto.randomUUID(), currentFormId = crypto.randomUUID();
+    let options: library.ChoiceOption[] = [{ value: 0, text: "" }, { value: 1, text: "One" }];
+    let selected: number | null = 0;
+    const attribute: Record<string, unknown> = {};
+    const control = {
+      getName: () => "status", getControlType: () => "choice", getAttribute: () => attribute,
+      getOptions: () => options.map(item => ({ ...item })),
+      clearOptions: () => { options = []; },
+      addOption: (option: library.ChoiceOption, index: number) => { options.splice(index, 0, { ...option }); }
+    };
+    Object.assign(attribute, {
+      getName: () => "status", getAttributeType: () => "optionset", getValue: () => selected,
+      setValue: (value: number | null) => { selected = value; }, controls: { get: () => [control] }
+    });
+    const navigated: unknown[] = [];
+    const currentItem = { getId: () => currentFormId, navigate: () => { throw new Error("Already-current form must not navigate."); } };
+    const targetItem = { getId: () => targetFormId, navigate() { navigated.push(this); } };
+    const form = {
+      ...fixture.form,
+      getAttribute: (name: string) => name === "status" ? attribute : fixture.form.getAttribute(name),
+      getControl: (name: string) => name === "status" ? control : fixture.form.getControl(name),
+      ui: {
+        ...fixture.form.ui, formSelector: { items: { get: () => [currentItem, targetItem] }, getCurrentItem: () => currentItem }
+      }
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        const changed = VBD.Choices.setOptions(form, "status", [{value:0,text:"Only zero"}]);
+        const restored = VBD.Choices.restoreOptions(form, "status", changed.baseline);
+        const switched = await VBD.Forms.switchForm(form, targetFormId);
+        return JSON.stringify({changed:changed.status,restored:restored.status,switched});
+      })();`, {
+      crypto: globalThis.crypto, form, targetFormId,
+      Xrm: { Utility: { getGlobalContext: () => ({
+        client: { getClient: () => "Web", getFormFactor: () => 1, getClientState: () => "Online" }
+      }) } }
+    }, { timeout: 5000 });
+    expect(result).toBe(JSON.stringify({
+      changed: "applied", restored: "restored", switched: { status: "requested", formId: targetFormId }
+    }));
+    expect(options).toEqual([{ value: 0, text: "" }, { value: 1, text: "One" }]);
+    expect(selected).toBe(0);
+    expect(navigated).toEqual([targetItem]);
+    expect(fixture.form.data.save).not.toHaveBeenCalled();
+  });
+  it("uses compiled metadata adapters without guessing native choices or relationship identities", async () => {
+    const source = launchFixture(), calls: string[] = [];
+    const metadataContext: library.MetadataContext = {
+      getScope: () => ({ ...source.scope }),
+      getTable: async () => {
+        calls.push("table");
+        return { scope: { ...source.scope }, complete: true, metadata: { LogicalName: "account", EntitySetName: "accounts" } };
+      },
+      getChoices: async () => {
+        calls.push("choices");
+        return {
+          scope: { ...source.scope }, complete: true, metadata: {
+            EntityLogicalName: "account", LogicalName: "accountcategorycode", AttributeType: 11,
+            kind: "picklist", Options: [{ Value: 0, Labels: [{ LanguageCode: 1033, Label: "" }] }]
+          }
+        };
+      },
+      getRelationships: async () => {
+        calls.push("relationships");
+        return {
+          scope: { ...source.scope }, complete: true, metadata: [{
+            kind: "oneToMany", SchemaName: "account_contacts",
+            ReferencedEntity: "account", ReferencedAttribute: "accountid",
+            ReferencingEntity: "contact", ReferencingAttribute: "parentcustomerid",
+            ReferencedEntityNavigationPropertyName: "contact_customer_accounts",
+            ReferencingEntityNavigationPropertyName: "parentcustomerid_account"
+          }]
+        };
+      }
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        const table = await VBD.Metadata.getTable("account", {context:metadataContext});
+        const choices = await VBD.Metadata.getChoices("account", "accountcategorycode",
+          {context:metadataContext,languageId:1033});
+        const relationships = await VBD.Metadata.getRelationships("account",
+          {context:metadataContext,kind:"oneToMany"});
+        return JSON.stringify({table,choice:choices.choices[0],
+          relationship:relationships.relationships[0].SchemaName});
+      })();`, { crypto: globalThis.crypto, URL, TextEncoder, metadataContext }, { timeout: 5000 });
+    expect(result).toBe(JSON.stringify({
+      table: { LogicalName: "account", EntitySetName: "accounts" },
+      choice: { value: 0, label: "", languageId: 1033, isFallback: false },
+      relationship: "account_contacts"
+    }));
+    expect(calls).toEqual(["table", "choices", "relationships"]);
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
+  it("reserves bundled operation locks without browser storage, DOM or native reads", async () => {
+    const source = launchFixture();
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        let release;
+        const gate = new Promise(resolve => { release = resolve; });
+        const key = { namespace: "vm", key: "operation" };
+        const first = VBD.Execution.withLock(key, async () => { await gate; return false; }, {context:readContext});
+        const duplicate = await VBD.Execution.withLock(key, () => {throw new Error("Must not run");},
+          {context:readContext,duplicate:"return-busy"});
+        release();
+        return JSON.stringify({duplicate,first:await first});
+      })();`, { crypto: globalThis.crypto, URL, readContext: source.context }, { timeout: 5000 });
+    expect(result).toBe(JSON.stringify({ duplicate: { status: "busy" }, first: { status: "completed", value: false } }));
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
   it("uses the bundled configuration, binding, cache and same-window contracts across realms", async () => {
     const source = launchFixture(), opened: string[] = [];
     const config = configuration();
