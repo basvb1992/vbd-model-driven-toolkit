@@ -24,6 +24,8 @@ import { Bindings } from "./bindings.js";
 import { Cache } from "./cache.js";
 import { Execution } from "./execution.js";
 import { Metadata } from "./metadata.js";
+import { Batch } from "./batch.js";
+import { I18n } from "./i18n.js";
 
 if (Object.prototype.hasOwnProperty.call(globalThis, "VBD")) {
   throw new VbdError("DUPLICATE_INITIALIZATION", { operation: "initialize" });
@@ -33,7 +35,7 @@ Object.defineProperty(globalThis, "VBD", {
     Config, Diagnostics, Environment, Links, Launch, Windows,
     Utils, Context, Navigation, Dialogs, UI, Fields, Forms, Controls, Layout,
     Lookups, Choices, Validation, Events, Commands, Grids, Data, Query, Actions,
-    SidePanes, Security, Bindings, Cache, Execution, Metadata
+    SidePanes, Security, Bindings, Cache, Execution, Metadata, Batch, I18n
   }),
   enumerable: true,
   writable: false,

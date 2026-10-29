@@ -5,6 +5,12 @@ import { VbdError } from "./errors.js";
 import { runtimeSnapshot } from "./configuration-values.js";
 import { contextSchema } from "./platform.js";
 import { identifierSchema, parseInput } from "./validation.js";
+import { preflight, withRetry } from "./execution-read.js";
+export type {
+  ReadCallbackContext, ReadOperation, ReadRetryEvidence, ReadRetryPolicy, ReadRetryOptions,
+  PreflightObservation, PreflightCheck, PreflightReason, PreflightEvidence,
+  PreflightCheckResult, PreflightOptions, PreflightReport
+} from "./execution-read.js";
 
 const keySchema = z.object({
   namespace: identifierSchema, key: identifierSchema, record: entityRefSchema.optional()
@@ -63,4 +69,4 @@ async function withLock<T>(
     if (locks.get(identity) === owner) locks.delete(identity);
   }
 }
-export const Execution = Object.freeze({ withLock });
+export const Execution = Object.freeze({ withLock, withRetry, preflight });

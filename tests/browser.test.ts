@@ -11,6 +11,94 @@ import { nativeForm } from "./native-fixture.js";
 const bundle = readFileSync(resolve("dist", "vbd.toolkit.js"), "utf8");
 
 describe("browser distribution", () => {
+  it("uses compiled explicit localization and display contracts without guessed native locale", () => {
+    const foreignDate = new Date("2026-01-01T00:30:00Z");
+    const result: unknown = runInNewContext(`${bundle}
+      JSON.stringify({
+        locale:VBD.I18n.getLanguage({context:{
+          environmentUrl:"https://fixture.example",userId:"11111111-2222-3333-4444-555555555555",languageId:1033
+        }}).locale,
+        translated:VBD.I18n.translate("status","en-US",{
+          resources:{"en-US":{status:"{count}/{enabled}"}},onMissing:"error",values:{count:0,enabled:false}
+        }),
+        number:VBD.I18n.formatNumber(1234.5,"de-DE",{style:"decimal"}),
+        date:VBD.I18n.formatDate("2024-02-29","en-GB",{behavior:"dateOnly",dateStyle:"long"}),
+        display:VBD.Utils.formatValue({kind:"boolean",value:false,labels:{true:"Yes",false:"No"}},
+          {locale:"en-US",nulls:{policy:"error"}}),
+        dateIsForeign:!(foreignDate instanceof Date),
+        userLocal:VBD.I18n.formatDate(foreignDate,"en-GB",{
+          behavior:"userLocal",dateStyle:"long",timeStyle:"short",timeZone:"America/New_York"
+        })
+      });`, { crypto: globalThis.crypto, URL, TextEncoder, foreignDate }, { timeout: 5000 });
+    if (typeof result !== "string") throw new Error("Missing serialized localization result.");
+    expect(JSON.parse(result)).toEqual({
+      locale: null, translated: "0/false", number: new Intl.NumberFormat("de-DE").format(1234.5),
+      date: new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", dateStyle: "long" }).format(new Date("2024-02-29T00:00:00Z")),
+      display: "No", dateIsForeign: true,
+      userLocal: new Intl.DateTimeFormat("en-GB", {
+        dateStyle: "long", timeStyle: "short", timeZone: "America/New_York"
+      }).format(foreignDate)
+    });
+  });
+  it("retries explicit throttled read evidence and computes compiled preflight without native calls", async () => {
+    const source = launchFixture();
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        const attempts = [];
+        const value = await VBD.Execution.withRetry(({attempt}) => {
+          attempts.push(attempt);
+          if (attempt === 1) throw {status:429,retryAfter:0};
+          return false;
+        }, {readOnly:true,context:readContext,policy:{initialDelayMs:0,maxDelayMs:0}});
+        const report = await VBD.Execution.preflight([{
+          id:"fixtureRead",readOnly:true,run:()=>({status:"pass",reason:"confirmed"})
+        }], {context:readContext});
+        return JSON.stringify({value,attempts,status:report.status,basis:report.basis,counts:report.counts});
+      })();`, {
+      crypto: globalThis.crypto, URL, setTimeout, clearTimeout, performance: globalThis.performance,
+      readContext: source.context
+    }, { timeout: 5000 });
+    if (typeof result !== "string") throw new Error("Missing serialized retry/preflight result.");
+    expect(JSON.parse(result)).toEqual({
+      value: false, attempts: [1, 2], status: "ready", basis: "trusted-read-only-checks",
+      counts: { total: 1, executed: 1, pass: 1, fail: 0, unknown: 0, unsupported: 0, observerFailed: 0 }
+    });
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
+  it("does not turn optional localization into a prerequisite for Core initialization", () => {
+    const result: unknown = runInNewContext(`${bundle}
+      let localeError;
+      try {VBD.I18n.formatNumber(1,"en-US",{style:"decimal"});}
+      catch(error) {localeError=error.code;}
+      JSON.stringify({version:VBD.Diagnostics.getVersion(),valid:VBD.Config.validate({}).valid,localeError});`,
+    { crypto: globalThis.crypto, Intl: undefined }, { timeout: 5000 });
+    expect(result).toBe(JSON.stringify({ version: manifest.version, valid: false, localeError: "UNSUPPORTED_SURFACE" }));
+  });
+  it("reports actual compiled read-batch partial outcomes with isolated values and redacted errors", async () => {
+    const source = launchFixture();
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        const report = await VBD.Batch.execute([
+          {id:"zero",kind:"read",run:()=>0,validate:value=>typeof value==="number"},
+          {id:"failed",kind:"read",run:()=>{throw new Error("PRIVATE_BATCH_CANARY");},validate:()=>true},
+          {id:"after",kind:"read",run:()=>false,validate:value=>typeof value==="boolean"}
+        ], {context:readContext,concurrency:1,failurePolicy:"continue"});
+        return JSON.stringify(report);
+      })();`, { crypto: globalThis.crypto, URL, TextEncoder, readContext: source.context }, { timeout: 5000 });
+    expect(typeof result).toBe("string");
+    if (typeof result !== "string") throw new Error("Missing serialized read batch.");
+    expect(result).not.toContain("PRIVATE_BATCH_CANARY");
+    expect(JSON.parse(result)).toMatchObject({
+      status: "partial", stopReason: "none",
+      items: [
+        { id: "zero", status: "succeeded", value: 0 },
+        { id: "failed", status: "failed", error: { code: "OPERATION_FAILED" } },
+        { id: "after", status: "succeeded", value: false }
+      ],
+      counts: { total: 3, attempted: 3, succeeded: 2, failed: 1, skipped: 0 }
+    });
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
   it("uses compiled choice baseline tokens and a permitted form selector across realms", async () => {
     const fixture = nativeForm(), targetFormId = crypto.randomUUID(), currentFormId = crypto.randomUUID();
     let options: library.ChoiceOption[] = [{ value: 0, text: "" }, { value: 1, text: "One" }];

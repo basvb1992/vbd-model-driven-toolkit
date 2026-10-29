@@ -2,7 +2,7 @@
 
 This is an early source implementation with local unmanaged packaging,
 with a verified unmanaged BvB test installation, not a production-ready release.
-Current source is 0.6.0; the verified BvB Core installation and draft export
+Current source is 0.7.0; the verified BvB Core installation and draft export
 assets remain 0.5.0. New R2 helpers are source-only until separately deployed.
 Requires Node.js 24+ and npm. The npm package is private and not published.
 Building and local delivery tools need no environment login, Xrm, Studio, or
@@ -33,6 +33,8 @@ registration has been performed.
 The core interaction/form/data, owned-pane and Security subsets are documented in [core usage](core-usage.md).
 R2 usage is in [metadata](metadata.md), [advanced forms](advanced-forms.md) and
 [operation locks](execution.md).
+The 0.7.0 continuation adds explicit [read-job batches](read-batches.md),
+read-only retry/preflight and [localization/value formatting](localization.md).
 Approved configuration loading/resolution, bindings and memory caching are
 documented in [configuration runtime](environment-and-configuration.md).
 See [BvB testing](testing-in-bvb.md) before wiring a consumer-owned test form.

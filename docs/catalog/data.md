@@ -1,8 +1,8 @@
 # Dataverse data and query functions
 
-The 14 R1 Data/Query/Actions entries and five R2 Metadata entries are implemented
+The 14 R1 Data/Query/Actions entries, five R2 Metadata entries and Batch.execute are implemented
 in bounded source subsets. See [core usage](../core-usage.md) and
-[metadata discovery](../metadata.md); six R2 entries here remain planned.
+[metadata discovery](../metadata.md); five R2 entries here remain planned.
 See [catalog conventions](../function-catalog.md).
 The baseline is online Dataverse in the current environment. Cross-environment
 authentication is not automatically supplied by an app launcher.
@@ -63,6 +63,10 @@ must return synchronous proven JSON. Enumeration metadata remains unsupported.
 | `VBD.Actions.executeFunction` | Registered function contract, binding, parameters | Validated function response | Use supported function semantics and metadata. | R1 |
 
 ## VBD.Batch
+
+Only execute is implemented as an explicit [read-job runner](../read-batches.md).
+It is not the server `$batch` transport or an atomic mutation changeset;
+executeChangeset remains planned.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
