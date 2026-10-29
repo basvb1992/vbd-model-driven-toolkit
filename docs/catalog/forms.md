@@ -1,7 +1,9 @@
 # Form, control, and lookup functions
 
-The 39 R1 entries are implemented in a bounded source subset; seven R2 entries
-remain planned. See [catalog conventions](../function-catalog.md) and
+The 39 R1 entries and four R2 choice/form-switch entries are implemented in
+bounded source subsets; three R2 lookup entries remain planned.
+See [advanced form usage](../advanced-forms.md),
+[catalog conventions](../function-catalog.md) and
 [current signatures/policies](../core-usage.md).
 These functions require the appropriate supplied form/control context. Missing
 attributes/controls are errors unless an explicit optional-target policy is

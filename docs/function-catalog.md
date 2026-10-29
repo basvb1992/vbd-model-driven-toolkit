@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**135 functions have a local implementation; the other 63 remain planned.**
+**145 functions have a local implementation; the other 53 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -18,7 +18,10 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Cache.clear`
 - `VBD.Cache.getOrLoad`
 - `VBD.Cache.invalidate`
+- `VBD.Choices.filterOptions`
 - `VBD.Choices.getOptions`
+- `VBD.Choices.restoreOptions`
+- `VBD.Choices.setOptions`
 - `VBD.Commands.execute`
 - `VBD.Commands.refresh`
 - `VBD.Commands.run`
@@ -76,6 +79,7 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Events.onSave`
 - `VBD.Events.register`
 - `VBD.Events.unregister`
+- `VBD.Execution.withLock`
 - `VBD.Fields.clear`
 - `VBD.Fields.copy`
 - `VBD.Fields.fireOnChange`
@@ -92,6 +96,7 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Forms.refresh`
 - `VBD.Forms.save`
 - `VBD.Forms.setNotification`
+- `VBD.Forms.switchForm`
 - `VBD.Grids.getSelected`
 - `VBD.Grids.openSelected`
 - `VBD.Grids.refresh`
@@ -111,6 +116,11 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Lookups.removeFilter`
 - `VBD.Lookups.setDefaultView`
 - `VBD.Lookups.setEntityTypes`
+- `VBD.Metadata.getChoices`
+- `VBD.Metadata.getColumn`
+- `VBD.Metadata.getRelationships`
+- `VBD.Metadata.getTable`
+- `VBD.Metadata.invalidate`
 - `VBD.Navigation.newRecord`
 - `VBD.Navigation.openCustomPage`
 - `VBD.Navigation.openDashboard`

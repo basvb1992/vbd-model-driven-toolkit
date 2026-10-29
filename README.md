@@ -4,15 +4,16 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: early source implementation (0.5.0). 135 functions, local delivery
-tools, and solution packaging are implemented. The standalone unmanaged toolkit
-is deployed/published in BvB Demo Apps for testing; genuine managed/unmanaged
-exports exist. No consumer form/ribbon wiring, Studio, clean managed-target
-validation or public npm release is claimed.**
+**Status: early source implementation (0.6.0), with 145 implemented
+functions. BvB still runs the verified Core 0.5.0.0 and optional Playground
+0.1.0.0; this R2 source milestone is not deployed. The genuine managed/unmanaged
+exports and draft release remain the 0.5.0 test candidate. No consumer
+form/ribbon wiring, Studio, clean managed-target validation or public npm
+release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
-135 are locally implemented; the other 63 remain planned.
+145 are locally implemented; the other 53 remain planned.
 
 ## Available now
 
@@ -33,6 +34,15 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
   bindings and scoped copy-isolated memory caching. No recipe engine or secrets store.
 - Conservative privilege/table UX hints and same-window app profiles, separate
   from the active-gesture prepared-window path.
+- Bounded read-only metadata discovery, advanced choice/form UX and page-local
+  duplicate-operation locks in the 0.6.0 source slice; native-host subsets and
+  unverified behavior are documented separately.
+
+Metadata's native path covers selected table and base/Boolean column facts;
+choices, relationships and extended column facts require explicit scope-attested
+read-only adapters. Advanced choices currently require a singly bound native
+control with numeric baseline identities; form switching is saved desktop-Web
+Update forms only. These are documented subsets, not universal SDK coverage.
 - Typed field/control/form/layout helpers, owned lookup/event registration, choices
   and bounded synchronous validation; no automatic save or server-rule bypass.
 - Bounded OData/FetchXML data/query helpers and explicit operation contracts,
@@ -107,6 +117,9 @@ handover; a visual authoring Studio comes later.
 | --- | --- |
 | [Getting started](docs/getting-started.md) | Build, configuration/diagnostic APIs, portable schema, preflight, handover, and exit codes |
 | [Core usage](docs/core-usage.md) | Native navigation, forms, lookup/events, command wiring, bounded data/query APIs and operation contracts |
+| [Metadata discovery](docs/metadata.md) | Supported read-only metadata subsets, language/copy/cache scope and invalidation |
+| [Advanced form helpers](docs/advanced-forms.md) | Choice baselines/restore and safe permitted form switching |
+| [Operation locks](docs/execution.md) | Page-local scoped duplicate policy, ownership and failure semantics |
 | [Environment reads and app launching](docs/environment-launching.md) | Typed reads, scoped cache, approved app links, prepared tokens, and synchronous window requests |
 | [Feature specification](docs/feature-spec.md) | Outcomes, boundaries, acceptance criteria, assumptions, and failure cases |
 | [Function catalog](docs/function-catalog.md) | Complete proposed public API inventory, inputs, outputs, and delivery phases |

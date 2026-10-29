@@ -1,6 +1,6 @@
 # Shared services, files, and recipe functions
 
-The five UI entries are implemented; the other 20 remain planned.
+The five UI entries and Execution.withLock are implemented; the other 19 remain planned.
 See [catalog conventions](../function-catalog.md) and [core usage](../core-usage.md).
 Optional modules must not become hidden prerequisites for core functions.
 
@@ -21,6 +21,10 @@ unrelated libraries that call the SDK spinner directly.
 | `VBD.UI.clearNotification` | Notification token | Clear result | Clear only owned/requested notification. | R1 |
 
 ## VBD.Execution
+
+Only withLock is implemented in 0.6.0; see [scoped operation locks](../execution.md).
+There is no retry queue, lock TTL, automatic mutation retry or server-side
+coordination. withRetry/preflight remain planned.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
