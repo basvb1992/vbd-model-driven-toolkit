@@ -9,8 +9,9 @@ in the 0.7.0 source, including the bounded native UI/data subset, owned side pan
 conservative Security hints. [Configuration runtime](environment-and-configuration.md)
 defines approved loading, bindings and memory caching without a recipe engine.
 The R2 continuation adds [metadata](metadata.md), [advanced form UX](advanced-forms.md)
-and [scoped operation locks](execution.md). BvB remains on the separately
-verified 0.5.0 test installation until another authorized deployment.
+and [scoped operation locks](execution.md). BvB now has the separately verified
+0.7.0 Core test upgrade and optional 0.2.0 consultant Playground. This proves
+deployment/read-back, not every native API, role or client configuration.
 The next read-execution and [batch](read-batches.md) helpers use explicit
 trusted read-only contracts, not transactional mutation semantics.
 [Localization](localization.md) is plain-text display formatting with explicit

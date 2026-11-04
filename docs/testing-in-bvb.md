@@ -10,13 +10,15 @@ For a launchable read-only example app, use the separate
 [VBD Toolkit Playground companion](playground.md). Its app is in the
 `VBDToolkitPlayground` solution; it is deliberately not added to Core.
 
-**Current deployment:** standalone unmanaged `VBDModelDrivenToolkit` 0.5.0.0
-is imported and its two resources are published in BvB Demo Apps. Import job
+**Current deployment:** standalone unmanaged `VBDModelDrivenToolkit` 0.7.0.0
+is upgraded and its two resources are published in BvB Demo Apps. Import job
 completion, zero component failures, exact component inventory, and the served
 browser-resource SHA-256 were verified. No consumer test form/command handler
 was created; follow the setup below to exercise the library in your own app.
-Genuine managed/unmanaged exports are available as draft-release assets pending
-the owner's license decision. This is not a clean managed-target certification.
+The optional Playground 0.2.0.0 has 17 searchable/copyable examples and editable
+safe local tools. Genuine current Core exports are retained locally pending
+the owner's license decision; the old 0.5.0 GitHub draft remains unchanged.
+This is not a clean managed-target or signed-in native form certification.
 
 ## Load it on a test form
 

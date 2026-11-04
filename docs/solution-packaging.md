@@ -21,6 +21,13 @@ operation is performed by these tools. License/redistribution approval is pendin
 
 ## What is actually in the solution
 
+**Current adoption status:** authoritative main contains the tested 0.7.0
+runtime and optional consultant Playground 0.2.0.0. Both are upgraded/published
+in BvB. Historical source-only and first-install evidence below remains valid
+for those original observations; the
+[latest upgrade evidence](#adoption-and-bvb-upgrade-evidence) records the current
+versions and remaining native/clean-target/license boundaries.
+
 Independent solution: `VBDModelDrivenToolkit`; dedicated publisher unique name
 `VBDModelDrivenToolkit` (display `VBD Toolkit`), prefix `vbd`.
 The publisher option-value prefix `59926` comes from the official PAC initializer
@@ -535,3 +542,91 @@ record changes, PR merges, tag/draft-release mutation or license decision were
 performed. Existing BvB Core 0.5.0.0, Playground 0.1.0.0 and prior source/release
 artifacts remain separate and unchanged. Native/client runtime and clean-target
 managed import/upgrade require their own authorized verification.
+
+### Adoption and BvB upgrade evidence
+
+Issue #23 consolidated the complete verified history into main through normal
+merge [PR #24](https://github.com/basvb1992/vbd-model-driven-toolkit/pull/24),
+commit `bb32edc5778234c8dabdf3d4ef72f71eddebf426`. The tree exactly matches
+tested implementation head `b14c23f`. Current patch provenance is `c4966a8`
+(upgrade provenance) and UI lane `fc92a94` applied as `b14c23f`.
+The original consultant/packaging commits match their integrated cherry-picks
+by stable patch ID. The 11 old PRs were explicitly merged/superseded with
+provenance notes, not replayed or silently discarded. Original branches,
+worktrees, commits, the old test tag and draft assets were preserved.
+
+Full integrated local gate: **43 test files / 1849 tests**, strict
+types/lint/build/package-consumer checks and both actual native PAC integrations.
+Consolidation push/PR checks and the main merge check passed:
+[main CI](https://github.com/basvb1992/vbd-model-driven-toolkit/actions/runs/41857191096).
+A bounded read-only review of the prior latest runtime reported no material
+findings; it did not certify native hosts or replace the new delta's tests.
+
+Before changing BvB, PAC and API identity, versions, closed component inventories,
+owned resource hashes and original app identity were verified. Fresh genuine
+native unmanaged backups and an owned-only snapshot are retained under ignored
+`artifacts\AdoptionBackup-20261104`. Unreviewed concurrent resource changes would
+block the upgrade. A backup does not make unmanaged downgrade a safe rollback.
+
+| Upgrade input | Local PAC ZIP SHA-256 |
+| --- | --- |
+| Core 0.5.0.0 to 0.7.0.0 | `87238adf2dd6fe3f0492060d0f00410581170e8c3048fa2718dc0b3511b9bbbe` |
+| Playground 0.1.0.0 to 0.2.0.0 | `1be55eed7c14ce7630111196931debae01fd444ff16ae009e419c13436e4c9a3` |
+
+Both stages returned **Passed**, with zero missing dependencies/validation
+findings. Both native imports finished **state 3/status 30**, progress 100 and
+zero component failures. No force overwrite, skipped dependency check,
+workflow activation, global publish, role/security setting or business-data
+mutation was used. Targeted PublishXml published only the owned IDs.
+
+Core still has two resources; the optional companion still has one app, one
+sitemap and three resources. All original IDs were preserved, including the
+companion app and its launch URL. Existing Core `IntroducedVersion` remains
+**0.5.0.0**, while companion resources/app remain **0.1.0.0**. These are first
+introduction facts, not current solution versions; the pack/verify contracts
+now enforce that distinction. Raw server exports were not rewritten.
+
+| Published resource | SHA-256 (HTTP 200 and API read-back matched) |
+| --- | --- |
+| Core browser | `ddafddfdf7386cbaada97c972018bd3f67f4640601f45e6e145bf075c3ca4e4e` |
+| Core notices | `6454b2f04b4b23775bb853fd1b309b2a50ff5aa46f7e30ac48f9de16ca318703` |
+| Playground HTML | `f17f4795be26c4154dcbc8a2cf24d0ea26fdc2971f5dce9ef8394069f8388cca` |
+| Playground handlers | `58e1670c1e82a9628d6394fb08a3e1d8fdbb29d18b24f873a57a22e7e257fc55` |
+| Playground icon | `e709554b552e95ef7d2251c7713fcd5c60d474e34b43a9e37f670974b5345468` |
+
+The original 0.7.0 runtime bytes and **153 APIs** are unchanged; this task adds
+consultant adoption UI, not new Core APIs. Rendered built assets passed
+17-example search/category/empty recovery, current edited code and invalid
+clearing, native copy-only wiring, honest partial/incomplete status, text-only
+script-shaped values, clipboard success/denial recovery, visible keyboard focus,
+390px overflow and 200% zoom checks. The browser fixture used an explicit
+synthetic global context and no Xrm; those local examples made no API data reads.
+
+A separate live adapter check made **six authorized current-user GETs**, no
+writes. It checked the actual installed solution version, owned-resource
+existence/absence, selected table identity, two successful read-batch jobs,
+ready read-only preflight and lock completion. Its LCID 1033/en-US read
+preference was explicit. This is not native Xrm form, retry-timing, lower-role
+or arbitrary-record authorization evidence.
+
+Fresh genuine native current Core exports are retained under ignored
+`artifacts\AdoptionExports-1793806189754`, inspected against current source with
+the explicit closed `dataverseExport` dialect:
+
+| Genuine unchanged server ZIP | SHA-256 |
+| --- | --- |
+| `VBDModelDrivenToolkit_0.7.0.0_unmanaged.zip` | `85c008e499204fc1ca48e133e4cf5b513caf79f43d3fd8253ea08bf2e2f7bbe1` |
+| `VBDModelDrivenToolkit_0.7.0.0_managed.zip` | `eb4f07dfdb944bf9f643e9caa0e89e462cf7be32abed387197af8aabe101a227` |
+
+**Not run:** signed-in native form/ribbon/lookup/choice/window interactions,
+per-role/client matrix and clean separate managed-target install/upgrade. The
+automation browser reaches Microsoft sign-in, and no approved signed-in test
+form/session was supplied. No credentials were requested, tokens injected into
+the browser, authentication bypassed, surprise consumer handlers installed or
+native certification inferred. Follow [the native checklist](testing-in-bvb.md#native-form-and-command-acceptance-checklist)
+with an authorized test user/form.
+
+The package remains **UNLICENSED**; public source visibility is not approval
+to publish binaries or invent redistribution rights. The historical
+`v0.5.0-test.1` tag/draft/assets remain untouched. No public binary release,
+production-readiness or clean managed-target certification is claimed.
