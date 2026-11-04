@@ -15,6 +15,11 @@ tables/records/flows/plugins, install consumer form/ribbon handlers, or grant
 roles. Core API counts, solution versions/provenance and existing tags remain
 outside this UI change.
 
+**Current BvB app:** companion 0.2.0.0 with Core 0.7.0.0, consolidated on main.
+The original app ID and launch URL are preserved. Refresh the app to load the
+updated directory. The 17 examples are representative, not a claim that every
+one of the 153 APIs can run inside sitemap HTML.
+
 ## What you can try
 
 | Action | Behavior |
@@ -229,8 +234,8 @@ native labelled controls, visible keyboard focus and a responsive two-to-one
 column layout. Loading disables conflicting actions; errors recover controls;
 long results wrap; no decorative motion is authored. The original deployed
 companion's browser fixtures covered desktop/mobile/zoom and safe-read states.
-The new directory still requires the rendered verification handoff above;
-neither fixture category is a full accessibility/native-client certification.
+The new directory's rendered verification is recorded below; neither fixture
+category is a full accessibility/native-client certification.
 
 ## Installation boundary
 
@@ -273,3 +278,36 @@ Xrm. The live app URL correctly reaches the organization's Microsoft sign-in;
 the automation browser has no signed-in BvB session, so authenticated native-app
 rendering and every user's app visibility remain **unverified**, not assumed
 from the successful import or fixture screenshot.
+
+## Current 0.2.0 adoption upgrade
+
+The original BvB companion was upgraded from 0.1.0.0 to **0.2.0.0**, after Core
+0.5.0.0 was upgraded to **0.7.0.0**. Staging passed with no missing dependencies
+or validation findings. Both native imports finished state 3/status 30 and
+zero component failures. Original app/sitemap/resource IDs and introduction
+versions were preserved. Only those component IDs were published; no role,
+business-data, consumer form or global settings changed.
+
+The current companion source package SHA-256 is
+`1be55eed7c14ce7630111196931debae01fd444ff16ae009e419c13436e4c9a3`.
+Published HTML SHA-256:
+`f17f4795be26c4154dcbc8a2cf24d0ea26fdc2971f5dce9ef8394069f8388cca`.
+Published handler SHA-256:
+`58e1670c1e82a9628d6394fb08a3e1d8fdbb29d18b24f873a57a22e7e257fc55`.
+All three served resources returned HTTP 200 and exact package-matching bytes.
+
+The integrated full local gate passed **43 files / 1849 tests** with actual
+native Core and companion PAC checks. The rendered built HTML/JavaScript
+passed search/category/no-match recovery, current edited code and invalid-input
+clearing, native-copy-only host guidance, honest batch/preflight outcomes,
+script-shaped values rendered as text, exact generated-code copying and
+clipboard-denied manual recovery, visible keyboard focus, 390px overflow and
+200% zoom checks. These used a clearly synthetic fixture global context and
+made no API data requests. No fake Xrm or parent DOM was introduced.
+
+The actual app remains on its original direct link and reaches Microsoft
+sign-in in the automation browser. Signed-in native form/ribbon/lookup and
+per-role validation remain not run until a user-provided session/test form is
+available. Live typed read-adapter checks of owned resources/selected metadata
+are separate evidence, not a substitute. See the
+[complete adoption evidence](solution-packaging.md#adoption-and-bvb-upgrade-evidence).

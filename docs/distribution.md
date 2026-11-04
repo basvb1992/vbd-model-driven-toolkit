@@ -101,9 +101,11 @@ exports. Raw exported bytes are inspected with explicit `dataverseExport`
 format, never rewritten to make them pass. The unmanaged source installation
 is verified; clean managed-target install/upgrade and public redistribution
 approval remain outstanding.
-The current source package is not the installed/exported test version: BvB,
-the existing genuine paired exports and draft `v0.5.0-test.1` remain at 0.5.0.
-No 0.7.0 import, managed export or public release is claimed by this R2 slice.
+The adoption milestone upgraded BvB to Core 0.7.0.0 and optional Playground
+0.2.0.0, preserving original component IDs/introduction versions. Genuine
+0.7.0 managed/unmanaged exports match current source and served resources.
+The historical `v0.5.0-test.1` tag/draft/assets remain unchanged; no new public
+binary release or license approval is implied.
 
 | Artifact | Intended use |
 | --- | --- |

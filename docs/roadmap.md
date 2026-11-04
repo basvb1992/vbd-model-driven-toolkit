@@ -4,6 +4,27 @@
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
+## Current adoption status
+
+[Issue #23](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/23)
+consolidated the tested stack through [PR #24](https://github.com/basvb1992/vbd-model-driven-toolkit/pull/24)
+into authoritative main with normal history, then superseded the old PRs with
+ancestor/patch-equivalence evidence rather than replaying their work.
+BvB now runs Core 0.7.0.0 and optional Playground 0.2.0.0. The Playground has
+17 searchable examples, editable safe inputs, current copyable TypeScript,
+per-method availability and actual form/ribbon host/wiring guidance.
+
+Both strictly higher unmanaged upgrades passed staging/import/component checks
+and targeted publication, with original IDs/provenance and exact served bytes.
+Six actual current-user GETs through reviewed read adapters validated owned
+resource presence/absence, selected metadata, read batches, preflight and lock
+behavior without writes. These are not signed-in native form/command/lookup or
+role-matrix evidence: the automation browser is at Microsoft sign-in.
+Managed clean-target testing and license/public publication remain pending.
+Historical milestone sections below describe their original source-only scope;
+the [current deployment evidence](solution-packaging.md#adoption-and-bvb-upgrade-evidence)
+supersedes those older installation-status observations, not their contracts.
+
 ## Current progress: C1a and C1b
 
 [Issue #1](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/1) scopes

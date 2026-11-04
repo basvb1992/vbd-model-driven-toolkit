@@ -1,15 +1,16 @@
 # VBD Model-Driven Toolkit
 
-A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
+A configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
 **Status: early source implementation (0.7.0), with 153 implemented
-functions. BvB still runs the verified Core 0.5.0.0 and optional Playground
-0.1.0.0; this R2 source milestone is not deployed. The genuine managed/unmanaged
-exports and draft release remain the 0.5.0 test candidate. No consumer
-form/ribbon wiring, Studio, clean managed-target validation or public npm
-release is claimed.**
+functions. Authoritative source is consolidated on main. BvB runs verified
+Core 0.7.0.0 and optional Playground 0.2.0.0 with 17 searchable examples,
+editable safe inputs, copyable TypeScript and form/ribbon wiring guidance.
+Genuine current Core exports exist; the old 0.5.0 draft release is unchanged.
+Native signed-in form/ribbon/role-matrix validation and clean managed-target
+testing remain unverified. No license approval or public npm release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
@@ -55,8 +56,8 @@ Update forms only. These are documented subsets, not universal SDK coverage.
 - Sanitized snapshot comparison and supplied-manifest upgrade reports, separate
   from the browser runtime.
 - Local PAC unmanaged pack/unpack/repack with two independent webresources,
-  complete bundled notices and bounded inspection. Managed creation remains
-  blocked pending a genuine authorized Dataverse export.
+  complete bundled notices and bounded inspection. Offline managed conversion
+  remains blocked; genuine authorized managed/unmanaged exports are available.
 
 Requires Node.js 24 or later for development/tools:
 
@@ -160,8 +161,8 @@ can target tables, columns, and environment variables belonging to any publisher
 
 ## Development and sharing
 
-The intended first development environment is the owner's BvB Demo environment.
-Its exact identity and publisher must be verified before a future deployment.
+The development/test environment is the owner's BvB Demo Apps environment.
+Its exact identity and publisher are verified before every scoped deployment.
 No environment URLs, app IDs, tenant values, credentials, or customer data are
 required in this repository.
 
@@ -169,9 +170,11 @@ The repository is now public, but a redistribution license remains undecided;
 the package stays private/UNLICENSED. Draft releases do not grant reuse rights.
 Future tagged releases should provide
 managed and unmanaged solution ZIPs built from the same source revision.
-The unmanaged 0.5.0.0 toolkit import and published browser content are verified
-in BvB. Genuine managed/unmanaged exports retain the same runtime payloads.
+The unmanaged 0.7.0.0 toolkit upgrade and published browser content are verified
+in BvB. Genuine current managed/unmanaged exports retain the same runtime payloads.
 A draft GitHub test release is prepared pending the owner license decision;
 managed clean-target installation and full native UI coverage remain outstanding.
+See [adoption and upgrade evidence](docs/solution-packaging.md#adoption-and-bvb-upgrade-evidence)
+and [the consultant Playground](docs/playground.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing implementation.

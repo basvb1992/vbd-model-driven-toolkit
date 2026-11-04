@@ -534,6 +534,17 @@ form is an explicit unverified boundary. Managed clean-target/role matrix and
 license/public release remain pending. A safe live read-adapter check does not
 certify native Xrm forms or command registration.
 
+### Adoption acceptance evidence
+
+| Criterion | Observed verification | Boundary |
+| --- | --- | --- |
+| One authoritative source, no lost/duplicated lane work. | Consolidation PR #24 merged normally at bb32edc; exact tree matches tested b14c23f. Existing main was an ancestor; original consultant/packaging stable patch IDs match their integrated cherry-picks. All 11 old PRs are accounted for as merged/superseded, with branches/worktrees preserved. | No history rewrite, old tag or draft mutation; documentation evidence is a later content-only follow-up. |
+| Usable searchable/copyable examples with actual host requirements. | 17 examples, per-method availability, edited finite/locale inputs, no-match recovery, current generated snippets, invalid clearing, text-only output and clipboard success/failure recovery verified in rendered browser; native examples are copy-only. | Representative examples, not runnable coverage of all 153 methods or native SDK certification. |
+| Source/type/package and responsive consistency. | 43 files / 1849 tests, both actual native PAC integrations; 153 APIs unchanged, 390px/no overflow, 200% zoom and visible 3px keyboard focus. | No full accessibility audit or all-client matrix. |
+| Safe strictly higher BvB upgrades with stable ownership. | Fresh native backups, confirmed original versions/inventory, Passed stages with zero findings, Core 0.5 to 0.7 and Playground 0.1 to 0.2 imports state 3/status 30 and zero component failures; exact IDs/provenance and served hashes preserved/verified after targeted publication. | No force overwrite, data, roles, consumer forms or global settings changed. Backups are retained evidence, not a promise that unmanaged downgrade is rollback. |
+| Actual supported read behavior. | Six current-user GETs with explicit scoped adapters verified owned-resource existence/absence, selected metadata, read batch, preflight and lock behavior without writes. | Not native Xrm/SDK forms, real retry timing, lower-privileged users or row authorization certification. |
+| Honest remaining release/native gates. | Actual browser app opening reaches Microsoft sign-in; no signed-in test form/command session supplied. Fresh genuine 0.7 Core exports match source, but public license and clean managed target remain pending. | No credentials/auth bypass, invented license, public binary release or clean managed install claim. |
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -562,7 +573,7 @@ certify native Xrm forms or command registration.
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 153-function source namespace; deployed BvB still has the verified 135-function 0.5.0 version. Full live coverage remains separate. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 153-function authoritative source and BvB 0.7.0 resource content verified. Full native live coverage remains separate. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |

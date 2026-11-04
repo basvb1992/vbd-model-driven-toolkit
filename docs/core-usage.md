@@ -3,11 +3,11 @@
 The 0.7.0 source adds eight more selected R2 APIs: 153 of 198 are implemented across
 32 namespaces. These are bounded source contracts, not certification of every
 SDK feature, client, tenant, form, or permission configuration.
-The standalone 0.5.0.0 unmanaged toolkit is imported/published in BvB and genuine
+The standalone 0.7.0.0 unmanaged toolkit is upgraded/published in BvB and genuine
 managed/unmanaged exports are verified. No consumer wiring or clean managed
 target import is implied. See [testing](testing-in-bvb.md) and
 [packaging evidence](solution-packaging.md).
-The newer source is **not deployed**: read [metadata discovery](metadata.md),
+For the newer supported source subsets, read [metadata discovery](metadata.md),
 [advanced choice/form helpers](advanced-forms.md) and [operation locks](execution.md)
 for exact subsets and evidence boundaries before using those additions.
 Read execution/preflight is documented with [execution](execution.md);
