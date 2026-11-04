@@ -1,8 +1,14 @@
 # Dataverse data and query functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md).
+The 14 R1 Data/Query/Actions entries, five R2 Metadata entries and Batch.execute are implemented
+in bounded source subsets. See [core usage](../core-usage.md) and
+[metadata discovery](../metadata.md); five R2 entries here remain planned.
+See [catalog conventions](../function-catalog.md).
 The baseline is online Dataverse in the current environment. Cross-environment
 authentication is not automatically supplied by an app launcher.
+No live writes are part of verification. ETags require an atomic conditional
+adapter; unsupported native conditional writes fail before dispatch.
+Read lookup-shadow names are distinct from logical tables/FetchXML/write fields.
 
 ## VBD.Data
 
@@ -24,6 +30,8 @@ server errors without turning access denial into a missing record.
 
 Support raw OData/FetchXML for advanced consumers and structured safe helpers
 for common conditions. Never substitute unescaped values into query templates.
+FetchXML currently supports explicit selected/ordered root queries and scalar
+filters, not joins/aggregates/general NOT/contains or ambiguous cookie-less paging.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -45,6 +53,9 @@ for common conditions. Never substitute unescaped values into query templates.
 
 Operation names and parameter metadata must be registered/validated; input values
 alone are not enough to construct a correct Web API execution request.
+Contracts declare parameter metadata and expected empty/validated JSON response.
+Response validators may be async with a final scope check; parameter guards
+must return synchronous proven JSON. Enumeration metadata remains unsupported.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -52,6 +63,10 @@ alone are not enough to construct a correct Web API execution request.
 | `VBD.Actions.executeFunction` | Registered function contract, binding, parameters | Validated function response | Use supported function semantics and metadata. | R1 |
 
 ## VBD.Batch
+
+Only execute is implemented as an explicit [read-job runner](../read-batches.md).
+It is not the server `$batch` transport or an atomic mutation changeset;
+executeChangeset remains planned.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -62,6 +77,9 @@ alone are not enough to construct a correct Web API execution request.
 
 Scope caches by environment and language. Fetch only required metadata and do
 not assume choice values or relationship names from display labels.
+The implemented 0.6.0 native/typed-adapter subsets, requested-property rules,
+localization policy and invalidation boundaries are in [metadata usage](../metadata.md).
+This is not a live tenant or all-metadata compatibility certification.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

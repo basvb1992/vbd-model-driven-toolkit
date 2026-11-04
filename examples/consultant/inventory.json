@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "inventoryId": "exampleInventory",
+  "sourceRevision": "a679b55",
+  "observedAt": "2026-10-28T10:00:00.000Z",
+  "installedVersion": "0.2.0",
+  "targetVersion": "0.3.0",
+  "registrationCoverage": "complete",
+  "functions": [
+    { "id": "validateExample", "name": "VBD.Config.validate" }
+  ],
+  "configurations": [
+    { "id": "exampleConfiguration", "contract": "toolkitConfiguration.v1" }
+  ],
+  "registrations": [
+    {
+      "id": "exampleRegistration",
+      "functionRef": "validateExample",
+      "configurationRef": "exampleConfiguration",
+      "evidence": "declared"
+    }
+  ]
+}

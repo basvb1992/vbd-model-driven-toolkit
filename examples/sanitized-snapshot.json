@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "targetAlias": "demo",
+  "observedAt": "2026-10-28T08:00:00Z",
+  "environmentVariables": [
+    {
+      "schemaName": "vbd_TargetModelDrivenAppId",
+      "status": "available",
+      "type": "text",
+      "hasCurrentValue": true,
+      "hasDefaultValue": false
+    },
+    {
+      "schemaName": "vbd_TargetEnvironmentUrl",
+      "status": "available",
+      "type": "text",
+      "hasCurrentValue": false,
+      "hasDefaultValue": true
+    },
+    {
+      "schemaName": "vbd_ApprovedAppOrigin",
+      "status": "denied"
+    }
+  ]
+}

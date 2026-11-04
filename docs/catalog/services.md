@@ -1,6 +1,8 @@
 # Shared services, files, and recipe functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md).
+The five UI entries, three Execution entries and four I18n entries are implemented;
+the other 13 remain planned.
+See [catalog conventions](../function-catalog.md) and [core usage](../core-usage.md).
 Optional modules must not become hidden prerequisites for core functions.
 
 ## VBD.UI
@@ -8,16 +10,22 @@ Optional modules must not become hidden prerequisites for core functions.
 Form-specific notifications are in `VBD.Forms`. Global notifications use supported
 platform APIs. Progress is owned/scoped so overlapping operations do not clear
 each other's state unexpectedly.
+Ownership coordinates VBD callers on a shared native progress surface, not
+unrelated libraries that call the SDK spinner directly.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.UI.showProgress` | Message, operation ID | Progress token | Validate platform capability and token ownership. | R1 |
 | `VBD.UI.hideProgress` | Progress token | Cleanup result | Close owned progress state; report invalid ownership. | R1 |
 | `VBD.UI.withProgress` | Message, trusted async operation | Operation result | Cleanup in finally; retain original error/cancellation. | R1 |
-| `VBD.UI.notify` | Message, severity, scope, optional duration/actions | Notification token | Supported global notification contract only. | R1 |
+| `VBD.UI.notify` | Message, level, close-button policy | Owned notification token | Native global notification only; auto-dismiss/background action policies are explicitly unsupported here. | R1 |
 | `VBD.UI.clearNotification` | Notification token | Clear result | Clear only owned/requested notification. | R1 |
 
 ## VBD.Execution
+
+The three methods have bounded source implementations; see [execution](../execution.md).
+The retry/preflight subset is explicitly read-only. There is no durable retry
+queue, lock TTL, automatic mutation retry or server-side coordination.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -65,6 +73,11 @@ without requiring R2 multi-step recipe execution. This preserves a small first
 release while keeping a stable maker entry point.
 
 ## VBD.I18n
+
+The four methods and Utils.formatValue are implemented using the explicit
+[localization/display contract](../localization.md). Language/locale evidence,
+fallback, placeholder and date/time behavior are validated, not inferred from
+tenant/browser names or rendered as HTML.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

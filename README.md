@@ -4,11 +4,79 @@ A proposed configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: documentation and API design only. No functions, solution packages,
-deployment scripts, or npm package have been implemented or released.**
+**Status: early source implementation (0.7.0), with 153 implemented
+functions. BvB still runs the verified Core 0.5.0.0 and optional Playground
+0.1.0.0; this R2 source milestone is not deployed. The genuine managed/unmanaged
+exports and draft release remain the 0.5.0 test candidate. No consumer
+form/ribbon wiring, Studio, clean managed-target validation or public npm
+release is claimed.**
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
+153 are locally implemented; the other 45 remain planned.
+
+## Available now
+
+- `VBD.Config.validate`, `register`, and `get`: strict portable declaration
+  validation and an isolated in-memory registry.
+- `VBD.Diagnostics.normalizeError`, `report`, and `getVersion`: structured
+  errors, explicit redacted sinks, and version information.
+- A browser `VBD` bundle, ESM developer bundle, and TypeScript declarations.
+- Ten typed `VBD.Environment` APIs with supported online Xrm reads, explicit
+  current/default precedence, protected-type guards, and scoped bounded caching.
+- `VBD.Links.app`, three `VBD.Launch` APIs, and `VBD.Windows.open` for approved
+  app destinations prepared before a synchronous isolated click request.
+- Native context, navigation/dialog, progress/notification, grid and prepared-profile
+  ribbon adapters, with explicit lifecycle/cancellation/failure outcomes.
+- Owned desktop-Web side panes, pure approved-origin record/view links, and
+  read-only method-presence diagnostics (not access or installation checks).
+- Approved JSON configuration loading, typed declaration resolution, allowlisted
+  bindings and scoped copy-isolated memory caching. No recipe engine or secrets store.
+- Conservative privilege/table UX hints and same-window app profiles, separate
+  from the active-gesture prepared-window path.
+- Bounded read-only metadata discovery, advanced choice/form UX and page-local
+  duplicate-operation locks in the 0.6.0 source slice; native-host subsets and
+  unverified behavior are documented separately.
+- Read-only retry/preflight and parallel read-job batches, plus explicit
+  localization and typed display formatting in the 0.7.0 source slice.
+  These are not mutation retries, server changesets or an HTML/template engine.
+
+Metadata's native path covers selected table and base/Boolean column facts;
+choices, relationships and extended column facts require explicit scope-attested
+read-only adapters. Advanced choices currently require a singly bound native
+control with numeric baseline identities; form switching is saved desktop-Web
+Update forms only. These are documented subsets, not universal SDK coverage.
+- Typed field/control/form/layout helpers, owned lookup/event registration, choices
+  and bounded synchronous validation; no automatic save or server-rule bypass.
+- Bounded OData/FetchXML data/query helpers and explicit operation contracts,
+  field allowlists, delete confirmation and conditional-write policy.
+- Local `preflight` JSON and `handover` Markdown tools. These use source and
+  optional sanitized supplied evidence; no live environment is queried.
+- Sanitized snapshot comparison and supplied-manifest upgrade reports, separate
+  from the browser runtime.
+- Local PAC unmanaged pack/unpack/repack with two independent webresources,
+  complete bundled notices and bounded inspection. Managed creation remains
+  blocked pending a genuine authorized Dataverse export.
+
+Requires Node.js 24 or later for development/tools:
+
+```powershell
+npm ci
+npm run check
+node .\dist\vbd-toolkit.mjs preflight --config .\examples\customer-workspace.json
+```
+
+The example preflight intentionally exits **2 (incomplete)**: live deployment
+and actual registry/handler wiring are unverified.
+See [getting started](docs/getting-started.md) for usable APIs, report generation,
+input limits, and the precise current boundaries.
+See [environment reads and app launching](docs/environment-launching.md) for
+the new runtime contracts, caller-owned setup/click example, and limitations.
+See [core usage](docs/core-usage.md) for the next navigation/form/data milestones,
+native handler parameters, scope bounds and unsupported subsets.
+See [consultant tools](docs/consultant-tools.md) and
+[solution packaging](docs/solution-packaging.md) for current delivery commands,
+evidence limits, and the remaining managed/import/release gates.
 
 ## What we are designing
 
@@ -50,10 +118,22 @@ handover; a visual authoring Studio comes later.
 
 | Document | Contents |
 | --- | --- |
+| [Getting started](docs/getting-started.md) | Build, configuration/diagnostic APIs, portable schema, preflight, handover, and exit codes |
+| [Core usage](docs/core-usage.md) | Native navigation, forms, lookup/events, command wiring, bounded data/query APIs and operation contracts |
+| [Metadata discovery](docs/metadata.md) | Supported read-only metadata subsets, language/copy/cache scope and invalidation |
+| [Advanced form helpers](docs/advanced-forms.md) | Choice baselines/restore and safe permitted form switching |
+| [Operation locks](docs/execution.md) | Page-local scoped duplicate policy, ownership and failure semantics |
+| [Read batches](docs/read-batches.md) | Explicit read jobs, concurrency, copied/guarded outcomes and cancellation/limit semantics |
+| [Localization](docs/localization.md) | Explicit locale/language, safe text resources and distinct date/time behavior |
+| [Environment reads and app launching](docs/environment-launching.md) | Typed reads, scoped cache, approved app links, prepared tokens, and synchronous window requests |
 | [Feature specification](docs/feature-spec.md) | Outcomes, boundaries, acceptance criteria, assumptions, and failure cases |
 | [Function catalog](docs/function-catalog.md) | Complete proposed public API inventory, inputs, outputs, and delivery phases |
 | [Architecture](docs/architecture.md) | Typed APIs, maker adapters, recipes, contexts, errors, and compatibility |
 | [Consultant capabilities](docs/consultant-experience.md) | Prioritized diagnostic, delivery, comparison, handover, and Studio experiences |
+| [Consultant tools](docs/consultant-tools.md) | Local sanitized comparison and supplied-manifest upgrade reports |
+| [Solution packaging](docs/solution-packaging.md) | Offline unmanaged PAC packaging, complete notices, inspection and managed prerequisites |
+| [Testing in BvB](docs/testing-in-bvb.md) | Consumer-owned test form setup, safe smoke scenarios and deployment evidence boundaries |
+| [Optional Playground app](docs/playground.md) | Separate launchable read-only app, examples and supported HTML-webresource boundaries |
 | [Environment and configuration](docs/environment-and-configuration.md) | Value resolution, types, caching, secrets, feature flags, and bindings |
 | [Apps and independent windows](docs/app-launching.md) | App profiles, deep links, popup restrictions, authentication, and return contracts |
 | [Recipe examples](docs/recipes.md) | Proposed end-to-end interactions and smart mechanisms |
@@ -69,8 +149,8 @@ handover; a visual authoring Studio comes later.
 | Public namespace | `VBD`, for example `VBD.Environment.getText` |
 | Dataverse publisher prefix | `vbd` |
 | Toolkit-owned schema names | `vbd_<name>` |
-| Proposed solution unique name | `VBDModelDrivenToolkit` |
-| Proposed core webresource | `vbd_/toolkit/vbd.toolkit.js` |
+| Core solution unique name | `VBDModelDrivenToolkit` |
+| Core webresource | `vbd_/toolkit/vbd.toolkit.js` |
 | Proposed maker adapter webresource | `vbd_/toolkit/vbd.commands.js` |
 | Repository | `vbd-model-driven-toolkit` |
 
@@ -85,9 +165,13 @@ Its exact identity and publisher must be verified before a future deployment.
 No environment URLs, app IDs, tenant values, credentials, or customer data are
 required in this repository.
 
-The repository is initially private. Public visibility and a redistribution
-license are pending owner approval. Future tagged releases should provide
+The repository is now public, but a redistribution license remains undecided;
+the package stays private/UNLICENSED. Draft releases do not grant reuse rights.
+Future tagged releases should provide
 managed and unmanaged solution ZIPs built from the same source revision.
-There are no installable ZIPs yet.
+The unmanaged 0.5.0.0 toolkit import and published browser content are verified
+in BvB. Genuine managed/unmanaged exports retain the same runtime payloads.
+A draft GitHub test release is prepared pending the owner license decision;
+managed clean-target installation and full native UI coverage remain outstanding.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing implementation.

@@ -1,7 +1,8 @@
 # Contributing
 
-This repository currently contains a design baseline, not an implementation.
-Do not treat catalog entries as callable APIs.
+This repository contains an early implementation alongside the broader design.
+Only functions listed as implemented in the catalog are callable.
+Do not treat planned entries or generated command templates as existing APIs.
 
 ## Before implementing
 
@@ -46,6 +47,15 @@ mapping and the [roadmap](docs/roadmap.md) for phase gates.
 
 Documentation-only contributions need link and catalog consistency checks,
 not invented build/test infrastructure.
+
+For implementation changes, use Node.js 24+, `npm ci`, and `npm run check`.
+The check includes strict types, lint, build, NodeNext package-consumer types,
+and unit/CLI/browser-bundle VM tests. Commit the dependency lockfile when needed.
+Live model-driven behavior and solution import are separate future checks.
+Environment/launcher adapters must also cover protected-type guards, scope and
+invalidation races, source freshness, origin policy, opaque-token integrity,
+and synchronous user-activation requirements. Never equate a null window handle
+or a valid declaration with a loaded, authorized destination.
 
 ## License and releases
 

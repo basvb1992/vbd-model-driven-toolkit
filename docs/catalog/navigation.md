@@ -1,16 +1,22 @@
 # Navigation, app launcher, and window functions
 
-All entries are planned. See [catalog conventions](../function-catalog.md) and
-the mandatory [app/window contract](../app-launching.md).
+26 entries are implemented locally: the eight non-generative Navigation methods,
+Dialogs 6, Links 3, SidePanes 4, Launch 4, and Windows.open.
+The other 3 remain planned.
+See [catalog conventions](../function-catalog.md),
+[current runtime usage](../environment-launching.md), and the mandatory
+[app/window contract](../app-launching.md).
 
 ## VBD.Navigation
 
 Use supported page-type contracts. Record forms, custom pages, HTML webresources,
 and generative pages do not accept identical input objects or return values.
+The current record path supports inline/modal navigateTo, not record new-window
+mode or a main-form Quick Create callback. See [core usage](../core-usage.md).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Navigation.openRecord` | ref, optional form/tab, supported data, presentation/chrome options | Navigation request/result | Native openForm for supported separate-window forms; navigateTo for dialogs; no main-form save callback assumption. | R1 |
+| `VBD.Navigation.openRecord` | ref, optional form/tab, data, inline/modal options | Navigation request/result | navigateTo lifecycle only; record new-window mode is explicitly unsupported in this subset. | R1 |
 | `VBD.Navigation.newRecord` | Table, approved defaults, mapping source, form/presentation | Create-form navigation request/result | Opening a main form is not creating/saving a record or promising a save/close completion. | R1 |
 | `VBD.Navigation.quickCreate` | Table, supported defaults/options | Documented Quick Create save result | Only enabled/supported Quick Create forms; no separate window/tab or invented cancel callback. | R1 |
 | `VBD.Navigation.openView` | Table, view ID/type | Navigation request result | Entity-list navigateTo is inline; no generic list-modal promise. | R1 |
@@ -38,13 +44,17 @@ does not prove a record saved. Refresh policies must account for that distinctio
 
 Persistent app panes are a separate feature from side-positioned modal dialogs.
 Use stable pane identities to avoid creating duplicates on every click.
+The implemented subset is online desktop Web only, at most 32 tracked IDs per
+SDK host, with matching creation options and original native-instance ownership.
+No foreign-pane adoption, automatic retry/rollback, external URL or arbitrary iframe.
+See [usage and lifecycle](../core-usage.md#owned-side-panes-and-deep-links).
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
 | `VBD.SidePanes.createOrGet` | Pane ID, title, supported width/options | Supported pane reference/token | Reuse matching pane; reject incompatible/unsupported options. | R1 |
 | `VBD.SidePanes.navigate` | Pane token/ID, supported page input | Navigation completion | Do not promise arbitrary external iframe embedding. | R1 |
-| `VBD.SidePanes.select` | Pane ID | Selection result | Require an existing supported pane. | R1 |
-| `VBD.SidePanes.close` | Pane ID | Close result | Close owned/requested pane, not unrelated app panes. | R1 |
+| `VBD.SidePanes.select` | Original pane handle or explicitly owned ID | Selection request receipt | Require the current original owned instance; reject active navigation. | R1 |
+| `VBD.SidePanes.close` | Original pane handle or explicitly owned ID | Native close completion | Close owned panes only; no close during active navigation or ownership takeover. | R1 |
 | `VBD.SidePanes.update` | Pane ID, supported title/badge/properties | Applied result | Capability-check individual platform properties. | R2 |
 
 ## VBD.Links
@@ -54,21 +64,25 @@ keys, IDs, and encoding. Never forward the entire form or current URL by default
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Links.record` | Approved environment/app identity, ref, supported form options | Validated URL | Build a documented model-driven record deep link. | R1 |
-| `VBD.Links.app` | Approved environment and app identity | Validated URL | Current environment by default; cross-environment must be explicit. | R1 |
-| `VBD.Links.view` | Approved environment/app, table, view identity/type | Validated URL | Use documented list/view addressing only. | R1 |
+| `VBD.Links.record` | AppLinkOptions plus record reference and optional formId | Validated URL | Pure record deep link; formId is encoded within extraqs. Does not expand Windows.open policy. | R1 |
+| `VBD.Links.app` | Explicit root environment, one app ID/unique name, approved origins | Validated URL | Pure HTTPS app-link construction; no implicit global environment lookup. | R1 |
+| `VBD.Links.view` | AppLinkOptions plus entityName, viewId and savedquery/userquery type | Validated URL | Pure list/view link; type codes 1039/4230, no arbitrary query forwarding. | R1 |
 
 ## VBD.Launch
 
 Profiles bind environment variables and immediate context to supported destinations.
 These are launch configuration helpers, not authentication or app provisioning.
+The current profile schema supports modelDrivenApp/newWindow or sameWindow,
+without record/field parameters. Existing prepared-profile ribbon handlers are
+newWindow-only. openProfile is a separate sameWindow path; inline/dialog/pane
+app-profile dispatch is not silently approximated.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Launch.getProfile` | Registered profile key | Validated unresolved profile | Check destination/presentation/override policy. | R1 |
-| `VBD.Launch.prepareProfile` | Profile key, safe ctx, TTL/scope | `PreparedLaunch` | Resolve async configuration early; expire on dependency/scope change. | R1 |
-| `VBD.Launch.openPrepared` | Prepared launch, immediate permitted bindings | Synchronous `LaunchResult` | Validate and request browser opening during user activation; no await before open. | R1 |
-| `VBD.Launch.openProfile` | Profile key, ctx, supported non-popup presentation | Navigation request/result | Async convenience for inline/dialog/pane/host navigation; independent windows require openPrepared. | R1 |
+| `VBD.Launch.getProfile` | Configuration name and profile key | Validated unresolved profile copy | Check the supported declaration; do not resolve values. | R1 |
+| `VBD.Launch.prepareProfile` | Configuration/profile identity, optional read context, TTL | Opaque `PreparedLaunch` | Resolve async configuration early; expire on freshness/revision/scope/invalidation changes. | R1 |
+| `VBD.Launch.openPrepared` | Original prepared token, optional dimensions/trusted host | Synchronous `LaunchResult` | Require active user activation; no async reads, URL overrides, or record bindings. | R1 |
+| `VBD.Launch.openProfile` | configurationName/profileKey, context/TTL and optional trusted SameWindowHost | Requested/unknown sameWindow receipt | sameWindow profiles only; default top-level location.assign, embedded hosts need explicit adapter. No async popup workaround. | R1 |
 
 ## VBD.Windows
 
@@ -77,5 +91,5 @@ readiness. Isolated-window and reusable-connected-window modes are distinct.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
-| `VBD.Windows.open` | Already validated app/external URL, isolated target/size/referrer policy | Synchronous `LaunchResult` | Not a replacement for native form navigation; no async resolution; no opener by default; null handle alone is not proof of blocking. | R1 |
+| `VBD.Windows.open` | App URL, approved origins, optional pixel dimensions/trusted host | Synchronous `LaunchResult` | Current scope is model-driven app links only; _blank/noopener/noreferrer; a null handle is not proof of blocking. | R1 |
 | `VBD.Windows.openNamed` | Approved URL, stable name, explicit connected-mode policy | Request result and permitted handle/token | Optional reuse; cannot guarantee isolation/reuse together or manage cross-origin internals. | R3 |

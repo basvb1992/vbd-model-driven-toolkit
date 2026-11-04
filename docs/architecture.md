@@ -1,6 +1,20 @@
 # Architecture
 
-All contracts below are proposed. No runtime exists yet.
+Most contracts below are proposed. The implemented configuration/diagnostic
+functions and local delivery tools are described in [getting started](getting-started.md).
+The scoped environment/app-launch subset is in [runtime usage](environment-launching.md).
+Their source-level checks are not Dataverse installation or live-app evidence.
+The [core usage](core-usage.md) contract describes the 153 implemented methods
+in the 0.7.0 source, including the bounded native UI/data subset, owned side panes and
+conservative Security hints. [Configuration runtime](environment-and-configuration.md)
+defines approved loading, bindings and memory caching without a recipe engine.
+The R2 continuation adds [metadata](metadata.md), [advanced form UX](advanced-forms.md)
+and [scoped operation locks](execution.md). BvB remains on the separately
+verified 0.5.0 test installation until another authorized deployment.
+The next read-execution and [batch](read-batches.md) helpers use explicit
+trusted read-only contracts, not transactional mutation semantics.
+[Localization](localization.md) is plain-text display formatting with explicit
+locale/time behavior, never a renderer or query serializer.
 
 ## Product and framework separation
 
@@ -46,25 +60,36 @@ only the opted-in interaction, not Core installation or unrelated operations.
 - Stable registered operation names for recipes; extensions register trusted
   functions in code, not unrestricted global names supplied by configuration.
 
-Build tools and dependencies will be selected during implementation, not added
-to a documentation-only repository in advance.
+The source uses strict TypeScript, Zod schemas, esbuild browser/ESM/CLI bundles,
+ESLint, and Vitest. Loading the browser bundle needs no Node, Xrm, DOM, or
+framework. Environment reads lazily require a supported online Xrm context
+or explicit typed ReadContext; window requests require a supported browser
+or explicit typed WindowHost. Local tools never invoke these live adapters.
+Duplicate global initialization fails instead of replacing an existing `VBD`.
 
 ## Context and entry points
 
 | Surface | Required input | Proposed adapter |
 | --- | --- | --- |
-| Form OnLoad/OnChange/OnSave | Execution context, with pass-execution-context enabled. | `VBD.Events.onLoad`, `onChange`, or `onSave` |
+| Form OnLoad/OnChange | Execution context, pass-context enabled, registryName/profileKey. | `VBD.Events.onLoad` or `onChange` |
+| Synchronous OnSave validation | Execution context and reviewed typed/JSON rules. | `VBD.Events.onSave` |
 | Form command | `PrimaryControl` plus static recipe/configuration key. | `VBD.Commands.run` |
 | Grid/subgrid command | `SelectedControl` and explicit selected record references/IDs. | `VBD.Commands.runGrid` |
 | Typed application code | An explicitly constructed context and typed options. | Direct namespace function or `VBD.Recipes.run` |
 
-Proposed positional adapter contracts are:
+Current positional adapter contracts are:
 
-- `VBD.Commands.run(primaryControl, recipeKey)`
-- `VBD.Commands.runGrid(selectedControl, selectedReferences, recipeKey)`
-- `VBD.Events.onLoad(executionContext, recipeKey)`
-- `VBD.Events.onChange(executionContext, recipeKey)`
-- `VBD.Events.onSave(executionContext, recipeKey)`
+- `VBD.Commands.run(primaryControl, commandKey)`
+- `VBD.Commands.runGrid(selectedControl, selectedReferences, commandKey, entityType?)`
+- `VBD.Events.onLoad(executionContext, commandKey)`
+- `VBD.Events.onChange(executionContext, commandKey)`
+- `VBD.Events.onSave(executionContext, rules, options?)`
+
+commandKey is configurationName/profileKey in schema version 1. This is not a
+generic function/recipe dispatcher. Maker command/load errors are presented once
+and return an explicit failed outcome; presentation failure rejects. The typed
+core throws. OnSave validates synchronously and prevents before returning;
+neither registration nor a promise enables platform async app settings.
 
 The catalog documents operation contracts, not promises that every platform
 designer exposes every parameter type. Validate actual parameter support per
@@ -83,12 +108,12 @@ requests on every ribbon reevaluation.
 | `EntityRef` | `{ entityType, id, name? }`, with validated GUID where required. |
 | `OperationContext` | Surface, form/grid where supplied, current/selected references, app, client, and user scope. |
 | `ValueBinding` | Explicit literal, context value, field, environment variable, configuration key, or previous-step result. |
-| `ResolvedValue<T>` | Value, schema name/type, cache metadata, and provenance only when observable. |
+| `ResolvedValue<T>` | Value, schema name/type, fetched/expiry times, cache status, and explicit current/default provenance. |
 | `Page<T>` | Items and supported continuation information; never an implicit unbounded result. |
 | `OperationResult<T>` | Successful result or explicit cancellation/skipped outcome where the operation supports it. |
 | `BatchResult` | Per-operation outcomes and summary; partial failure remains visible. |
-| `LaunchResult` | Requested/observably blocked/unknown status and safe metadata; not proof that the destination loaded. |
-| `PreparedLaunch` | Validated destination/options and scope/version/expiry; no credentials or user record payloads. |
+| `LaunchResult` | Currently requested/unknown with isolation metadata; no returned handle or proof that the destination loaded. |
+| `PreparedLaunch` | Frozen opaque identity/expiry token; its approved destination, scope, revision and freshness are private in-memory state. |
 | `Disposable` | Explicit removal of a registered handler, subscription, or scoped resource. |
 
 Unexpected errors reject/throw a structured `VbdError` with code, safe message,
@@ -101,8 +126,15 @@ Proposed codes include `INVALID_ARGUMENT`, `CONTEXT_REQUIRED`,
 `CONFIG_INVALID`, `CONFIG_NOT_READY`, `CONFIG_EXPIRED`, `SECRET_NOT_SUPPORTED`,
 `ACCESS_DENIED`, `POPUP_BLOCKED`, `CONCURRENCY_CONFLICT`, and `PARTIAL_FAILURE`.
 
-The core throws; maker entry points present an appropriate user-facing error
-once and retain diagnostic correlation. No broad catch-and-return-default paths.
+The current implemented error codes are in `src/errors.ts`; future platform
+codes above remain proposed. Diagnostic reporting derives messages from a fixed
+code map and never serializes the original cause, native message, stack, or input.
+An explicit sink is required; sink failure is an error, not a reporting receipt.
+
+The core throws; maker command/load entry points present an appropriate user-facing
+error once and retain diagnostic correlation in a discriminated failed outcome.
+There is no success-shaped fallback. OnSave prevents first and propagates
+unexpected failures for the native synchronous error path.
 
 ## Surface and capability policy
 
@@ -136,6 +168,13 @@ policy. Optional fallbacks must be configured and reported to the caller.
   sensitive URL query strings by default.
 - Event disposables and idempotent registration rather than accumulating handlers.
 
+The implemented environment cache has explicit entry/character/in-flight limits.
+It is not the future generic Cache module. Invalidation removes selected cached
+names in the chosen scope and conservatively expires all prepared launches;
+no values are stored in browser storage. Prepared state is capped at 128 tokens.
+Replacing registered configuration changes its revision, invalidating prior
+tokens without automatically mutating Dataverse or another app.
+
 ## Bounded interaction contract
 
 `VBD.Recipes` is a client interaction composer, not the existing workflow engine.
@@ -164,3 +203,9 @@ credentials, and long-running work. A recipe spanning confirmation, email,
 record creation, and navigation cannot be rolled back as one client transaction.
 Server work can use any compatible approved API; the toolkit does not assume
 or install the owner's Workflow/Interaction Framework.
+
+The data subset uses explicit scalar-write field allowlists, exact delete
+confirmation and declared action metadata. Conditional updates require an
+atomic adapter or fail before dispatch. Transport/scope/response failures can
+leave a mutation outcome uncertain; there is no automatic retry or rollback.
+Paging is bounded and not a server snapshot/transaction.

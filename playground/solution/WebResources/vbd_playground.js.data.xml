@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{f427deb9-04b8-81fe-b917-572c0a1e9332}</WebResourceId>
+  <Name>vbd_/playground/vbd.playground.js</Name><DisplayName>VBD Toolkit Playground handlers</DisplayName>
+  <WebResourceType>3</WebResourceType><IsCustomizable>1</IsCustomizable>
+  <IntroducedVersion>0.1.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient><IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <FileName>/WebResources/vbd_playground.js</FileName>
+</WebResource>

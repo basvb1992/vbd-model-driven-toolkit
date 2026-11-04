@@ -1,7 +1,90 @@
 # Roadmap
 
-All function catalog entries are **planned**. Delivery phase is not implementation
-status and does not guarantee every proposed API name will survive design review.
+153 catalog functions have a local implementation; the other 45 are planned.
+Delivery phase is not implementation status and does not guarantee every
+proposed API name will survive design review.
+
+## Current progress: C1a and C1b
+
+[Issue #1](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/1) scopes
+the first implementation: six configuration/diagnostic APIs, strict schema,
+browser/ESM/declaration builds, local source/snapshot preflight, and Markdown
+handover. See [getting started](getting-started.md).
+
+Local verification includes strict types/lint/build, NodeNext consumer types,
+CLI behavior, redaction/bounds tests, and browser-bundle VM smoke checks.
+[Issue #3](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/3) adds
+ten environment APIs, approved app links, prepared profile tokens, and synchronous
+isolated app-window requests. See [runtime usage](environment-launching.md).
+
+Those source-only slices did not complete R1 release readiness. The later
+0.5.0 milestone has a verified BvB test installation and genuine exports, not
+full native-client/consumer wiring or production-readiness certification.
+
+## Next core source milestones
+
+[Issue #5](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/5)
+adds the selected 97 interaction/form/data APIs described in
+[core usage](core-usage.md). This covers the 39 R1 form entries, 14 R1
+Data/Query/Actions entries, and 44 Context/Utils/navigation/dialog/UI/grid/command
+entries. It does not complete all R1 options or the full roadmap.
+
+[Issue #13](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/13)
+adds seven source APIs in 0.4.0: owned side-pane create/navigate/select/close,
+record/view links and read-only capability observations. See
+[current usage](core-usage.md#owned-side-panes-and-deep-links).
+[Issue #15](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/15)
+adds the final ten R1 entries in 0.5.0: approved configuration loading/resolution,
+allowlisted bindings, generic scoped memory cache, conservative table/privilege
+hints and sameWindow-only openProfile. Native privilege depths remain unknown
+where the SDK contract cannot establish their encoding. This completes the
+**R1 source inventory**, not all R1 options, live Dynamics verification or
+release readiness. R2/R3 entries remain separate scoped work.
+See [BvB testing](testing-in-bvb.md) for consumer-owned installation/wiring.
+
+## R2 metadata and form source continuation
+
+[Issue #19](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/19)
+selects five read-only Metadata APIs, three advanced Choices helpers,
+Forms.switchForm and Execution.withLock. This 0.6.0 slice targets 145/198
+implemented methods across 30 namespaces. See [metadata](metadata.md),
+[advanced forms](advanced-forms.md) and [locks](execution.md) for bounded
+native/adapter contracts and failure/lifecycle semantics.
+
+The other 53 APIs, including dependent lookups, relationship writes,
+batch/aggregate/files, retries/preflight and recipes, remain planned. This
+source continuation leaves deployed BvB Core 0.5.0 and Playground 0.1.0,
+existing release tags/draft assets and prior PRs untouched. No new deployment,
+public binary publication or license approval is implied.
+
+## Current R2 safe-read and localization continuation
+
+[Issue #21](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/21)
+selects Execution.withRetry/preflight, Batch.execute, four I18n methods and
+Utils.formatValue. Source 0.7.0 has 153/198 implemented methods across 32
+namespaces; the remaining 45 candidates remain planned.
+
+Read-only declarations are caller trust contracts, not an arbitrary operation
+dispatcher or proof of authorization/purity. There are no mutation retries,
+server changesets, durable queues, HTML templates or guessed locale/time zones.
+See [execution](execution.md), [read batches](read-batches.md) and
+[localization](localization.md) for precise supported subsets.
+Deployed BvB Core 0.5.0, Playground 0.1.0, prior source PRs, tags and draft
+assets remain unchanged by this continuation.
+
+## Integrated local delivery
+
+[Issue #11](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/11)
+integrates the independent consultant and packaging lanes into a separate
+branch over the 0.3.0 core; their original worktrees and PRs remain unchanged.
+[Consultant tools](consultant-tools.md) implement the bounded C05/C08 subset.
+[Offline packaging](solution-packaging.md) reconciles the current source/version,
+shared browser build options, nine bundled dependency notices, and actual PAC
+unmanaged pack/unpack/repack. Neither tool changes the 118-function API count.
+
+The package has two webresources and no Dataverse dependencies. This is local
+evidence only: no import, authentication, deployment, merge, genuine managed
+export, license approval or public release is implied.
 
 ## D0: Documentation baseline
 
@@ -51,7 +134,7 @@ turn these options into core prerequisites.
 ## Consultant value workstream
 
 This workstream complements R1-R3; it does not add CLI/Studio capabilities to
-the public browser function count. All capabilities remain planned. See the
+the public browser function count. C1a is partial progress, not full completion. See the
 [consultant catalog](consultant-experience.md) for IDs and observable evidence.
 
 | Stage | Priority capabilities | Dependency / gate |
@@ -78,7 +161,17 @@ reason to merge repositories, solutions, or release dependencies.
 Managed/unmanaged packaging can start once R1 contracts are stable. It is not
 implied by function implementation. First verify BvB Demo target identity and
 publisher without embedding that environment in portable sources.
+The [local unmanaged portion](solution-packaging.md) now exists; managed creation
+fails explicitly until genuine authorized export prerequisites are satisfied.
 
 First distributable release requires ALM acceptance evidence, owner-approved
 license/visibility, tagged reproducible artifacts, and consumer installation
 instructions. Repository creation alone is not a solution release.
+
+The 0.5.0.0 test milestone now has a successful unmanaged BvB import, targeted
+resource publication, exact server/browser content hashes and genuine paired
+exports. No consumer wiring, production deployment, clean managed-target import
+or full native-client certification is implied. GitHub test release preparation
+is **draft-only while UNLICENSED**; public source visibility is not license
+approval. See [BvB testing](testing-in-bvb.md) and
+[current evidence](solution-packaging.md#current-050-bvb-test-evidence).

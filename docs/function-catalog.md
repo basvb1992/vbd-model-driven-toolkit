@@ -1,7 +1,7 @@
 # Proposed public function catalog
 
-**Every function in this catalog is planned. None is implemented.**
-Names and contracts are design candidates; review them before implementation.
+**153 functions have a local implementation; the other 45 remain planned.**
+Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
 
@@ -9,12 +9,173 @@ Current inventory: **198 functions across 41 namespaces**. Earliest-phase
 classification: 135 R1, 59 R2, and 4 R3. Implementation issues should select
 bounded subsets; R1 is not a requirement to build 135 functions in one change.
 
+## Implemented source subset
+
+- `VBD.Actions.executeAction`
+- `VBD.Actions.executeFunction`
+- `VBD.Batch.execute`
+- `VBD.Bindings.resolve`
+- `VBD.Bindings.resolveMany`
+- `VBD.Cache.clear`
+- `VBD.Cache.getOrLoad`
+- `VBD.Cache.invalidate`
+- `VBD.Choices.filterOptions`
+- `VBD.Choices.getOptions`
+- `VBD.Choices.restoreOptions`
+- `VBD.Choices.setOptions`
+- `VBD.Commands.execute`
+- `VBD.Commands.refresh`
+- `VBD.Commands.run`
+- `VBD.Commands.runGrid`
+- `VBD.Commands.validateSelection`
+- `VBD.Config.get`
+- `VBD.Config.load`
+- `VBD.Config.register`
+- `VBD.Config.resolve`
+- `VBD.Config.validate`
+- `VBD.Context.fromFormCommand`
+- `VBD.Context.fromFormEvent`
+- `VBD.Context.fromGridCommand`
+- `VBD.Context.getApp`
+- `VBD.Context.getClient`
+- `VBD.Context.getRecord`
+- `VBD.Context.getSelection`
+- `VBD.Context.getUser`
+- `VBD.Context.requireCapability`
+- `VBD.Context.requireSavedRecord`
+- `VBD.Controls.forAttribute`
+- `VBD.Controls.setDisabled`
+- `VBD.Controls.setFocus`
+- `VBD.Controls.setLabel`
+- `VBD.Controls.setVisible`
+- `VBD.Data.create`
+- `VBD.Data.delete`
+- `VBD.Data.exists`
+- `VBD.Data.retrieve`
+- `VBD.Data.retrieveMany`
+- `VBD.Data.retrieveRelated`
+- `VBD.Data.update`
+- `VBD.Diagnostics.getCapabilities`
+- `VBD.Diagnostics.getVersion`
+- `VBD.Diagnostics.normalizeError`
+- `VBD.Diagnostics.report`
+- `VBD.Dialogs.alert`
+- `VBD.Dialogs.confirm`
+- `VBD.Dialogs.customPage`
+- `VBD.Dialogs.error`
+- `VBD.Dialogs.record`
+- `VBD.Dialogs.webResource`
+- `VBD.Environment.get`
+- `VBD.Environment.getBoolean`
+- `VBD.Environment.getDefinition`
+- `VBD.Environment.getJson`
+- `VBD.Environment.getMany`
+- `VBD.Environment.getNumber`
+- `VBD.Environment.getOptional`
+- `VBD.Environment.getText`
+- `VBD.Environment.invalidate`
+- `VBD.Environment.preload`
+- `VBD.Events.onChange`
+- `VBD.Events.onLoad`
+- `VBD.Events.onSave`
+- `VBD.Events.register`
+- `VBD.Events.unregister`
+- `VBD.Execution.preflight`
+- `VBD.Execution.withLock`
+- `VBD.Execution.withRetry`
+- `VBD.Fields.clear`
+- `VBD.Fields.copy`
+- `VBD.Fields.fireOnChange`
+- `VBD.Fields.get`
+- `VBD.Fields.getLookup`
+- `VBD.Fields.set`
+- `VBD.Fields.setDefault`
+- `VBD.Fields.setLookup`
+- `VBD.Fields.setRequired`
+- `VBD.Fields.setSubmitMode`
+- `VBD.Forms.clearNotification`
+- `VBD.Forms.getType`
+- `VBD.Forms.isDirty`
+- `VBD.Forms.refresh`
+- `VBD.Forms.save`
+- `VBD.Forms.setNotification`
+- `VBD.Forms.switchForm`
+- `VBD.Grids.getSelected`
+- `VBD.Grids.openSelected`
+- `VBD.Grids.refresh`
+- `VBD.I18n.formatDate`
+- `VBD.I18n.formatNumber`
+- `VBD.I18n.getLanguage`
+- `VBD.I18n.translate`
+- `VBD.Launch.getProfile`
+- `VBD.Launch.openPrepared`
+- `VBD.Launch.openProfile`
+- `VBD.Launch.prepareProfile`
+- `VBD.Layout.focusTab`
+- `VBD.Layout.setSectionVisible`
+- `VBD.Layout.setTabExpanded`
+- `VBD.Layout.setTabVisible`
+- `VBD.Links.app`
+- `VBD.Links.record`
+- `VBD.Links.view`
+- `VBD.Lookups.addFilter`
+- `VBD.Lookups.pick`
+- `VBD.Lookups.removeFilter`
+- `VBD.Lookups.setDefaultView`
+- `VBD.Lookups.setEntityTypes`
+- `VBD.Metadata.getChoices`
+- `VBD.Metadata.getColumn`
+- `VBD.Metadata.getRelationships`
+- `VBD.Metadata.getTable`
+- `VBD.Metadata.invalidate`
+- `VBD.Navigation.newRecord`
+- `VBD.Navigation.openCustomPage`
+- `VBD.Navigation.openDashboard`
+- `VBD.Navigation.openRecord`
+- `VBD.Navigation.openUrl`
+- `VBD.Navigation.openView`
+- `VBD.Navigation.openWebResource`
+- `VBD.Navigation.quickCreate`
+- `VBD.Query.buildFilter`
+- `VBD.Query.executeFetchXml`
+- `VBD.Query.executeOData`
+- `VBD.Query.iteratePages`
+- `VBD.Query.retrieveAll`
+- `VBD.Security.assessTable`
+- `VBD.Security.hasPrivilege`
+- `VBD.SidePanes.close`
+- `VBD.SidePanes.createOrGet`
+- `VBD.SidePanes.navigate`
+- `VBD.SidePanes.select`
+- `VBD.UI.clearNotification`
+- `VBD.UI.hideProgress`
+- `VBD.UI.notify`
+- `VBD.UI.showProgress`
+- `VBD.UI.withProgress`
+- `VBD.Utils.compareValues`
+- `VBD.Utils.escapeODataLiteral`
+- `VBD.Utils.escapeXml`
+- `VBD.Utils.formatValue`
+- `VBD.Utils.isGuid`
+- `VBD.Utils.normalizeGuid`
+- `VBD.Utils.parseNumber`
+- `VBD.Utils.toEntityRef`
+- `VBD.Validation.evaluate`
+- `VBD.Validation.validateBeforeSave`
+- `VBD.Validation.validateFields`
+- `VBD.Windows.open`
+
+Generated from the built exports with `npm run docs:availability`.
+Implementation means the documented source subset, not live tenant or deployment certification.
+See [core usage](core-usage.md), [getting started](getting-started.md), and
+[environment/app runtime usage](environment-launching.md) for exact contracts and limits.
+
 ## Reading the catalog
 
 - Each row identifies one public function, its inputs, return contract, behavior,
   and earliest proposed phase.
 - `R1`: core; `R2`: advanced/reusable interactions; `R3`: optional capability-gated
-  extension. All phases retain planned status.
+  extension. Phase is not implementation status; only the subset above is implemented.
 - Inputs are proposed named options, not final positional JavaScript signatures.
   Exceptions are the documented maker adapters in [architecture](architecture.md).
 - Reads/writes/navigation that need asynchronous platform APIs return promises.

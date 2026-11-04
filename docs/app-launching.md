@@ -4,7 +4,10 @@ An independent window means a separate browser top-level browsing context.
 It does not mean offline execution, another browser profile, a separate
 authentication session, or access outside the user's licenses and privileges.
 
-All APIs in this document are proposed.
+Links.app, Launch.getProfile/prepareProfile/openPrepared, and Windows.open have
+a bounded implementation for model-driven app/new-window profiles.
+Other APIs and destinations below remain proposed. See
+[current signatures and limitations](environment-launching.md).
 
 ## Destination and presentation are separate
 
@@ -120,8 +123,9 @@ identity or grants access to the target environment.
 Browser APIs may return no usable window handle when opener isolation is used,
 even when the request succeeds. A null handle alone is not proof of blocking.
 
-`LaunchResult` distinguishes a request issued, a provably blocked operation, and
-an unknown browser outcome. It must not claim that:
+The current `LaunchResult` reports only requested/unknown with isolation metadata.
+Missing/inactive user activation and request exceptions are explicit errors,
+not inferred popup-blocking results. It must not claim that:
 
 - the user reached the destination;
 - the destination app finished loading;

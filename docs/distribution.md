@@ -1,6 +1,11 @@
 # Repository and solution distribution
 
-This document describes future delivery. There is no build or deploy command yet.
+Local source builds, CLI tools, offline unmanaged packaging, a verified BvB
+unmanaged import and genuine paired exports now exist. Clean managed-target
+imports and public binary distribution remain gated.
+See [getting started](getting-started.md),
+[consultant tools](consultant-tools.md), and
+[solution packaging](solution-packaging.md).
 
 ## Repository
 
@@ -24,6 +29,28 @@ Proposed implementation layout:
 | `artifacts/` | Ignored local build outputs; tagged releases publish selected ZIPs. |
 
 Do not create empty implementation scaffolding merely to imply readiness.
+
+Current `npm run build` outputs are:
+
+| Output | Current purpose |
+| --- | --- |
+| `dist/vbd.toolkit.js` | Implemented `VBD` browser subset; duplicate initialization is rejected, platform adapters are lazy. |
+| `dist/index.mjs` and `dist/types/` | ESM developer API and declarations. |
+| `dist/vbd-toolkit.mjs` | Node.js 24+ local preflight/handover CLI; uses installed declared dependencies. |
+| `dist/THIRD-PARTY-NOTICES.txt` | Notices for all packages actually bundled, including XML dependencies. |
+
+Outputs are ignored local artifacts, not a published release. The package is
+private/UNLICENSED pending owner license approval. Bundled dependencies retain
+their own licenses; build metadata drives notice collection and missing notices
+fail the build. The published @nodable/entities 3.1.0 package omits its LICENSE;
+the exact declared upstream MIT notice is retained under third-party/licenses
+with its immutable source blob. That fallback is version/license-bound, not a
+general permission to omit notices.
+The project uses npm's `omit-lockfile-registry-resolved` option: the lockfile
+pins versions and integrity without embedding the development machine's mirror.
+Each installer uses its configured approved registry (public npm on GitHub CI).
+No global registry or TLS setting is modified. A distribution test protects
+this portability boundary.
 
 ## Solution boundary
 
@@ -61,6 +88,22 @@ must not wait for Studio, and no Delivery Tool may silently import/publish/fix
 an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
+
+The current 0.7.0 source maps to solution version `0.7.0.0`. Local PAC builds
+contain exactly the browser `VBD` resource and complete escaped third-party
+notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
+zero Dataverse dependencies from the nine bundled runtime packages.
+Build and inspection use the shared browser/notice contract and locked inputs.
+No offline managed build is fabricated: it fails `MANAGED_EXPORT_REQUIRED`
+before creating output. The [packaging guide](solution-packaging.md) records
+the successful BvB source installation and genuine native managed/unmanaged
+exports. Raw exported bytes are inspected with explicit `dataverseExport`
+format, never rewritten to make them pass. The unmanaged source installation
+is verified; clean managed-target install/upgrade and public redistribution
+approval remain outstanding.
+The current source package is not the installed/exported test version: BvB,
+the existing genuine paired exports and draft `v0.5.0-test.1` remain at 0.5.0.
+No 0.7.0 import, managed export or public release is claimed by this R2 slice.
 
 | Artifact | Intended use |
 | --- | --- |
@@ -100,7 +143,8 @@ to the consuming organization. Uninstall dependency and data impacts need review
 
 ## Access and license
 
-The repository was created private. The owner can share access with collaborators.
-A public repository and redistribution license are not yet approved. Do not
-publish reusable solution binaries or a package without resolving the license,
-ownership of included assets, and release governance.
+The repository was created private and is now public. Source visibility does
+not grant redistribution rights: the package remains private/UNLICENSED and no
+open-source license is selected. Until the owner confirms the license, prepare
+a draft GitHub test release rather than publishing reusable binary assets.
+Resolve ownership of included assets and release governance before publication.

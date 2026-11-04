@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "customerWorkspace",
+  "environmentVariables": [
+    { "schemaName": "vbd_TargetModelDrivenAppId", "type": "text", "required": true },
+    { "schemaName": "vbd_TargetEnvironmentUrl", "type": "text", "required": true },
+    { "schemaName": "vbd_ApprovedAppOrigin", "type": "text", "required": true }
+  ],
+  "launchProfiles": [
+    {
+      "key": "customerWorkspace",
+      "destinationKind": "modelDrivenApp",
+      "appId": { "environmentVariable": "vbd_TargetModelDrivenAppId" },
+      "environmentUrl": { "environmentVariable": "vbd_TargetEnvironmentUrl" },
+      "presentation": "newWindow",
+      "allowedOrigins": [
+        { "environmentVariable": "vbd_ApprovedAppOrigin" }
+      ]
+    }
+  ],
+  "registrations": [
+    { "id": "openCustomerWorkspace", "surface": "formCommand", "profileKey": "customerWorkspace" }
+  ]
+}
