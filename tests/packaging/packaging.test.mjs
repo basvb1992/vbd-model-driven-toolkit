@@ -332,6 +332,7 @@ describe("source/build/archive boundary (synthetic builds and constructed archiv
     ["Other/Solution.xml", "<Publisher>", '<Publisher environment="production">', "COMPONENT"],
     ["Other/Solution.xml", "<Publisher>", '<Publisher __proto__="unexpected">', "COMPONENT"],
     ["WebResources/vbd_toolkit.js.data.xml", "<WebResourceType>3", "<WebResourceType>1", "COMPONENT"],
+    ["WebResources/vbd_toolkit.js.data.xml", "<IntroducedVersion>0.5.0.0</IntroducedVersion>", `<IntroducedVersion>${solutionVersion}</IntroducedVersion>`, "COMPONENT"],
     ["WebResources/vbd_toolkit.js.data.xml", "<Name>vbd_/", "<Name>customer_/", "COMPONENT"]
   ])("rejects invalid source %s", async (file, from, to, code) => {
     const root = await fixture(); await replace(root, `solution/${file}`, from, to);

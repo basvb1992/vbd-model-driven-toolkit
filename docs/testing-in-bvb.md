@@ -102,3 +102,40 @@ Dynamics form, security role, app, client or browser. Record the actual scenario
 you run, expected/observed results, toolkit/source version, and any missing
 access or unsupported options. Do not copy real record values, tokens or
 environment-specific credentials into GitHub issues or release attachments.
+
+## Native form and command acceptance checklist
+
+The searchable Playground distinguishes safe HTML-page examples from
+**copy-only native host examples**. Copying a wrapper does not register it.
+Use a consumer-owned test form/library and records explicitly approved for
+testing. Never pass an HTML page's global context as a fabricated form context.
+
+| Surface | Setup | Expected observation |
+| --- | --- | --- |
+| Form OnLoad/OnChange | Register a named consumer wrapper and enable Pass execution context. Resolve with Context.fromFormEvent. | Correct form/record state; missing fields fail explicitly; no automatic save or business write. |
+| Form command | Configure the wrapper's parameter as PrimaryControl; resolve with Context.fromFormCommand. | Actual form context, not event-context assumptions. |
+| Grid command | Supply SelectedControl and the actual documented selected references/IDs. Resolve with Context.fromGridCommand. | Only supplied selected rows are reported; empty/mixed selections follow the explicit policy. |
+| Lookup filter | Use an actual supported lookup control and valid reviewed filter; retain/dispose the original registration. | Filter applies at PreSearch only and is removed by owned disposal; no parent DOM or foreign handler removal. |
+| Choice baseline/restore | Use a singly bound supported choice control on test data; retain the exact baseline token. | Numeric identity/order preserved; excluded current selection rejects unless explicit clearing is chosen; unrelated/newer edits are not silently restored. |
+| Form switching | Use a saved desktop-Web Update form with a permitted target. | Dirty form rejects by default; save policy is explicit and rechecks edits/identity; result means a navigation request, not target OnLoad proof. |
+| Prepared app command | Prepare an approved newWindow profile on load/change, then use an active trusted command click. | No async reads between click and isolated window request; opener/referrer policy preserved; null handle remains unknown. |
+
+Test at least one lower-privileged user separately from the administrator.
+Permission denial must remain a visible failure/unknown where documented, not
+be converted to missing data or allowed authorization. Do not grant roles to
+make a test look green; document the actual intended access.
+
+Keep evidence categories separate:
+
+- **Automated source/browser fixtures:** deterministic helper behavior, rendered
+  controls, keyboard/search/copy/error states and response limits.
+- **Deployment/read-back:** native import result, exact owned identities,
+  publication and served content hashes.
+- **Live read adapter:** actual current-user Web API reads of owned toolkit
+  resources/selected metadata through explicit typed adapters.
+- **Native user acceptance:** signed-in app/form/ribbon/lookup interactions and
+  role/browser matrix. This cannot be inferred from the first three categories.
+
+If the automation browser is at Microsoft sign-in or no approved test form is
+available, record the native checks as **not run**, rather than injecting tokens,
+creating surprise consumer registrations or claiming a full live pass.

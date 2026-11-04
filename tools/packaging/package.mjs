@@ -15,6 +15,7 @@ import {
 
 export const repository = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 export const identity = "VBDModelDrivenToolkit";
+export const introducedVersion = "0.5.0.0";
 export const resources = Object.freeze([
   { name: "vbd_/toolkit/vbd.toolkit.js", file: "vbd_toolkit.js", type: "3" },
   { name: "vbd_/toolkit/THIRD-PARTY-NOTICES.html", file: "vbd_THIRD-PARTY-NOTICES.html", type: "1" }
@@ -288,7 +289,7 @@ function manifest(bytes, expectedVersion, kind, exported = false) {
 function exportResourcePath(item) {
   return `WebResources/${item.name.replace(/[/.]/g, "")}${componentId(item.name).replace(/[{}]/g, "").toUpperCase()}`;
 }
-function descriptor(node, item, expectedVersion, staged, exported = false) {
+function descriptor(node, item, staged, exported = false) {
   requireThat(node.name === "WebResource", "COMPONENT", "Expected WebResource.");
   childrenOnly(node, ["WebResourceId", "Name", "DisplayName", "WebResourceType", "IsCustomizable", "IntroducedVersion",
     "IsEnabledForMobileClient", "IsAvailableForMobileOffline", "FileName",
@@ -296,7 +297,7 @@ function descriptor(node, item, expectedVersion, staged, exported = false) {
   if (exported) requireThat(value(node, "CanBeDeleted") === "1" && value(node, "IsHidden") === "0",
     "COMPONENT", "Unexpected exported webresource properties.");
   requireThat(value(node, "Name") === item.name && value(node, "WebResourceType") === item.type
-    && value(node, "IntroducedVersion") === expectedVersion
+    && value(node, "IntroducedVersion") === introducedVersion
     && value(node, "IsCustomizable") === "1" && value(node, "IsEnabledForMobileClient") === "0"
     && value(node, "IsAvailableForMobileOffline") === "0"
     && value(node, "DisplayName") === (item.type === "3" ? "VBD Toolkit" : "VBD Toolkit Third-Party Notices"),
@@ -313,7 +314,7 @@ function descriptor(node, item, expectedVersion, staged, exported = false) {
     && file === `/WebResources/${item.file}`, "COMPONENT", "Source identity is derived, not environment-specific.");
   return file.slice(1);
 }
-function customizations(bytes, expectedVersion, staged, exported = false) {
+function customizations(bytes, staged, exported = false) {
   const root = metadata(bytes, exported);
   requireThat(root.name === "ImportExportXml", "XML", "Expected customizations XML.");
   childrenOnly(root, [...emptyCollections, "Languages", "WebResources"]);
@@ -330,7 +331,7 @@ function customizations(bytes, expectedVersion, staged, exported = false) {
   return resources.map((item) => {
     const matches = web.children.filter((node) => value(node, "Name") === item.name);
     requireThat(matches.length === 1, "COMPONENT", "Missing or duplicate toolkit webresource.");
-    return descriptor(matches[0], item, expectedVersion, true, exported);
+    return descriptor(matches[0], item, true, exported);
   });
 }
 export async function inputs(root = repository) {
@@ -355,10 +356,10 @@ export async function inputs(root = repository) {
     noSensitiveContent(bytes); source.set(file, bytes);
   }
   manifest(source.get("Other/Solution.xml"), expectedVersion, "unmanaged", false);
-  customizations(source.get("Other/Customizations.xml"), expectedVersion, false);
+  customizations(source.get("Other/Customizations.xml"), false);
   const rel = metadata(source.get("Other/Relationships.xml"));
   requireThat(rel.name === "EntityRelationships", "COMPONENT", "Unexpected relationship metadata."); empty(rel);
-  for (const item of resources) descriptor(metadata(source.get(`WebResources/${item.file}.data.xml`)), item, expectedVersion, false);
+  for (const item of resources) descriptor(metadata(source.get(`WebResources/${item.file}.data.xml`)), item, false);
   const browser = await boundedFile(root, "dist/vbd.toolkit.js");
   noSensitiveContent(browser);
   requireThat(decode(browser).includes('"VBD"') && decode(browser).includes("DUPLICATE_INITIALIZATION"),
@@ -396,7 +397,7 @@ export function inspectArchive(bytes, expected, { kind = "unmanaged", checksum, 
     return entries.get(name);
   };
   manifest(get("solution.xml"), expected.version, kind, exported);
-  const paths = customizations(get("customizations.xml"), expected.version, true, exported);
+  const paths = customizations(get("customizations.xml"), true, exported);
   const allowed = ["solution.xml", "customizations.xml", "[Content_Types].xml", ...paths];
   requireThat(new Set(paths).size === resources.length && entries.size === allowed.length
     && [...entries.keys()].every((name) => allowed.includes(name)),
@@ -495,9 +496,9 @@ export async function build({ root = repository, out, pac = "pac", kind = "unman
     ...resources.flatMap((item) => [`WebResources/${item.name}`, `WebResources/${item.name}.data.xml`])].sort();
   requireThat(JSON.stringify(actual) === JSON.stringify(wanted), "ROUNDTRIP", "PAC unpacked component inventory differs.");
   manifest(await boundedFile(root, `${unpacked}/Other/Solution.xml`, limits.xml), expected.version, "unmanaged");
-  customizations(await boundedFile(root, `${unpacked}/Other/Customizations.xml`, limits.xml), expected.version, false);
+  customizations(await boundedFile(root, `${unpacked}/Other/Customizations.xml`, limits.xml), false);
   for (const [index, item] of resources.entries()) {
-    descriptor(metadata(await boundedFile(root, `${unpacked}/WebResources/${item.name}.data.xml`, limits.xml)), item, expected.version, true);
+    descriptor(metadata(await boundedFile(root, `${unpacked}/WebResources/${item.name}.data.xml`, limits.xml)), item, true);
     requireThat(sha256(await boundedFile(root, `${unpacked}/WebResources/${item.name}`)) === sha256(expected.payloads[index]),
       "ROUNDTRIP", "Unpacked payload changed.");
   }

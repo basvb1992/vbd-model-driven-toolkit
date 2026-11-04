@@ -10,7 +10,7 @@ describe.skipIf(!process.env.VBD_PLAYGROUND_PAC)("actual optional Playground PAC
   it("packs one native app/sitemap and three resources without bundling Core", async () => {
     const out = `artifacts/PlaygroundIntegration-${Date.now()}`;
     const report = await buildPlayground(out, process.env.VBD_PLAYGROUND_PAC);
-    expect(report).toMatchObject({ solution: "VBDToolkitPlayground", version: "0.1.0.0", app: "vbd_ToolkitPlayground" });
+    expect(report).toMatchObject({ solution: "VBDToolkitPlayground", version: "0.2.0.0", app: "vbd_ToolkitPlayground" });
     expect(report.payloads).toHaveLength(3);
     await expect(buildPlayground(out, process.env.VBD_PLAYGROUND_PAC)).rejects.toThrow();
   }, 120000);

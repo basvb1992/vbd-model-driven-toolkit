@@ -5,6 +5,8 @@ import { runPac } from "../packaging/package.mjs";
 import { readZip, sha256, xml, child, value } from "../packaging/formats.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+export const playgroundVersion = "0.2.0.0";
+const introducedVersion = "0.1.0.0";
 const sourceFiles = [
   "Other/Solution.xml", "Other/Customizations.xml", "Other/Relationships.xml",
   "AppModules/vbd_ToolkitPlayground/AppModule.xml",
@@ -26,7 +28,7 @@ export function inspectPlayground(bytes) {
     return bytes;
   };
   const solution = child(xml(required("solution.xml")), "SolutionManifest");
-  if (value(solution, "UniqueName") !== "VBDToolkitPlayground" || value(solution, "Version") !== "0.1.0.0" ||
+  if (value(solution, "UniqueName") !== "VBDToolkitPlayground" || value(solution, "Version") !== playgroundVersion ||
       value(solution, "Managed") !== "0") throw new Error("Playground identity/version/kind differs.");
   const roots = child(solution, "RootComponents").children;
   const expectedNames = ["html", "js", "svg"].map(extension => `vbd_/playground/vbd.playground.${extension}`);
@@ -52,6 +54,7 @@ export function inspectPlayground(bytes) {
   }
   const payloads = webresources.map(node => {
     if (!expectedNames.includes(value(node, "Name"))) throw new Error("Unexpected companion resource name.");
+    if (value(node, "IntroducedVersion") !== introducedVersion) throw new Error("Companion component provenance must stay at its first introduced version.");
     const path = value(node, "FileName").replace(/^\//, "");
     return { name: value(node, "Name"), path, sha256: sha256(required(path)) };
   });
@@ -60,6 +63,7 @@ export function inspectPlayground(bytes) {
   if (value(app, "UniqueName") !== "vbd_ToolkitPlayground" || child(app, "AppModuleRoleMaps").children.length !== 0) {
     throw new Error("Unexpected app identity or app-role changes.");
   }
+  if (value(app, "IntroducedVersion") !== introducedVersion) throw new Error("App provenance must stay at its first introduced version.");
   const appComponents = child(app, "AppModuleComponents").children;
   if (appComponents.length !== 1 || appComponents[0].attrs.type !== "62" ||
       appComponents[0].attrs.schemaName !== "vbd_ToolkitPlayground") {
@@ -69,7 +73,7 @@ export function inspectPlayground(bytes) {
   if (entries.size !== allowed.size || [...entries.keys()].some(name => !allowed.has(name))) {
     throw new Error("Unexpected extra Playground archive content.");
   }
-  return { solution: "VBDToolkitPlayground", version: "0.1.0.0", sha256: sha256(bytes), app: "vbd_ToolkitPlayground", payloads };
+  return { solution: "VBDToolkitPlayground", version: playgroundVersion, sha256: sha256(bytes), app: "vbd_ToolkitPlayground", payloads };
 }
 export async function buildPlayground(out, pac = "pac") {
   if (typeof out !== "string" || !/^artifacts[\\/][A-Za-z0-9][A-Za-z0-9._-]{0,80}$/.test(out)) {
@@ -90,7 +94,7 @@ export async function buildPlayground(out, pac = "pac") {
     await writeFile(join(source, `WebResources/vbd_playground.${extension}`),
       await file(`dist/playground/vbd.playground.${extension}`), { flag: "wx" });
   }
-  const zip = join(output, "VBDToolkitPlayground_0.1.0.0_unmanaged.zip");
+  const zip = join(output, `VBDToolkitPlayground_${playgroundVersion}_unmanaged.zip`);
   const log = runPac(pac, ["solution", "pack", "--zipfile", zip, "--folder", source, "--packagetype", "Unmanaged"], root);
   await writeFile(join(output, "pack.txt"), log, { flag: "wx" });
   const report = inspectPlayground(await readFile(zip));

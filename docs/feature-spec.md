@@ -497,6 +497,43 @@ consumer checks. Original worktrees remain clean at their delivered heads.
 | Exact availability and public contracts. | Digit-aware catalog invariant now includes I18n; actual built/archive surface is 153 methods/32 namespaces, with 45 candidates still planned. | No additional planned recipe/file/change-set/native operation is implied. |
 | Reproducible current source package. | Final full gate: 41 files / 1790 tests with both native PAC opt-ins; exact archive/runtime/notices and 215 input fingerprints. See [packaging evidence](solution-packaging.md#current-070-safe-read-and-localization-source-evidence). | 0.7.0 is not deployed, managed-exported or public-release-ready; BvB remains on 0.5.0 Core and 0.1.0 Playground. |
 
+## Adoption, consolidation and BvB validation
+
+[Issue #23](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/23)
+consolidates the branch stack into authoritative main, updates the BvB test
+installation to Core 0.7.0.0 and optional Playground 0.2.0.0, and makes example
+discovery and native registration guidance available to consultants.
+The 153/198 runtime API surface remains unchanged; no additional library
+milestone, public binary release or license decision is included.
+
+Use one normal merge of the verified latest history plus this bounded delta;
+do not replay obsolete source versions or duplicate already-cherry-picked
+delivery lanes. Older PRs receive explicit supersession/provenance notes.
+Existing tags, draft assets, worktrees and branches remain intact.
+
+The optional Playground adds search/categories/host requirements, fixed safe
+runnable examples with editable inputs, copyable TypeScript and form/ribbon
+wiring guidance. Native-only examples cannot run in the sitemap HTML host.
+No eval/code execution editor, arbitrary queries, writes, data/schema/role
+changes, parent DOM access or automatic reads. Missing capabilities/version,
+filter-empty/loading/validation/copy failures remain explicit and accessible.
+
+Before upgrading, verify the existing BvB identity, owned component inventory,
+versions and hashes, and retain genuine native backups. Stage and import
+strictly higher versions without force overwrite, then publish only owned
+resource/app/sitemap IDs. Preserve original component IntroducedVersion as
+provenance, distinct from current solution version. Verify exact content,
+original companion app identity, supported relative dependencies and current
+served bytes after publication; no global settings/production target changes.
+
+Map acceptance to full source/actual PAC gates, compiled and rendered browser
+checks (keyboard, filter, editable examples, copy, error/empty, desktop/mobile/
+zoom) and native import/read-back evidence. Attempt live signed-in native UI
+smoke without authentication bypass; absence of a signed-in browser or test
+form is an explicit unverified boundary. Managed clean-target/role matrix and
+license/public release remain pending. A safe live read-adapter check does not
+certify native Xrm forms or command registration.
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface

@@ -161,11 +161,15 @@ bounded inspection only: it does not extract or execute an input archive.
 
 - Stable package `major.minor.patch` maps to solution `major.minor.patch.0`;
   all four components must be canonical decimals, each `0..65535`.
-- `Solution.xml` and both descriptors must match that version. Prerelease
-  versions, mismatched source and changing only ZIP names are rejected.
+- `Solution.xml` must match that version. Both existing Core webresource
+  descriptors retain `IntroducedVersion` **0.5.0.0**, their verified first
+  installed version, independently of the current solution version. The
+  companion's existing resources/app retain 0.1.0.0. Resetting that provenance
+  on every upgrade is rejected rather than mistaken for a new component.
+  Prerelease versions, mismatched source and changing only ZIP names are rejected.
   The existing `src/version.ts` literal must also match `package.json`.
-- A future release must update these sources together with the owner's package
-  version change, then rebuild once from the same reviewed/tagged revision.
+- A future release updates solution/package/runtime versions together, while
+  preserving existing component provenance, then rebuilds from the same source.
 - The tool independently reproduces the browser build **in memory**, using the
   same `scripts/bundle-contract.mjs` options as `scripts/build.mjs` and existing
   esbuild. A stale or

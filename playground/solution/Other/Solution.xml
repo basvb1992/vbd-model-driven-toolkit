@@ -4,7 +4,7 @@
     <UniqueName>VBDToolkitPlayground</UniqueName>
     <LocalizedNames><LocalizedName description="VBD Toolkit Playground" languagecode="1033" /></LocalizedNames>
     <Descriptions><Description description="Optional read-only companion app for the separately installed VBD Model-Driven Toolkit. No tables, data or consumer wiring." languagecode="1033" /></Descriptions>
-    <Version>0.1.0.0</Version>
+    <Version>0.2.0.0</Version>
     <Managed>0</Managed>
     <Publisher>
       <UniqueName>VBDModelDrivenToolkit</UniqueName>
