@@ -1,7 +1,7 @@
 # Core interaction, form, and data usage
 
-The 0.7.0 source adds eight more selected R2 APIs: 153 of 198 are implemented across
-32 namespaces. These are bounded source contracts, not certification of every
+The 0.8.0 source adds six selected R2 APIs: 159 of 198 are implemented across
+33 namespaces. These are bounded source contracts, not certification of every
 SDK feature, client, tenant, form, or permission configuration.
 The standalone 0.7.0.0 unmanaged toolkit is upgraded/published in BvB and genuine
 managed/unmanaged exports are verified. No consumer wiring or clean managed
@@ -14,6 +14,10 @@ Read execution/preflight is documented with [execution](execution.md);
 [read batches](read-batches.md) and [localization/value formatting](localization.md)
 define the separate 0.7.0 contracts. No automatic mutation retry or server
 changeset is implemented.
+The new lookup/relationship/pane update source is not deployed. Read
+[advanced lookups](advanced-lookups.md), [relationship operations](relationships.md)
+and [pane updates](pane-updates.md) for precise supported host/adapter,
+ownership and failure/uncertainty semantics. BvB's 0.7.0 Core remains unchanged.
 
 All methods are under global `VBD` in the browser bundle, or available through
 `import * as VBD from "vbd-model-driven-toolkit"` in a configured local workspace.

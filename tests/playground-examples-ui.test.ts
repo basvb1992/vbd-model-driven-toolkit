@@ -264,7 +264,7 @@ describe("compiled Playground UI contract (non-rendered fixture)", () => {
   it("keeps inspect/local/JSON validation explicit and invalidates obsolete declaration code", async () => {
     const ui = await fixture();
     ui.get("inspect").click(); await ui.settle();
-    expect(ui.get("result").textContent).toContain('"installed": "Core 0.7.0"');
+    expect(ui.get("result").textContent).toContain(`"installed": "Core ${Core.Diagnostics.getVersion()}"`);
     expect(ui.get("result").textContent).toContain('"compiledMethods"');
     ui.get("local").click(); await ui.settle();
     expect(ui.get("result").textContent).toContain('"enabled": false');

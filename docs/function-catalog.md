@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**153 functions have a local implementation; the other 45 remain planned.**
+**159 functions have a local implementation; the other 39 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -119,10 +119,13 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Links.record`
 - `VBD.Links.view`
 - `VBD.Lookups.addFilter`
+- `VBD.Lookups.addView`
+- `VBD.Lookups.bindDependent`
 - `VBD.Lookups.pick`
 - `VBD.Lookups.removeFilter`
 - `VBD.Lookups.setDefaultView`
 - `VBD.Lookups.setEntityTypes`
+- `VBD.Lookups.validateSelection`
 - `VBD.Metadata.getChoices`
 - `VBD.Metadata.getColumn`
 - `VBD.Metadata.getRelationships`
@@ -141,12 +144,15 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Query.executeOData`
 - `VBD.Query.iteratePages`
 - `VBD.Query.retrieveAll`
+- `VBD.Relationships.associate`
+- `VBD.Relationships.disassociate`
 - `VBD.Security.assessTable`
 - `VBD.Security.hasPrivilege`
 - `VBD.SidePanes.close`
 - `VBD.SidePanes.createOrGet`
 - `VBD.SidePanes.navigate`
 - `VBD.SidePanes.select`
+- `VBD.SidePanes.update`
 - `VBD.UI.clearNotification`
 - `VBD.UI.hideProgress`
 - `VBD.UI.notify`

@@ -4,9 +4,9 @@ A configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: early source implementation (0.7.0), with 153 implemented
-functions. Authoritative source is consolidated on main. BvB runs verified
-Core 0.7.0.0 and optional Playground 0.2.0.0 with 17 searchable examples,
+**Status: source milestone 0.8.0, with 159 implemented functions. This new
+lookup/relationship/pane slice is not deployed; authoritative main and BvB
+remain on verified Core 0.7.0.0 and optional Playground 0.2.0.0 with 17 searchable examples,
 editable safe inputs, copyable TypeScript and form/ribbon wiring guidance.
 Genuine current Core exports exist; the old 0.5.0 draft release is unchanged.
 Native signed-in form/ribbon/role-matrix validation and clean managed-target
@@ -14,7 +14,7 @@ testing remain unverified. No license approval or public npm release is claimed.
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
-153 are locally implemented; the other 45 remain planned.
+159 are locally implemented; the other 39 remain planned.
 
 ## Available now
 
@@ -41,12 +41,24 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
 - Read-only retry/preflight and parallel read-job batches, plus explicit
   localization and typed display formatting in the 0.7.0 source slice.
   These are not mutation retries, server changesets or an HTML/template engine.
+- Advanced lookup views/dependency/selection contracts, explicit relationship
+  operations and owned pane-property updates in the source-only 0.8.0 slice.
+  Native subsets and mutation uncertainty are documented; no live writes occur
+  as part of this source verification.
 
 Metadata's native path covers selected table and base/Boolean column facts;
 choices, relationships and extended column facts require explicit scope-attested
 read-only adapters. Advanced choices currently require a singly bound native
 control with numeric baseline identities; form switching is saved desktop-Web
 Update forms only. These are documented subsets, not universal SDK coverage.
+Relationship association/disassociation currently supports explicitly described
+many-to-many collection relationships only; native schema/navigation names must
+match, otherwise an explicit reviewed adapter is required. No tenant mutations
+or server/SDK compatibility certification are implied by fixture coverage.
+Advanced lookup helpers require standard non-party-list, explicitly non-owner
+lookups and restricted single-entity XML/layout contracts. Async dependencies
+expose readiness/failures before synchronous PreSearch; supplied access evidence
+is not authorization, and a PreSearch error does not guarantee picker cancellation.
 - Typed field/control/form/layout helpers, owned lookup/event registration, choices
   and bounded synchronous validation; no automatic save or server-rule bypass.
 - Bounded OData/FetchXML data/query helpers and explicit operation contracts,
@@ -124,6 +136,9 @@ handover; a visual authoring Studio comes later.
 | [Metadata discovery](docs/metadata.md) | Supported read-only metadata subsets, language/copy/cache scope and invalidation |
 | [Advanced form helpers](docs/advanced-forms.md) | Choice baselines/restore and safe permitted form switching |
 | [Operation locks](docs/execution.md) | Page-local scoped duplicate policy, ownership and failure semantics |
+| [Advanced lookups](docs/advanced-lookups.md) | Custom views, owned dependent filtering and selection evidence |
+| [Relationship operations](docs/relationships.md) | Exact association/disassociation contracts, confirmation and uncertain outcomes |
+| [Owned pane updates](docs/pane-updates.md) | Documented native property subset, preflight, ownership and partial failure |
 | [Read batches](docs/read-batches.md) | Explicit read jobs, concurrency, copied/guarded outcomes and cancellation/limit semantics |
 | [Localization](docs/localization.md) | Explicit locale/language, safe text resources and distinct date/time behavior |
 | [Environment reads and app launching](docs/environment-launching.md) | Typed reads, scoped cache, approved app links, prepared tokens, and synchronous window requests |

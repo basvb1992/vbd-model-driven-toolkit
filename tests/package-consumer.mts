@@ -190,3 +190,39 @@ void translated;
 void formattedNumber;
 void formattedDate;
 void displayed;
+
+const paneUpdate: VBD.SidePaneUpdateResult = VBD.SidePanes.update(paneHandle, {
+  title: "Updated summary", width: 600, canClose: true, hidden: false
+});
+void paneUpdate;
+
+declare const relationSource: VBD.EntityRef;
+declare const relationTargets: readonly VBD.EntityRef[];
+declare const relation: VBD.RelationshipContract;
+declare const relationshipContext: VBD.RelationshipContext;
+const associated: Promise<VBD.RelationshipResult> = VBD.Relationships.associate(
+  relationSource, relation, relationTargets, { context: relationshipContext }
+);
+const disassociated: Promise<VBD.RelationshipResult> = VBD.Relationships.disassociate(
+  relationSource, relation, relationTargets, {
+    context: relationshipContext,
+    confirmation: { policy: "confirm-disassociate", source: relationSource, relationship: relation, targets: relationTargets }
+  }
+);
+void associated;
+void disassociated;
+
+declare const lookupViewOptions: VBD.LookupViewOptions;
+declare const dependentLookupOptions: VBD.DependentLookupOptions;
+declare const lookupSelectionOptions: VBD.LookupSelectionOptions;
+const customView: VBD.LookupViewReceipt = VBD.Lookups.addView(form, "child", lookupViewOptions);
+const dependentLookup: VBD.DependentLookupBinding = VBD.Lookups.bindDependent(form, dependentLookupOptions);
+const dependencyReady: Promise<VBD.DependentLookupState> = dependentLookup.readiness;
+const dependencyRefreshed: Promise<VBD.DependentLookupState> = dependentLookup.refresh();
+const lookupSelection: Promise<VBD.LookupSelectionResult> = VBD.Lookups.validateSelection(
+  [{ entityType: "account", id: "00000000-0000-0000-0000-000000000001" }], lookupSelectionOptions
+);
+void customView;
+void dependencyReady;
+void dependencyRefreshed;
+void lookupSelection;
