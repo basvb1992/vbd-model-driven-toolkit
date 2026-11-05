@@ -29,7 +29,10 @@ export type { ReadContext, ReadScope } from "./platform.js";
 export { Links } from "./links.js";
 export type { AppLinkOptions, RecordLinkOptions, ViewLinkOptions } from "./links.js";
 export { SidePanes } from "./side-panes.js";
-export type { SidePaneOptions, SidePaneHandle, SidePanePage } from "./side-panes.js";
+export type {
+  SidePaneOptions, SidePaneHandle, SidePanePage, SidePaneUpdateOptions,
+  SidePaneProperty, SidePaneUpdateResult
+} from "./side-panes.js";
 export { Launch } from "./launch.js";
 export type {
   ProfileIdentity, PreparationOptions, ProfileDefinition, PreparedLaunch,
@@ -60,7 +63,9 @@ export type { BoundControl } from "./controls.js";
 export { Lookups, Choices } from "./lookups.js";
 export type {
   LookupPickOptions, ChoiceOption, ChoiceMutationOptions, ChoiceBaselineToken,
-  ChoiceMutationResult, ChoiceRestoreResult
+  ChoiceMutationResult, ChoiceRestoreResult, LookupViewOptions, LookupViewReceipt,
+  DependentLookupOptions, DependentLookupBinding, DependentLookupState, DependentLookupFailure,
+  LookupSelectionOptions, LookupSelectionResult, LookupSelectionItem, LookupAccessEvidence
 } from "./lookups.js";
 export { Validation } from "./form-validation.js";
 export type { ValidationRule, ValidationIssue, ValidationReport } from "./form-validation.js";
@@ -107,3 +112,9 @@ export { Batch } from "./batch.js";
 export type {
   ReadBatchRequest, ReadBatchOptions, BatchStopReason, ReadBatchItem, ReadBatchResult
 } from "./batch.js";
+export { Relationships } from "./relationships.js";
+export type {
+  RelationshipContract, RelationshipRequestMetadata, RelationshipRequest,
+  RelationshipContext, RelationshipOptions, RelationshipConfirmation,
+  DisassociateOptions, RelationshipDiagnostic, RelationshipItem, RelationshipResult
+} from "./relationships.js";

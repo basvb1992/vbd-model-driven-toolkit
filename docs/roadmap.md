@@ -1,10 +1,14 @@
 # Roadmap
 
-153 catalog functions have a local implementation; the other 45 are planned.
+159 catalog functions have a local implementation; the other 39 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
 ## Current adoption status
+
+The new source-only 0.8.0 milestone below is not another deployment. This
+adoption section describes the still-current authoritative main/BvB 0.7.0
+installation and companion 0.2.0; no original tag/draft/assets are changed.
 
 [Issue #23](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/23)
 consolidated the tested stack through [PR #24](https://github.com/basvb1992/vbd-model-driven-toolkit/pull/24)
@@ -92,6 +96,22 @@ See [execution](execution.md), [read batches](read-batches.md) and
 [localization](localization.md) for precise supported subsets.
 Deployed BvB Core 0.5.0, Playground 0.1.0, prior source PRs, tags and draft
 assets remain unchanged by this continuation.
+
+## Current R2 lookup, relationship and pane source continuation
+
+[Issue #26](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/26)
+selects Lookups.addView/bindDependent/validateSelection,
+Relationships.associate/disassociate and SidePanes.update. Source/solution
+0.8.0/0.8.0.0 targets 159/198 APIs across 33 namespaces. The remaining 39
+candidates, including aggregate/upsert/transactional changesets, files and
+recipes, remain planned.
+
+Use the documented [lookup](advanced-lookups.md), [relationship](relationships.md)
+and [pane update](pane-updates.md) contracts rather than assuming every native
+lookup/control/relationship shape is supported. Relationship writes can reach
+the server before transport/scope failure; they never inherit the read-only
+retry/batch policy or promise rollback. This source milestone leaves BvB,
+authoritative main, prior releases and test artifacts unchanged.
 
 ## Integrated local delivery
 

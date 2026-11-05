@@ -2,9 +2,11 @@
 
 This is an early source implementation with local unmanaged packaging,
 with a verified unmanaged BvB test installation, not a production-ready release.
-Current source is 0.7.0 on authoritative main; BvB has a verified Core 0.7.0.0
+This milestone source is 0.8.0; authoritative main/BvB retain verified Core 0.7.0.0
 test upgrade and optional Playground 0.2.0.0. The historical 0.5.0 draft assets
 remain unchanged. Deployment/read-back is not full native-host certification.
+The six new 0.8.0 APIs are source-only. See [advanced lookups](advanced-lookups.md),
+[relationship operations](relationships.md) and [pane updates](pane-updates.md).
 Requires Node.js 24+ and npm. The npm package is private and not published.
 Building and local delivery tools need no environment login, Xrm, Studio, or
 Workflow/Interaction Framework. Runtime environment reads use the caller's

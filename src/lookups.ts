@@ -10,6 +10,16 @@ import { checkedXml } from "./xml.js";
 import { disposeRegistration, registration } from "./registrations.js";
 import type { Disposable } from "./registrations.js";
 import { filterOptions, restoreOptions, setOptions } from "./choices-options.js";
+import { addView } from "./lookup-view.js";
+import { bindDependent } from "./lookup-dependent.js";
+import { validateSelection } from "./lookup-selection.js";
+export type { LookupViewOptions, LookupViewReceipt } from "./lookup-view.js";
+export type {
+  DependentLookupBinding, DependentLookupFailure, DependentLookupOptions, DependentLookupState
+} from "./lookup-dependent.js";
+export type {
+  LookupAccessEvidence, LookupSelectionItem, LookupSelectionOptions, LookupSelectionResult
+} from "./lookup-selection.js";
 export type {
   ChoiceBaselineToken, ChoiceMutationOptions, ChoiceMutationResult, ChoiceOption, ChoiceRestoreResult
 } from "./choices-options.js";
@@ -103,5 +113,5 @@ function getOptions(input: unknown, column: string): { value: number; text: stri
   return resultOf(z.array(z.object({ value: z.number().int(), text: z.string().max(8192) })).max(1000),
     call(attribute, "getOptions"));
 }
-export const Lookups = Object.freeze({ pick, addFilter, removeFilter, setDefaultView, setEntityTypes });
+export const Lookups = Object.freeze({ pick, addFilter, removeFilter, setDefaultView, setEntityTypes, addView, bindDependent, validateSelection });
 export const Choices = Object.freeze({ getOptions, setOptions, filterOptions, restoreOptions });
