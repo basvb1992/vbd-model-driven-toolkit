@@ -190,3 +190,59 @@ void translated;
 void formattedNumber;
 void formattedDate;
 void displayed;
+
+const paneUpdate: VBD.SidePaneUpdateResult = VBD.SidePanes.update(paneHandle, {
+  title: "Updated summary", width: 600, canClose: true, hidden: false
+});
+void paneUpdate;
+
+declare const relationSource: VBD.EntityRef;
+declare const relationTargets: readonly VBD.EntityRef[];
+declare const relation: VBD.RelationshipContract;
+declare const relationshipContext: VBD.RelationshipContext;
+const associated: Promise<VBD.RelationshipResult> = VBD.Relationships.associate(
+  relationSource, relation, relationTargets, { context: relationshipContext }
+);
+const disassociated: Promise<VBD.RelationshipResult> = VBD.Relationships.disassociate(
+  relationSource, relation, relationTargets, {
+    context: relationshipContext,
+    confirmation: { policy: "confirm-disassociate", source: relationSource, relationship: relation, targets: relationTargets }
+  }
+);
+void associated;
+void disassociated;
+
+declare const lookupViewOptions: VBD.LookupViewOptions;
+declare const dependentLookupOptions: VBD.DependentLookupOptions;
+declare const lookupSelectionOptions: VBD.LookupSelectionOptions;
+const customView: VBD.LookupViewReceipt = VBD.Lookups.addView(form, "child", lookupViewOptions);
+const dependentLookup: VBD.DependentLookupBinding = VBD.Lookups.bindDependent(form, dependentLookupOptions);
+const dependencyReady: Promise<VBD.DependentLookupState> = dependentLookup.readiness;
+const dependencyRefreshed: Promise<VBD.DependentLookupState> = dependentLookup.refresh();
+const lookupSelection: Promise<VBD.LookupSelectionResult> = VBD.Lookups.validateSelection(
+  [{ entityType: "account", id: "00000000-0000-0000-0000-000000000001" }], lookupSelectionOptions
+);
+void customView;
+void dependencyReady;
+void dependencyRefreshed;
+void lookupSelection;
+
+declare const consumerGrid: unknown;
+declare const gridOperation: VBD.GridOperation<{ accepted: boolean }>;
+const selectedResult: Promise<VBD.GridRunResult<{ accepted: boolean }>> =
+  VBD.Grids.runSelected(consumerGrid, gridOperation, { allowedTables: ["account"], max: 25 });
+const gridLoaded: VBD.GridLoadHandler = executionContext => { void executionContext; };
+const gridRegistration: VBD.Disposable = VBD.Grids.registerOnLoad(consumerGrid, gridLoaded);
+void selectedResult;
+void gridRegistration;
+
+const ruleCondition: VBD.RuleCondition = { kind: "prepared", key: "enabled", op: "eq", value: true };
+const allConditions: VBD.RuleAll = VBD.Rules.all([ruleCondition]);
+const anyConditions: VBD.RuleAny = VBD.Rules.any([ruleCondition]);
+const negatedCondition: VBD.RuleNot = VBD.Rules.not(ruleCondition);
+declare const ruleOptions: VBD.RuleEvaluationOptions;
+const assessment: VBD.RuleAssessment = VBD.Rules.evaluate(allConditions, ruleOptions);
+const jsonAssessment: VBD.RuleAssessment = VBD.Rules.evaluate(JSON.stringify(anyConditions), ruleOptions);
+void negatedCondition;
+void assessment;
+void jsonAssessment;

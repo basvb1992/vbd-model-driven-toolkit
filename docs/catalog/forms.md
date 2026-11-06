@@ -1,7 +1,9 @@
 # Form, control, and lookup functions
 
-The 39 R1 entries and four R2 choice/form-switch entries are implemented in
-bounded source subsets; three R2 lookup entries remain planned.
+All 46 entries have bounded source implementations: 39 R1 entries and seven
+R2 choice/form-switch/lookup helpers. Availability does not imply support for
+every native lookup/client/metadata shape or live Dynamics certification.
+See [advanced lookups](../advanced-lookups.md),
 See [advanced form usage](../advanced-forms.md),
 [catalog conventions](../function-catalog.md) and
 [current signatures/policies](../core-usage.md).
@@ -67,6 +69,9 @@ must deliberately apply to all supported bound controls or a specified subset.
 PreSearch hooks are synchronous. Resolve asynchronous filter dependencies before
 the hook, and invalidate them when the parent changes. Unsupported lookup types
 must be reported rather than silently accepting a filter that never applies.
+The 0.8.0 source adds custom-view/dependency/selection helpers under the exact
+[advanced lookup contract](../advanced-lookups.md). It is not a deployment,
+generic query editor, promise of owner-lookup support or arbitrary callback engine.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

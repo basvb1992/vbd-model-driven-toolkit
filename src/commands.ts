@@ -11,6 +11,10 @@ import { runPreparedCommand } from "./command-state.js";
 import { call } from "./sdk.js";
 import { logicalNameSchema, parseInput } from "./validation.js";
 import type { WindowOptions } from "./windows.js";
+import { runSelected, registerOnLoad } from "./grid-interactions.js";
+export type {
+  GridOperation, GridRunOptions, GridStopReason, GridRunItem, GridRunResult, GridLoadHandler
+} from "./grid-interactions.js";
 
 export interface FailureOutcome { status: "failed"; error: VbdError }
 export async function presentFailure(error: unknown): Promise<FailureOutcome> {
@@ -78,4 +82,4 @@ async function openSelected(input: unknown, options: PresentationOptions = {}) {
   return Navigation.openRecord(ref, options);
 }
 export const Commands = Object.freeze({ run, runGrid, execute, refresh, validateSelection });
-export const Grids = Object.freeze({ getSelected, refresh: refreshGrid, openSelected });
+export const Grids = Object.freeze({ getSelected, refresh: refreshGrid, openSelected, runSelected, registerOnLoad });

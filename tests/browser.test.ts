@@ -6,11 +6,250 @@ import manifest from "../package.json" with { type: "json" };
 import { configuration } from "./helpers.js";
 import { appId, launchFixture } from "./environment-helpers.js";
 import * as library from "../src/index.js";
-import { nativeForm } from "./native-fixture.js";
+import { nativeForm, nativeSdk, nativeGrid } from "./native-fixture.js";
 
 const bundle = readFileSync(resolve("dist", "vbd.toolkit.js"), "utf8");
 
 describe("browser distribution", () => {
+  it("evaluates compiled tri-state rules with scoped prepared facts and exact native observations", () => {
+    const source = launchFixture(), form = nativeForm(), grid = nativeGrid();
+    const actual: unknown = runInNewContext(`${bundle}
+      (()=>{
+        const common={
+          scope,scopeContext:readContext,allowedFields:["number","absent"],
+          allowedPrepared:[{key:"t"},{key:"f"},{key:"u"}],
+          prepared:{scope,values:{t:{state:"ready",value:true},f:{state:"ready",value:false},u:{state:"notReady"}}}
+        };
+        const options={...common,context:VBD.Context.fromFormCommand(form)};
+        const fact=key=>({kind:"prepared",key,op:"eq",value:true});
+        const state=condition=>VBD.Rules.evaluate(condition,options).state;
+        return JSON.stringify({
+          ready:state(fact("t")),negative:state(fact("f")),unknown:state(fact("u")),
+          all:state(VBD.Rules.all([fact("u"),fact("f")])),
+          any:state(VBD.Rules.any([fact("u"),fact("t")])),
+          not:state(VBD.Rules.not(fact("u"))),
+          json:state(JSON.stringify(fact("t"))),saved:state({kind:"record",state:"saved"}),
+          field:state({kind:"field",field:"number",op:"eq",value:0}),
+          absent:state({kind:"field",field:"absent",op:"eq",value:null}),
+          selected:VBD.Rules.evaluate({kind:"selection",min:1,max:1,tables:["account"]},{
+            ...common,context:VBD.Context.fromGridCommand(grid)
+          }).state,basis:VBD.Rules.evaluate(fact("t"),options).basis
+        });
+      })();`, {
+      crypto: globalThis.crypto, URL, TextEncoder,
+      form: form.form, grid: grid.grid, scope: source.scope, readContext: source.context
+    }, { timeout: 5000 });
+    if (typeof actual !== "string") throw new Error("Missing compiled rule assessment");
+    expect(JSON.parse(actual)).toEqual({
+      ready: "matched", negative: "notMatched", unknown: "unknown", all: "notMatched",
+      any: "matched", not: "unknown", json: "matched", saved: "matched", field: "matched",
+      absent: "unknown", selected: "matched", basis: "ux-only"
+    });
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
+  it("runs a compiled frozen grid selection and disposes only its native OnLoad wrapper", async () => {
+    const source = launchFixture(), received: string[] = [];
+    const foreign = (_event: unknown): void => { void _event; };
+    const handlers = new Set<(event: unknown) => void>([foreign]);
+    const grid = {
+      getGrid: () => ({ getSelectedRows: () => ({ get: () => [{
+        data: { entity: { getId: () => appId, getEntityName: () => "account" } }
+      }] }) }),
+      getGridType: () => 2,
+      addOnLoad: (handler: (event: unknown) => void) => { handlers.add(handler); },
+      removeOnLoad: (handler: (event: unknown) => void) => { handlers.delete(handler); }
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async()=>{
+        const selected=await VBD.Grids.runSelected(grid,{
+          kind:"read",run:record=>{received.push(record.id);return false;},
+          validate:value=>value===false
+        },{allowedTables:["account"],context:readContext});
+        let events=0;
+        const callback=()=>{events++;};
+        const token=VBD.Grids.registerOnLoad(grid,callback);
+        const reused=VBD.Grids.registerOnLoad(grid,callback);
+        fire();
+        const disposed=token.dispose();
+        fire();
+        return JSON.stringify({status:selected.status,value:selected.items[0].value,
+          counts:selected.counts,events,reused:reused===token,removed:disposed.removed});
+      })();`, {
+      crypto: globalThis.crypto, URL, TextEncoder, grid, received, readContext: source.context,
+      fire: () => { for (const handler of [...handlers]) handler({ getEventSource: () => grid }); }
+    }, { timeout: 5000 });
+    if (typeof result !== "string") throw new Error("Missing compiled grid receipts");
+    expect(JSON.parse(result)).toEqual({
+      status: "succeeded", value: false,
+      counts: { requested: 1, attempted: 1, succeeded: 1, failed: 0, uncertain: 0, skipped: 0 },
+      events: 1, reused: true, removed: true
+    });
+    expect(received).toEqual([appId]);
+    expect(handlers).toEqual(new Set([foreign]));
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
+  it("uses compiled advanced lookup view/selection contracts without native record reads", async () => {
+    const source = launchFixture(), calls: unknown[][] = [], viewId = crypto.randomUUID();
+    const foreign = (_event: unknown): void => { void _event; };
+    const changes = new Set<(event: unknown) => void>([foreign]);
+    const searches = new Set<(event: unknown) => void>([foreign]);
+    const loads = new Set<(event: unknown) => void>([foreign]);
+    const filters: string[] = [], dependencyErrors: unknown[] = [];
+    const parent = {
+      getName: () => "parent", getAttributeType: () => "lookup", getIsPartyList: () => false,
+      getValue: () => [{ entityType: "account", id: appId, name: "Synthetic parent" }],
+      addOnChange: (handler: (event: unknown) => void) => { changes.add(handler); },
+      removeOnChange: (handler: (event: unknown) => void) => { changes.delete(handler); }
+    };
+    const child = {
+      getName: () => "child", getAttributeType: () => "lookup",
+      getIsPartyList: () => false, getValue: () => null
+    };
+    const control = {
+      getControlType: () => "lookup", getAttribute: () => child,
+      getEntityTypes: () => ["account"], getDefaultView: () => appId,
+      addCustomView: (...args: unknown[]) => { calls.push(args); },
+      addPreSearch: (handler: (event: unknown) => void) => { searches.add(handler); },
+      removePreSearch: (handler: (event: unknown) => void) => { searches.delete(handler); },
+      addCustomFilter: (filter: string) => { filters.push(filter); }
+    };
+    const formItem = { getId: () => appId };
+    const form = {
+      getAttribute: (name: string) => name === "child" ? child : name === "parent" ? parent : null,
+      getControl: (name: string) => name === "child" ? control : null,
+      data: {
+        entity: { getId: () => appId, getEntityName: () => "account" },
+        addOnLoad: (handler: (event: unknown) => void) => { loads.add(handler); },
+        removeOnLoad: (handler: (event: unknown) => void) => { loads.delete(handler); }
+      },
+      ui: { formSelector: { getCurrentItem: () => formItem } }
+    };
+    const viewOptions: library.LookupViewOptions = {
+      lookupKind: "standard", ownerLookup: false, identityPolicy: "caller-unique",
+      viewId, entityType: "account", displayName: "Synthetic accounts", tableTypeCode: 1,
+      primaryIdColumn: "accountid", primaryNameColumn: "name", isDefault: false,
+      fetchXml: '<fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="false"><entity name="account"><attribute name="accountid"/><attribute name="name"/></entity></fetch>',
+      layoutXml: '<grid name="resultset" object="1" jump="name" select="1" icon="1" preview="1"><row name="result" id="accountid"><cell name="name" width="200"/></row></grid>'
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        const view=VBD.Lookups.addView(form,"child",viewOptions);
+        const reused=VBD.Lookups.addView(form,"child",viewOptions);
+        const selection=await VBD.Lookups.validateSelection([{entityType:"account",id:"${appId}"}],{
+          allowedTables:["account"],cardinality:{min:0,max:1},empty:"invalid",
+          predicate:{mode:"sync",test:()=>true},access:{policy:"not-checked"},context:readContext
+        });
+        const binding=VBD.Lookups.bindDependent(form,{
+          parentColumn:"parent",parentTables:["account"],childControl:"child",entityType:"account",
+          lookupKind:"standard",ownerLookup:false,selectionOnInvalidate:"retain-invalid",emptyParent:"not-ready",
+          prepare:async()=>'<filter type="and"><condition attribute="parentaccountid" operator="eq" value="${appId}"/></filter>',
+          onError:failure=>{dependencyErrors.push(failure);},context:readContext
+        });
+        const ready=await binding.readiness;
+        search();
+        const disposed=binding.dispose();
+        return JSON.stringify({viewStatus:view.status,reused:reused.status,removable:view.removable,
+          selection:selection.status,basis:selection.basis,dependent:ready.status,removed:disposed.removed});
+      })();`, {
+      crypto: globalThis.crypto, URL, TextEncoder, form, viewOptions, readContext: source.context, dependencyErrors,
+      search: () => {
+        const event = { getFormContext: () => form, getEventSource: () => control };
+        for (const handler of searches) handler(event);
+      }
+    }, { timeout: 5000 });
+    if (typeof result !== "string") throw new Error("Missing compiled advanced lookup receipts.");
+    expect(JSON.parse(result)).toEqual({
+      viewStatus: "requested", reused: "existing", removable: false,
+      selection: "valid", basis: "trusted-caller-checks", dependent: "ready", removed: true
+    });
+    expect(calls).toHaveLength(1);
+    expect(filters).toHaveLength(1);
+    expect(changes).toEqual(new Set([foreign]));
+    expect(searches).toEqual(new Set([foreign]));
+    expect(loads).toEqual(new Set([foreign]));
+    expect(dependencyErrors).toEqual([]);
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
+  it("uses compiled explicit relationship adapters and exact removal confirmation without a record-delete fallback", async () => {
+    const source = launchFixture(), targetId = crypto.randomUUID();
+    const relation: library.RelationshipContract = {
+      scope: { ...source.scope }, sourceSide: "entity1",
+      navigationProperty: "vbd_account_contact", cardinality: "collection",
+      metadata: {
+        kind: "manyToMany", SchemaName: "vbd_account_contact",
+        Entity1LogicalName: "account", Entity2LogicalName: "contact",
+        Entity1NavigationPropertyName: "vbd_account_contact", Entity2NavigationPropertyName: "vbd_account_contact",
+        IntersectEntityName: "vbd_account_contact",
+        Entity1IntersectAttribute: "accountid", Entity2IntersectAttribute: "contactid"
+      }
+    };
+    const operations: string[] = [];
+    const context: library.RelationshipContext = {
+      getScope: () => ({ ...source.scope }),
+      executeRelationship: async request => {
+        operations.push(request.getMetadata().operationName);
+        return { ok: true, status: 204 };
+      }
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        const source={entityType:"account",id:"${appId}"};
+        const targets=[{entityType:"contact",id:"${targetId}"}];
+        const association=await VBD.Relationships.associate(source,relation,targets,{context});
+        const removal=await VBD.Relationships.disassociate(source,relation,targets,{
+          context,confirmation:{policy:"confirm-disassociate",source,relationship:relation,targets}
+        });
+        return JSON.stringify({association:association.status,removal:removal.status,
+          associationCounts:association.counts,removalCounts:removal.counts});
+      })();`, { crypto: globalThis.crypto, URL, TextEncoder, relation, context }, { timeout: 5000 });
+    if (typeof result !== "string") throw new Error("Missing compiled relationship receipt.");
+    const counts = { requested: 1, attempted: 1, completed: 1, failed: 0, uncertain: 0, skipped: 0 };
+    expect(JSON.parse(result)).toEqual({
+      association: "completed", removal: "completed", associationCounts: counts, removalCounts: counts
+    });
+    expect(operations).toEqual(["Associate", "Disassociate"]);
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
+  it("updates a compiled original pane instance and preserves reuse/lifecycle across realms", async () => {
+    const sdk = nativeSdk();
+    const panes = new Map<string, Record<string, unknown>>();
+    const host = {
+      getPane: (id: string) => panes.get(id),
+      createPane: async (options: Record<string, unknown>) => {
+        if (typeof options.paneId !== "string") throw new Error("Missing pane fixture identity.");
+        const id = options.paneId;
+        const pane = {
+          ...options, hidden: false,
+          navigate: async (_page: unknown) => { void _page; },
+          select: () => undefined, close: () => { panes.delete(id); }
+        };
+        panes.set(id, pane);
+        return pane;
+      }
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async () => {
+        const token=await VBD.SidePanes.createOrGet({paneId:"vbd_vm",title:"Original"});
+        const receipt=VBD.SidePanes.update(token,patch);
+        const reused=await VBD.SidePanes.createOrGet({
+          paneId:"vbd_vm",title:"Updated",width:600,canClose:false
+        });
+        const selected=VBD.SidePanes.select(token);
+        const closed=VBD.SidePanes.close(token);
+        return JSON.stringify({receipt,sameToken:reused===token,selected,closed});
+      })();`, {
+      crypto: globalThis.crypto,
+      patch: { hidden: true, width: 600, canClose: false, title: "Updated" },
+      Xrm: { ...sdk.xrm, App: { ...sdk.app, sidePanes: host } }
+    }, { timeout: 5000 });
+    if (typeof result !== "string") throw new Error("Missing compiled pane update receipt.");
+    expect(JSON.parse(result)).toEqual({
+      receipt: { status: "updated", paneId: "vbd_vm", changed: ["title", "width", "canClose", "hidden"] },
+      sameToken: true, selected: { status: "requested", paneId: "vbd_vm" },
+      closed: { status: "closed", paneId: "vbd_vm" }
+    });
+    expect(panes.size).toBe(0);
+  });
   it("uses compiled explicit localization and display contracts without guessed native locale", () => {
     const foreignDate = new Date("2026-01-01T00:30:00Z");
     const result: unknown = runInNewContext(`${bundle}
@@ -264,7 +503,7 @@ describe("browser distribution", () => {
           environmentReads: "absent", sidePanes: "absent", notifications: "absent"
         }
       },
-      sidePaneMethods: ["close", "createOrGet", "navigate", "select"]
+      sidePaneMethods: ["close", "createOrGet", "navigate", "select", "update"]
     }));
   });
   it("loads the implemented namespace without requiring Node, Xrm, or DOM at initialization", () => {

@@ -33,9 +33,9 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-153 runtime functions and the bounded local
+165 runtime functions and the bounded local
 tooling subset are implemented; see [getting started](getting-started.md) and
-[environment/launcher usage](environment-launching.md). The remaining 45 functions
+[environment/launcher usage](environment-launching.md). The remaining 33 functions
 are planned; [core usage](core-usage.md) defines current subset limitations.
 
 ## Non-goals
@@ -495,7 +495,7 @@ consumer checks. Original worktrees remain clean at their delivered heads.
 | Explicit locale/resource/placeholder/date/time/value contracts. | 179 focused localization/dispatcher/capability cases plus compiled empty/false/zero text, numbers, date-only and foreign-realm Date with explicit New York time zone. | Constrained supported Intl/locale subset, no browser/tenant/Windows-zone guesses or HTML renderer. |
 | Optional Intl does not break unrelated Core. | Parent sandbox reproduction identified a raw missing-Intl exception; separate guarded-capability fix and 19 regressions pass. Core initializes without Intl, while requested formatting returns UNSUPPORTED_SURFACE. | Native/client locale support still requires supported capabilities, not a universal compatibility claim. |
 | Exact availability and public contracts. | Digit-aware catalog invariant now includes I18n; actual built/archive surface is 153 methods/32 namespaces, with 45 candidates still planned. | No additional planned recipe/file/change-set/native operation is implied. |
-| Reproducible current source package. | Final full gate: 41 files / 1790 tests with both native PAC opt-ins; exact archive/runtime/notices and 215 input fingerprints. See [packaging evidence](solution-packaging.md#current-070-safe-read-and-localization-source-evidence). | 0.7.0 is not deployed, managed-exported or public-release-ready; BvB remains on 0.5.0 Core and 0.1.0 Playground. |
+| Reproducible current source package. | Final full gate: 41 files / 1790 tests with both native PAC opt-ins; exact archive/runtime/notices and 215 input fingerprints. See [packaging evidence](solution-packaging.md#070-safe-read-and-localization-source-evidence). | This was source-only at its original delivery; the later adoption section records its separate deployment/export evidence. |
 
 ## Adoption, consolidation and BvB validation
 
@@ -545,6 +545,114 @@ certify native Xrm forms or command registration.
 | Actual supported read behavior. | Six current-user GETs with explicit scoped adapters verified owned-resource existence/absence, selected metadata, read batch, preflight and lock behavior without writes. | Not native Xrm/SDK forms, real retry timing, lower-privileged users or row authorization certification. |
 | Honest remaining release/native gates. | Actual browser app opening reaches Microsoft sign-in; no signed-in test form/command session supplied. Fresh genuine 0.7 Core exports match source, but public license and clean managed target remain pending. | No credentials/auth bypass, invented license, public binary release or clean managed install claim. |
 
+## R2 lookup, relationship and owned-pane slice
+
+[Issue #26](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/26)
+selects six existing R2 APIs: Lookups.addView/bindDependent/validateSelection,
+Relationships.associate/disassociate and SidePanes.update. Target source and
+local solution versions are 0.8.0/0.8.0.0, with 159/198 APIs across 33
+namespaces; 39 candidates remain planned. This is a source-only branch over
+authoritative main, not another deployment or license/release decision.
+
+Lookup helpers require exact supplied native identities and strict XML/view/
+selection contracts. Async dependent preparation must finish before synchronous
+PreSearch use; parent/context/scope changes invalidate pending work. Owned
+disposal cannot remove foreign handlers or pretend addCustomView has a native
+removal API. Clearing/revalidation/error policies are explicit; no implicit save,
+OnChange, unsafe XML interpolation or permission-as-invalid-record fallback.
+
+Relationship operations require exact validated refs, relationship/cardinality/
+navigation metadata and supported native or typed mutation capability. Bound
+targets and validate before dispatch; disassociation is not deletion. No guessed
+schema names, unsafe mutation retries, automatic rollback or false atomicity.
+Preserve attempted/completed/partial/uncertain consequences when native requests
+may already have reached the server; scope changes cannot manufacture success.
+
+Pane updates reuse current original-instance ownership and busy guards.
+Only documented property subsets/types are accepted; requested native writable
+capabilities are preflighted before mutation, failures expose safe partial
+evidence, and subsequent lifecycle remains possible after a partial change.
+Expected create/reuse state follows observed owned changes, not another pane.
+No arbitrary icon/iframe/DOM or invented badge encoding is added.
+
+Two isolated implementation lanes own lookups and relationships; the integrator
+owns pane updates, root exports/types/version/catalog/spec and package evidence.
+Acceptance requires exact-boundary/invalid/denied/partial/uncertainty/reentry/
+stale/dispose tests, compiled cross-realm and consumer typing, full source
+gates and actual native PAC Core/companion offline checks. Preserve first
+introduction versions and original deployed IDs. No tenant calls, auth,
+relationship/data mutations, deployment, merge, tag/draft changes or public
+binary publication. BvB remains Core 0.7.0.0 and Playground 0.2.0.0 until a
+separately scoped upgrade; native/role/clean-managed-target checks stay explicit.
+
+### 0.8.0 acceptance evidence
+
+| Criterion | Observed verification | Remaining boundary |
+| --- | --- | --- |
+| Explicit custom-view, dependent lifecycle and selection contracts. | 179 focused lookup cases; compiled root addView reuse, async readiness, synchronous PreSearch and disposal preserve foreign handlers. Public consumer types cover all three methods. | Standard non-party-list, explicitly non-owner lookups only; restricted FetchXML/layout subset. No custom-view removal, undelivered A-B-A detection or guaranteed picker cancellation. Access evidence is caller-supplied, not authorization. |
+| Validated relationship writes with honest outcomes. | 102 focused cases, compiled browser and consumer contracts cover scoped metadata, confirmation, denied/partial/uncertain/skipped results and dispatch bounds. | Many-to-many collection relationships only; differing schema/navigation names require an explicit adapter. No live mutation, server permission, rollback, retry or atomicity certification. |
+| Owned pane property updates preserve lifecycle. | 39 focused cases plus compiled root update/reuse/close cover strict title/width/canClose/hidden patches, descriptor/type preflight including nonextensible instances, no-ops, reentry and setter/clamping/partial failures. | Original online desktop-Web pane only; native rendering, client matrix and permissions remain unverified. No badge/icon or arbitrary property mutation. |
+| Consistent public source, declarations and availability. | Strict types, lint, ESM/browser/companion builds and package-consumer checks pass; generated catalog and independently executed archived browser both report 159 APIs / 33 namespaces at 0.8.0. | This feature branch is not authoritative main or a deployed upgrade. |
+| Package current bytes without widening deployment scope. | Full check: 48 files / 2172 tests with both actual native PAC integrations. Fresh Core pack/unpack/repack has two resources, zero Dataverse dependencies, nine complete runtime notices and 220 matching input fingerprints; exact hashes are in the packaging guide. | Local unmanaged source artifact only: importTested/publicReleaseReady/taggedSourceVerified remain false. Offline managed creation is still blocked; no tenant/auth/deployment or release changes. |
+
+Lane provenance: relationship original `232868b` integrates as `79adf45`;
+lookup original `37601ad` integrates as `d3773f7`. Parent integration supplies
+pane updates, shared exports/version/types/docs and complete offline evidence.
+The Playground fixture now derives the displayed version from the installed
+Core rather than pinning 0.7.0; its 17 examples and solution version are unchanged.
+
+## R2 synchronous command-rule and grid slice
+
+[Issue #28](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/28)
+selects Rules.evaluate/all/any/not and Grids.runSelected/registerOnLoad.
+The 0.9.0/0.9.0.0 source builds on verified 0.8 head `bbaca3f` (PR #27 is
+unmerged), targeting 165/198 APIs across 34 namespaces; 33 candidates remain
+planned. Consultant outcome: reusable command conditions and bounded selected
+record interactions without copying unsafe handlers into each app.
+
+Rules are synchronous bounded typed trees over approved context/prepared
+facts. Validate the complete tree, including short-circuited branches;
+preserve matched/notMatched/unknown semantics and unknown reasons. No eval,
+async rule reads or inferred privilege grants. AND false and OR true dominate
+unknown; negation never converts unknown into a match. Supplied facts are UX
+trust contracts, not authorization, and absent/not-ready facts must not pass.
+
+Grid operations preflight the complete actual/supplied selection, freeze it
+and process sequentially (one invocation per grid, maximum eight active
+grids). Explicit read/mutation declarations, stop/continue policy,
+cancellation/scope/result limits and failed/uncertain/skipped consequences
+are observable; no write retry, rollback, atomicity or durable execution.
+Owned subgrid OnLoad registration requires original native identities and
+documented getGridType=2/add/remove capabilities, preserves foreign handlers,
+deduplicates and supplies actionable cleanup on partial native failures.
+Current Learn supports subgrid OnLoad on both read-only/editable controls;
+getGridType describes home versus subgrid, not editability.
+
+Acceptance: strict invalid/unknown/zero/false/context/mutation/reentry/dispose
+tests, actual compiled root/consumer contracts, exact generated availability
+and source/solution versions, full check and actual offline PAC Core/companion
+pack/unpack/repack. Preserve introduction versions, runtime notices and
+existing APIs. Usage contracts: [rules](rules.md), [grids](grid-interactions.md).
+
+No tenant/auth calls, live writes, deployment, merge, tag/draft changes or
+binary publication. Main/BvB remain Core 0.7 with Playground 0.2; PR #27,
+historical artifacts and owner license/native/clean-managed gates remain
+separate. Read-only adapters/trusted callbacks and supported online SDK
+capabilities are dependencies, not a claim of all-client verification.
+
+### 0.9.0 acceptance evidence
+
+| Criterion | Observed verification | Remaining boundary |
+| --- | --- | --- |
+| Bounded synchronous conditions with explicit unknown behavior. | 125 Rules cases cover all four APIs, complete-tree preflight, deep-frozen constructors, exact comparisons, unknown dominance, allowlists, unsafe JSON/descriptors, scoped facts, guard failures, native errors, mutation and reentry. | Field/native capabilities are documented subsets. Caller owns same-scope fact provenance/freshness/record association; no TTL, historical-generation token or privilege proof is supplied. |
+| Frozen selected work with exact accounting and safe failure policy. | 48 grid cases cover normalization/all-table approvals, sequential immutable snapshots, max eight active grids, zero/false, invalid/async/mutating guards, bytes, cancellation, context changes, uncertain mutations, stop/continue and release. | Callback kind/completion evidence is caller trust. No concurrency option, automatic retry, abort of native in-flight work, transaction or rollback. |
+| Original-instance subgrid lifecycle. | Focused native fixtures preserve receivers/foreign handlers, deduplicate, bound ownership, verify source/reentry and stale/disposed callbacks, and retain deliberate recovery after native add/remove partial failures. | getGridType=2 identifies subgrid, not editability. Read-only/editable support follows current documented native capabilities; signed-in/client/control lifetime coverage remains unverified. |
+| Public wiring and exact distributable source. | Strict types/lint/build/package-consumer and root compiled rule/grid tests pass. Generated catalog and independently executed archived browser report 165 APIs /34 namespaces at 0.9.0. | No generic Commands dispatch or automatic native consumer registration was added. |
+| Full regression and native offline packaging. | 51 files /2347 tests with both real PAC integrations enabled. Current Core pack/unpack/repack has two resources, zero Dataverse dependencies, nine complete notices and 222 matching input fingerprints. Exact archive/browser hashes are in the packaging guide. | Local unmanaged source is not import-tested/public-release-ready/tagged-source-verified. Main, PR #27, BvB, genuine old exports and draft remain unchanged. |
+
+Rule lane original `2a6383d` integrates as `8d9037f`; parent owns grid helpers,
+public/version/catalog/type integration and exact packaging evidence.
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -573,7 +681,7 @@ certify native Xrm forms or command registration.
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 153-function authoritative source and BvB 0.7.0 resource content verified. Full native live coverage remains separate. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 165-function milestone source; authoritative main/deployed BvB remain verified 153-function 0.7.0. Full native coverage remains separate. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |

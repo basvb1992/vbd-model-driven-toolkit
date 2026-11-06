@@ -1,8 +1,8 @@
 # Dataverse data and query functions
 
-The 14 R1 Data/Query/Actions entries, five R2 Metadata entries and Batch.execute are implemented
+The 14 R1 Data/Query/Actions entries, five R2 Metadata entries, Batch.execute and two Relationships entries are implemented
 in bounded source subsets. See [core usage](../core-usage.md) and
-[metadata discovery](../metadata.md); five R2 entries here remain planned.
+[metadata discovery](../metadata.md); three R2 entries here remain planned.
 See [catalog conventions](../function-catalog.md).
 The baseline is online Dataverse in the current environment. Cross-environment
 authentication is not automatically supplied by an app launcher.
@@ -43,6 +43,12 @@ filters, not joins/aggregates/general NOT/contains or ambiguous cookie-less pagi
 | `VBD.Query.buildFilter` | Structured conditions, allowed columns/operators | Filter representation | Validate identifiers separately from scalar escaping. | R1 |
 
 ## VBD.Relationships
+
+The two APIs are implemented in the source-only 0.8.0 slice. The exact native/
+typed-adapter, confirmation and partial/uncertain mutation semantics are in
+[relationship usage](../relationships.md). Association is not a generic write
+dispatcher and disassociation is never target-record deletion. No native tenant
+relationship mutations were performed by source verification.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

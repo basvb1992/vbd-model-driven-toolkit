@@ -1,6 +1,7 @@
 # Commands, grids, and business helper functions
 
-The eight R1 Commands/Grids entries are implemented; the other 20 remain planned.
+The eight R1 Commands/Grids entries and six R2 Rules/Grids entries are
+implemented in bounded source subsets; the other 14 remain planned.
 See [catalog conventions](../function-catalog.md) and [core usage](../core-usage.md).
 Client predicates are UX decisions, not server authorization.
 
@@ -27,6 +28,8 @@ Rules use a small allowlisted condition model: saved/unsaved, field comparison,
 state/status, selection bounds, capability, configured flag, and privilege hints.
 Async data must be preloaded for synchronous visibility/enablement consumers.
 Modern Power Fx visibility is not a direct JavaScript custom-rule consumer.
+The four APIs are implemented in source 0.9; [rule usage](../rules.md)
+defines strict tree/fact/context and tri-state contracts, not authorization.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -36,6 +39,11 @@ Modern Power Fx visibility is not a direct JavaScript custom-rule consumer.
 | `VBD.Rules.not` | Typed condition | Composite condition | Negation does not convert unavailable authorization into allowed. | R2 |
 
 ## VBD.Grids
+
+All five APIs are implemented. The source 0.9
+[interaction contract](../grid-interactions.md) defines sequential bounded
+processing, explicit mutation uncertainty and owned subgrid OnLoad disposal.
+Native UI/role/lifetime verification remains separate.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |

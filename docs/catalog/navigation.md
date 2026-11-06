@@ -1,8 +1,8 @@
 # Navigation, app launcher, and window functions
 
-26 entries are implemented locally: the eight non-generative Navigation methods,
-Dialogs 6, Links 3, SidePanes 4, Launch 4, and Windows.open.
-The other 3 remain planned.
+27 entries are implemented locally: the eight non-generative Navigation methods,
+Dialogs 6, Links 3, SidePanes 5, Launch 4, and Windows.open.
+The other 2 remain planned.
 See [catalog conventions](../function-catalog.md),
 [current runtime usage](../environment-launching.md), and the mandatory
 [app/window contract](../app-launching.md).
@@ -48,6 +48,10 @@ The implemented subset is online desktop Web only, at most 32 tracked IDs per
 SDK host, with matching creation options and original native-instance ownership.
 No foreign-pane adoption, automatic retry/rollback, external URL or arbitrary iframe.
 See [usage and lifecycle](../core-usage.md#owned-side-panes-and-deep-links).
+The 0.8.0 update subset is title/width/canClose/hidden on the original owned
+instance, with writable-property preflight and honest partial outcomes.
+[Pane update usage](../pane-updates.md) defines exact bounds and unsupported
+badge/icon/property behavior; there is no DOM manipulation or rollback.
 
 | Function | Inputs | Returns | Behavior / boundary | Phase |
 | --- | --- | --- | --- | --- |
@@ -55,7 +59,7 @@ See [usage and lifecycle](../core-usage.md#owned-side-panes-and-deep-links).
 | `VBD.SidePanes.navigate` | Pane token/ID, supported page input | Navigation completion | Do not promise arbitrary external iframe embedding. | R1 |
 | `VBD.SidePanes.select` | Original pane handle or explicitly owned ID | Selection request receipt | Require the current original owned instance; reject active navigation. | R1 |
 | `VBD.SidePanes.close` | Original pane handle or explicitly owned ID | Native close completion | Close owned panes only; no close during active navigation or ownership takeover. | R1 |
-| `VBD.SidePanes.update` | Pane ID, supported title/badge/properties | Applied result | Capability-check individual platform properties. | R2 |
+| `VBD.SidePanes.update` | Original owned pane handle/ID, nonempty title/width/canClose/hidden patch | Updated receipt with changed properties | Preflight native writable descriptors; busy/ownership checks and uncertain partial failures; no badge/icon subset. | R2 |
 
 ## VBD.Links
 
