@@ -1,6 +1,6 @@
 # Proposed public function catalog
 
-**159 functions have a local implementation; the other 39 remain planned.**
+**165 functions have a local implementation; the other 33 remain planned.**
 Unimplemented names and contracts are design candidates; review them before implementation.
 This is the single inventory of intended public functions, not a list of existing
 APIs or an instruction to implement everything in the first release.
@@ -103,6 +103,8 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Grids.getSelected`
 - `VBD.Grids.openSelected`
 - `VBD.Grids.refresh`
+- `VBD.Grids.registerOnLoad`
+- `VBD.Grids.runSelected`
 - `VBD.I18n.formatDate`
 - `VBD.I18n.formatNumber`
 - `VBD.I18n.getLanguage`
@@ -146,6 +148,10 @@ bounded subsets; R1 is not a requirement to build 135 functions in one change.
 - `VBD.Query.retrieveAll`
 - `VBD.Relationships.associate`
 - `VBD.Relationships.disassociate`
+- `VBD.Rules.all`
+- `VBD.Rules.any`
+- `VBD.Rules.evaluate`
+- `VBD.Rules.not`
 - `VBD.Security.assessTable`
 - `VBD.Security.hasPrivilege`
 - `VBD.SidePanes.close`

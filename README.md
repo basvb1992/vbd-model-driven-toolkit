@@ -4,8 +4,8 @@ A configurable TypeScript toolkit for Dynamics 365 and Power Apps
 model-driven apps: reusable form helpers, ribbon commands, Dataverse queries,
 lookups, dialogs, app launchers, and environment-aware configuration.
 
-**Status: source milestone 0.8.0, with 159 implemented functions. This new
-lookup/relationship/pane slice is not deployed; authoritative main and BvB
+**Status: source milestone 0.9.0, with 165 implemented functions. This new
+rule/grid slice builds on verified 0.8 source and is not deployed; authoritative main and BvB
 remain on verified Core 0.7.0.0 and optional Playground 0.2.0.0 with 17 searchable examples,
 editable safe inputs, copyable TypeScript and form/ribbon wiring guidance.
 Genuine current Core exports exist; the old 0.5.0 draft release is unchanged.
@@ -14,7 +14,7 @@ testing remain unverified. No license approval or public npm release is claimed.
 
 The design catalog currently covers **198 proposed functions across 41
 namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
-159 are locally implemented; the other 39 remain planned.
+165 are locally implemented; the other 33 remain planned.
 
 ## Available now
 
@@ -45,6 +45,9 @@ namespaces**, with purpose, inputs, outputs, constraints, and delivery phase.
   operations and owned pane-property updates in the source-only 0.8.0 slice.
   Native subsets and mutation uncertainty are documented; no live writes occur
   as part of this source verification.
+- Typed synchronous tri-state command rules and bounded selected-grid
+  processing/owned subgrid OnLoad registration in the source-only 0.9.0 slice.
+  Prepared facts are UX inputs, not authorization; mutation outcomes can be uncertain.
 
 Metadata's native path covers selected table and base/Boolean column facts;
 choices, relationships and extended column facts require explicit scope-attested

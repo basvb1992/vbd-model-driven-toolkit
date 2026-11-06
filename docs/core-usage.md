@@ -1,7 +1,7 @@
 # Core interaction, form, and data usage
 
-The 0.8.0 source adds six selected R2 APIs: 159 of 198 are implemented across
-33 namespaces. These are bounded source contracts, not certification of every
+The 0.9.0 source adds six selected R2 APIs: 165 of 198 are implemented across
+34 namespaces. These are bounded source contracts, not certification of every
 SDK feature, client, tenant, form, or permission configuration.
 The standalone 0.7.0.0 unmanaged toolkit is upgraded/published in BvB and genuine
 managed/unmanaged exports are verified. No consumer wiring or clean managed
@@ -237,6 +237,13 @@ explicit issues for count/table/duplicates. Grids.getSelected/refresh/openSelect
 use a supported supplied grid; openSelected requires exactly one row.
 Other configured operations/recipes, Power Fx visibility and classic enable
 rules are not made interchangeable by these adapters.
+
+Source 0.9 adds [Rules.evaluate/all/any/not](rules.md) for synchronous
+tri-state UX conditions with explicit prepared/native facts; consumers must
+choose safe unknown behavior. [Grids.runSelected/registerOnLoad](grid-interactions.md)
+provide sequential bounded trusted work and owned native subgrid handlers.
+These do not expand Commands.run/runGrid to dispatch arbitrary operations,
+grant authorization, retry mutations or certify native host compatibility.
 
 UI.showProgress/hideProgress/withProgress own overlapping VBD tokens on the
 shared native progress surface. They cannot coordinate an unrelated library

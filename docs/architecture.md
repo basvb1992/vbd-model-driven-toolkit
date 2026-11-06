@@ -4,8 +4,8 @@ Most contracts below are proposed. The implemented configuration/diagnostic
 functions and local delivery tools are described in [getting started](getting-started.md).
 The scoped environment/app-launch subset is in [runtime usage](environment-launching.md).
 Their source-level checks are not Dataverse installation or live-app evidence.
-The [core usage](core-usage.md) contract describes the 159 implemented methods
-in the 0.8.0 source, including the bounded native UI/data subset, owned side panes and
+The [core usage](core-usage.md) contract describes the 165 implemented methods
+in the 0.9.0 source, including the bounded native UI/data subset, owned side panes and
 conservative Security hints. [Configuration runtime](environment-and-configuration.md)
 defines approved loading, bindings and memory caching without a recipe engine.
 The R2 continuation adds [metadata](metadata.md), [advanced form UX](advanced-forms.md)
@@ -21,6 +21,12 @@ The source-only 0.8.0 continuation adds [advanced lookups](advanced-lookups.md),
 These do not upgrade BvB, infer native/server compatibility or make relationship
 writes transactional/retryable. Authoritative main/BvB remain at 0.7.0 until
 the new source is separately reviewed and deployment is authorized.
+
+The 0.9.0 slice adds [bounded synchronous command rules](rules.md) and
+[selected-grid processing/subgrid events](grid-interactions.md). Prepared
+facts are caller-supplied UX inputs, not authorization. Grid processing is
+sequential and distinguishes mutation uncertainty; it does not reuse the
+read-only batch/retry declaration for writes or expand the prepared-command dispatcher.
 
 ## Product and framework separation
 

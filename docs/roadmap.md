@@ -1,12 +1,12 @@
 # Roadmap
 
-159 catalog functions have a local implementation; the other 39 are planned.
+165 catalog functions have a local implementation; the other 33 are planned.
 Delivery phase is not implementation status and does not guarantee every
 proposed API name will survive design review.
 
 ## Current adoption status
 
-The new source-only 0.8.0 milestone below is not another deployment. This
+The new source-only 0.9.0 milestone builds on verified 0.8 source, not another deployment. This
 adoption section describes the still-current authoritative main/BvB 0.7.0
 installation and companion 0.2.0; no original tag/draft/assets are changed.
 
@@ -112,6 +112,21 @@ lookup/control/relationship shape is supported. Relationship writes can reach
 the server before transport/scope failure; they never inherit the read-only
 retry/batch policy or promise rollback. This source milestone leaves BvB,
 authoritative main, prior releases and test artifacts unchanged.
+
+## Current R2 command-rule and grid source continuation
+
+[Issue #28](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/28)
+selects Rules.evaluate/all/any/not and Grids.runSelected/registerOnLoad.
+Source 0.9 targets 165/198 APIs across 34 namespaces. It builds on verified
+0.8 PR #27 without merging, closing or deploying that PR.
+The remaining 33 candidates include business record/process/activity helpers,
+aggregate/upsert/server changesets, files, integrations and recipes.
+
+Use [rule](rules.md) and [grid](grid-interactions.md) contracts: synchronous
+tri-state UX facts are not authorization; sequential grid work preserves
+read/mutation and uncertainty boundaries; owned subgrid listeners never remove
+foreign handlers. No arbitrary command/recipe dispatcher, durable queue,
+automatic mutation retry, tenant calls, deployment or public binary release.
 
 ## Integrated local delivery
 

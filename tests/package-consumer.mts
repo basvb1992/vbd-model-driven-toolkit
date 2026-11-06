@@ -226,3 +226,23 @@ void customView;
 void dependencyReady;
 void dependencyRefreshed;
 void lookupSelection;
+
+declare const consumerGrid: unknown;
+declare const gridOperation: VBD.GridOperation<{ accepted: boolean }>;
+const selectedResult: Promise<VBD.GridRunResult<{ accepted: boolean }>> =
+  VBD.Grids.runSelected(consumerGrid, gridOperation, { allowedTables: ["account"], max: 25 });
+const gridLoaded: VBD.GridLoadHandler = executionContext => { void executionContext; };
+const gridRegistration: VBD.Disposable = VBD.Grids.registerOnLoad(consumerGrid, gridLoaded);
+void selectedResult;
+void gridRegistration;
+
+const ruleCondition: VBD.RuleCondition = { kind: "prepared", key: "enabled", op: "eq", value: true };
+const allConditions: VBD.RuleAll = VBD.Rules.all([ruleCondition]);
+const anyConditions: VBD.RuleAny = VBD.Rules.any([ruleCondition]);
+const negatedCondition: VBD.RuleNot = VBD.Rules.not(ruleCondition);
+declare const ruleOptions: VBD.RuleEvaluationOptions;
+const assessment: VBD.RuleAssessment = VBD.Rules.evaluate(allConditions, ruleOptions);
+const jsonAssessment: VBD.RuleAssessment = VBD.Rules.evaluate(JSON.stringify(anyConditions), ruleOptions);
+void negatedCondition;
+void assessment;
+void jsonAssessment;

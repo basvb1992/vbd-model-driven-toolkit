@@ -73,7 +73,10 @@ export { Events } from "./events.js";
 export type { EventHandler } from "./events.js";
 export type { Disposable } from "./registrations.js";
 export { Commands, Grids } from "./commands.js";
-export type { FailureOutcome } from "./commands.js";
+export type {
+  FailureOutcome, GridOperation, GridRunOptions, GridStopReason,
+  GridRunItem, GridRunResult, GridLoadHandler
+} from "./commands.js";
 export { Data } from "./data.js";
 export type {
   DataContext, JsonFields, JsonValue, ClientOptions, MutationOptions,
@@ -113,6 +116,12 @@ export type {
   ReadBatchRequest, ReadBatchOptions, BatchStopReason, ReadBatchItem, ReadBatchResult
 } from "./batch.js";
 export { Relationships } from "./relationships.js";
+export { Rules } from "./rules.js";
+export type {
+  RuleScalar, RuleComparison, RuleCondition, RuleAll, RuleAny, RuleNot,
+  RulePreparedFact, RulePreparedValues, RulePreparedPolicy, RuleEvaluationOptions,
+  RuleState, RuleReason, RuleAssessment
+} from "./rules.js";
 export type {
   RelationshipContract, RelationshipRequestMetadata, RelationshipRequest,
   RelationshipContext, RelationshipOptions, RelationshipConfirmation,

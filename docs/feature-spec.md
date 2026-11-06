@@ -33,9 +33,9 @@ Framework and must remain usable when that framework is not installed.
 The [function catalog](function-catalog.md) is the authoritative proposed public
 runtime API inventory. The [consultant capability catalog](consultant-experience.md)
 defines the surrounding product experiences, not additional browser API functions.
-159 runtime functions and the bounded local
+165 runtime functions and the bounded local
 tooling subset are implemented; see [getting started](getting-started.md) and
-[environment/launcher usage](environment-launching.md). The remaining 39 functions
+[environment/launcher usage](environment-launching.md). The remaining 33 functions
 are planned; [core usage](core-usage.md) defines current subset limitations.
 
 ## Non-goals
@@ -601,6 +601,58 @@ pane updates, shared exports/version/types/docs and complete offline evidence.
 The Playground fixture now derives the displayed version from the installed
 Core rather than pinning 0.7.0; its 17 examples and solution version are unchanged.
 
+## R2 synchronous command-rule and grid slice
+
+[Issue #28](https://github.com/basvb1992/vbd-model-driven-toolkit/issues/28)
+selects Rules.evaluate/all/any/not and Grids.runSelected/registerOnLoad.
+The 0.9.0/0.9.0.0 source builds on verified 0.8 head `bbaca3f` (PR #27 is
+unmerged), targeting 165/198 APIs across 34 namespaces; 33 candidates remain
+planned. Consultant outcome: reusable command conditions and bounded selected
+record interactions without copying unsafe handlers into each app.
+
+Rules are synchronous bounded typed trees over approved context/prepared
+facts. Validate the complete tree, including short-circuited branches;
+preserve matched/notMatched/unknown semantics and unknown reasons. No eval,
+async rule reads or inferred privilege grants. AND false and OR true dominate
+unknown; negation never converts unknown into a match. Supplied facts are UX
+trust contracts, not authorization, and absent/not-ready facts must not pass.
+
+Grid operations preflight the complete actual/supplied selection, freeze it
+and process sequentially (one invocation per grid, maximum eight active
+grids). Explicit read/mutation declarations, stop/continue policy,
+cancellation/scope/result limits and failed/uncertain/skipped consequences
+are observable; no write retry, rollback, atomicity or durable execution.
+Owned subgrid OnLoad registration requires original native identities and
+documented getGridType=2/add/remove capabilities, preserves foreign handlers,
+deduplicates and supplies actionable cleanup on partial native failures.
+Current Learn supports subgrid OnLoad on both read-only/editable controls;
+getGridType describes home versus subgrid, not editability.
+
+Acceptance: strict invalid/unknown/zero/false/context/mutation/reentry/dispose
+tests, actual compiled root/consumer contracts, exact generated availability
+and source/solution versions, full check and actual offline PAC Core/companion
+pack/unpack/repack. Preserve introduction versions, runtime notices and
+existing APIs. Usage contracts: [rules](rules.md), [grids](grid-interactions.md).
+
+No tenant/auth calls, live writes, deployment, merge, tag/draft changes or
+binary publication. Main/BvB remain Core 0.7 with Playground 0.2; PR #27,
+historical artifacts and owner license/native/clean-managed gates remain
+separate. Read-only adapters/trusted callbacks and supported online SDK
+capabilities are dependencies, not a claim of all-client verification.
+
+### 0.9.0 acceptance evidence
+
+| Criterion | Observed verification | Remaining boundary |
+| --- | --- | --- |
+| Bounded synchronous conditions with explicit unknown behavior. | 125 Rules cases cover all four APIs, complete-tree preflight, deep-frozen constructors, exact comparisons, unknown dominance, allowlists, unsafe JSON/descriptors, scoped facts, guard failures, native errors, mutation and reentry. | Field/native capabilities are documented subsets. Caller owns same-scope fact provenance/freshness/record association; no TTL, historical-generation token or privilege proof is supplied. |
+| Frozen selected work with exact accounting and safe failure policy. | 48 grid cases cover normalization/all-table approvals, sequential immutable snapshots, max eight active grids, zero/false, invalid/async/mutating guards, bytes, cancellation, context changes, uncertain mutations, stop/continue and release. | Callback kind/completion evidence is caller trust. No concurrency option, automatic retry, abort of native in-flight work, transaction or rollback. |
+| Original-instance subgrid lifecycle. | Focused native fixtures preserve receivers/foreign handlers, deduplicate, bound ownership, verify source/reentry and stale/disposed callbacks, and retain deliberate recovery after native add/remove partial failures. | getGridType=2 identifies subgrid, not editability. Read-only/editable support follows current documented native capabilities; signed-in/client/control lifetime coverage remains unverified. |
+| Public wiring and exact distributable source. | Strict types/lint/build/package-consumer and root compiled rule/grid tests pass. Generated catalog and independently executed archived browser report 165 APIs /34 namespaces at 0.9.0. | No generic Commands dispatch or automatic native consumer registration was added. |
+| Full regression and native offline packaging. | 51 files /2347 tests with both real PAC integrations enabled. Current Core pack/unpack/repack has two resources, zero Dataverse dependencies, nine complete notices and 222 matching input fingerprints. Exact archive/browser hashes are in the packaging guide. | Local unmanaged source is not import-tested/public-release-ready/tagged-source-verified. Main, PR #27, BvB, genuine old exports and draft remain unchanged. |
+
+Rule lane original `2a6383d` integrates as `8d9037f`; parent owns grid helpers,
+public/version/catalog/type integration and exact packaging evidence.
+
 ## Dependencies and assumptions
 
 - Supported Power Apps/Dataverse client APIs, with online Unified Interface
@@ -629,7 +681,7 @@ Core rather than pinning 0.7.0; its 17 examples and solution version are unchang
 | DOC-04 | Consultant capabilities have priorities, inputs, outputs, ownership, boundaries, and verification criteria. | Capability coverage and cross-document consistency checks. | Documented; bounded C1a and C05/C08 local tooling implemented, broader capabilities planned. |
 | SEP-01 | Core works in an environment without the Workflow/Interaction Framework. | Dependency inspection and clean-environment import/smoke checks with no framework installed. | Local package has zero Dataverse dependencies; clean-environment import remains unverified. |
 | SEP-02 | Recipes remain bounded client interactions, not durable workflows. | Validator tests reject durable waits, triggers, cycles, resume state, and persistent retry definitions. | Planned. |
-| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 159-function milestone source; authoritative main/deployed BvB remain verified 153-function 0.7.0. Full native coverage remains separate. |
+| API-01 | Public functions are under `VBD`; toolkit assets use `vbd`. | Type/build checks and exported-symbol/solution inspection. | 165-function milestone source; authoritative main/deployed BvB remain verified 153-function 0.7.0. Full native coverage remains separate. |
 | API-02 | Typed and maker-facing calls use the same validated operation contracts. | Unit tests plus form and command registration examples. | Prepared-profile command/load adapters share the typed launch core; other configured operations remain planned. |
 | CFG-01 | Effective environment values, absent values, false/zero/empty, type errors, and access errors are handled distinctly. | Resolver tests and Dataverse integration fixtures. | Explicit unambiguous current/default semantics checked with typed adapters; real tenant/layered resolution unverified. |
 | CFG-02 | Secret variables never return browser-readable secret values. | Type guard tests, negative integration test, and redacted diagnostics check. | Type-before-value and redaction adapter tests pass; live negative tenant check unverified. |

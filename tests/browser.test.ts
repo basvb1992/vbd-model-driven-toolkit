@@ -6,11 +6,88 @@ import manifest from "../package.json" with { type: "json" };
 import { configuration } from "./helpers.js";
 import { appId, launchFixture } from "./environment-helpers.js";
 import * as library from "../src/index.js";
-import { nativeForm, nativeSdk } from "./native-fixture.js";
+import { nativeForm, nativeSdk, nativeGrid } from "./native-fixture.js";
 
 const bundle = readFileSync(resolve("dist", "vbd.toolkit.js"), "utf8");
 
 describe("browser distribution", () => {
+  it("evaluates compiled tri-state rules with scoped prepared facts and exact native observations", () => {
+    const source = launchFixture(), form = nativeForm(), grid = nativeGrid();
+    const actual: unknown = runInNewContext(`${bundle}
+      (()=>{
+        const common={
+          scope,scopeContext:readContext,allowedFields:["number","absent"],
+          allowedPrepared:[{key:"t"},{key:"f"},{key:"u"}],
+          prepared:{scope,values:{t:{state:"ready",value:true},f:{state:"ready",value:false},u:{state:"notReady"}}}
+        };
+        const options={...common,context:VBD.Context.fromFormCommand(form)};
+        const fact=key=>({kind:"prepared",key,op:"eq",value:true});
+        const state=condition=>VBD.Rules.evaluate(condition,options).state;
+        return JSON.stringify({
+          ready:state(fact("t")),negative:state(fact("f")),unknown:state(fact("u")),
+          all:state(VBD.Rules.all([fact("u"),fact("f")])),
+          any:state(VBD.Rules.any([fact("u"),fact("t")])),
+          not:state(VBD.Rules.not(fact("u"))),
+          json:state(JSON.stringify(fact("t"))),saved:state({kind:"record",state:"saved"}),
+          field:state({kind:"field",field:"number",op:"eq",value:0}),
+          absent:state({kind:"field",field:"absent",op:"eq",value:null}),
+          selected:VBD.Rules.evaluate({kind:"selection",min:1,max:1,tables:["account"]},{
+            ...common,context:VBD.Context.fromGridCommand(grid)
+          }).state,basis:VBD.Rules.evaluate(fact("t"),options).basis
+        });
+      })();`, {
+      crypto: globalThis.crypto, URL, TextEncoder,
+      form: form.form, grid: grid.grid, scope: source.scope, readContext: source.context
+    }, { timeout: 5000 });
+    if (typeof actual !== "string") throw new Error("Missing compiled rule assessment");
+    expect(JSON.parse(actual)).toEqual({
+      ready: "matched", negative: "notMatched", unknown: "unknown", all: "notMatched",
+      any: "matched", not: "unknown", json: "matched", saved: "matched", field: "matched",
+      absent: "unknown", selected: "matched", basis: "ux-only"
+    });
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
+  it("runs a compiled frozen grid selection and disposes only its native OnLoad wrapper", async () => {
+    const source = launchFixture(), received: string[] = [];
+    const foreign = (_event: unknown): void => { void _event; };
+    const handlers = new Set<(event: unknown) => void>([foreign]);
+    const grid = {
+      getGrid: () => ({ getSelectedRows: () => ({ get: () => [{
+        data: { entity: { getId: () => appId, getEntityName: () => "account" } }
+      }] }) }),
+      getGridType: () => 2,
+      addOnLoad: (handler: (event: unknown) => void) => { handlers.add(handler); },
+      removeOnLoad: (handler: (event: unknown) => void) => { handlers.delete(handler); }
+    };
+    const result: unknown = await runInNewContext(`${bundle}
+      (async()=>{
+        const selected=await VBD.Grids.runSelected(grid,{
+          kind:"read",run:record=>{received.push(record.id);return false;},
+          validate:value=>value===false
+        },{allowedTables:["account"],context:readContext});
+        let events=0;
+        const callback=()=>{events++;};
+        const token=VBD.Grids.registerOnLoad(grid,callback);
+        const reused=VBD.Grids.registerOnLoad(grid,callback);
+        fire();
+        const disposed=token.dispose();
+        fire();
+        return JSON.stringify({status:selected.status,value:selected.items[0].value,
+          counts:selected.counts,events,reused:reused===token,removed:disposed.removed});
+      })();`, {
+      crypto: globalThis.crypto, URL, TextEncoder, grid, received, readContext: source.context,
+      fire: () => { for (const handler of [...handlers]) handler({ getEventSource: () => grid }); }
+    }, { timeout: 5000 });
+    if (typeof result !== "string") throw new Error("Missing compiled grid receipts");
+    expect(JSON.parse(result)).toEqual({
+      status: "succeeded", value: false,
+      counts: { requested: 1, attempted: 1, succeeded: 1, failed: 0, uncertain: 0, skipped: 0 },
+      events: 1, reused: true, removed: true
+    });
+    expect(received).toEqual([appId]);
+    expect(handlers).toEqual(new Set([foreign]));
+    expect(source.retrieve).not.toHaveBeenCalled();
+  });
   it("uses compiled advanced lookup view/selection contracts without native record reads", async () => {
     const source = launchFixture(), calls: unknown[][] = [], viewId = crypto.randomUUID();
     const foreign = (_event: unknown): void => { void _event; };

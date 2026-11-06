@@ -89,7 +89,7 @@ an environment as a side effect of a check.
 
 ## Managed and unmanaged packages
 
-The current 0.8.0 source maps to solution version `0.8.0.0`. Local PAC builds
+The current 0.9.0 source maps to solution version `0.9.0.0`. Local PAC builds
 contain exactly the browser `VBD` resource and complete escaped third-party
 notices; no consumer wiring, tools or framework assets ship. Receipts distinguish
 zero Dataverse dependencies from the nine bundled runtime packages.
@@ -103,11 +103,11 @@ is verified; clean managed-target install/upgrade and public redistribution
 approval remain outstanding.
 The adoption milestone upgraded BvB to Core 0.7.0.0 and optional Playground
 0.2.0.0, preserving original component IDs/introduction versions. Genuine
-0.7.0 managed/unmanaged exports match current source and served resources.
+0.7.0 managed/unmanaged exports match the deployed 0.7.0 source and served resources.
 The historical `v0.5.0-test.1` tag/draft/assets remain unchanged; no new public
 binary release or license approval is implied.
-The new source-only 0.8.0 lookup/relationship/pane milestone is not that
-installation/export: no 0.8.0 import, genuine managed export or public release
+The source-only 0.8.0 lookup/relationship/pane and 0.9.0 rule/grid slices are not that
+installation/export: no 0.8.0/0.9.0 import, genuine managed export or public release
 is claimed. It preserves current Core component provenance at 0.5.0.0 and the
 optional companion at its existing 0.2.0.0 solution/0.1.0.0 introduction versions.
 
